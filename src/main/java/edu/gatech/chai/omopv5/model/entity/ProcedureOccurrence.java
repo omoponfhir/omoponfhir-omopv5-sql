@@ -1,0 +1,227 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Georgia Tech Research Institute
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *******************************************************************************/
+package edu.gatech.chai.omopv5.model.entity;
+
+import java.util.Date;
+import java.util.List;
+
+public class ProcedureOccurrence extends BaseEntity {
+
+	private Long id;
+	private FPerson fPerson;
+	private Concept procedureConcept;
+	private Date procedureDate;
+	private Concept procedureTypeConcept;
+	private Concept modifierConcept;
+	private Long quantity;
+	private Provider provider;
+	private VisitOccurrence visitOccurrence;
+	private String procedureSourceValue;
+	private Concept procedureSourceConcept;
+	private String qualifierSourceValue;
+
+	public ProcedureOccurrence() {
+		super();
+	}
+
+	public ProcedureOccurrence(Long id) {
+		super();
+		this.id = id;
+	}
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public FPerson getFPerson() {
+		return fPerson;
+	}
+
+	public void setFPerson(FPerson fPerson) {
+		this.fPerson = fPerson;
+	}
+
+	public Concept getProcedureConcept() {
+		return procedureConcept;
+	}
+
+	public void setProcedureConcept(Concept procedureConcept) {
+		this.procedureConcept = procedureConcept;
+	}
+
+	public Date getProcedureDate() {
+		return procedureDate;
+	}
+
+	public void setProcedureDate(Date procedureDate) {
+		this.procedureDate = procedureDate;
+	}
+
+	public Concept getProcedureTypeConcept() {
+		return procedureTypeConcept;
+	}
+
+	public void setProcedureTypeConcept(Concept procedureTypeConcept) {
+		this.procedureTypeConcept = procedureTypeConcept;
+	}
+
+	public Concept getModifierConcept() {
+		return modifierConcept;
+	}
+	
+	public void setModifierConcept(Concept modifierConcept) {
+		this.modifierConcept = modifierConcept;
+	}
+	
+	public Long getQuantity() {
+		return quantity;
+	}
+	
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
+	}
+	
+	public Provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
+	}
+
+	public VisitOccurrence getVisitOccurrence() {
+		return visitOccurrence;
+	}
+
+	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
+		this.visitOccurrence = visitOccurrence;
+	}
+
+	public String getProcedureSourceValue() {
+		return procedureSourceValue;
+	}
+
+	public void setProcedureSourceValue(String procedureSourceValue) {
+		this.procedureSourceValue = procedureSourceValue;
+	}
+
+	public Concept getProcedureSourceConcept() {
+		return procedureSourceConcept;
+	}
+
+	public void setProcedureSourceConcept(Concept procedureSourceConcept) {
+		this.procedureSourceConcept = procedureSourceConcept;
+	}
+
+	public String getQualifierSourceValue() {
+		return qualifierSourceValue;
+	}
+	
+	public void setQualifierSourceValue(String qualifierSourceValue) {
+		this.qualifierSourceValue = qualifierSourceValue;
+	}
+
+	@Override
+	public Long getIdAsLong() {
+		return getId();
+	}
+
+	@Override
+	public String getColumnName(String columnVariable) {
+		return ProcedureOccurrence._getColumnName(columnVariable);
+	}
+	
+	public static String _getColumnName(String columnVariable) {
+		if ("id".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_occurrence_id";
+
+		if ("fPerson".equals(columnVariable)) 
+			return "procedure_occurrence.person_id";
+
+		if ("procedureConcept".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_concept_id";
+
+		if ("procedureDate".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_date";
+
+		if ("procedureTypeConcept".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_type_concept_id";
+
+		if ("modifierConcept".equals(columnVariable)) 
+			return "procedure_occurrence.modifier_concept_id";
+
+		if ("quantity".equals(columnVariable)) 
+			return "procedure_occurrence.quantity";
+
+		if ("provider".equals(columnVariable)) 
+			return "procedure_occurrence.provider_id";
+
+		if ("visitOccurrence".equals(columnVariable)) 
+			return "procedure_occurrence.visit_occurrence_id";
+
+		if ("procedureSourceValue".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_source_value";
+
+		if ("procedureSourceConcept".equals(columnVariable)) 
+			return "procedure_occurrence.procedure_source_concept_id";
+
+		if ("qualifierSourceValue".equals(columnVariable)) 
+			return "procedure_occurrence.qualifier_source_value";
+
+		return null;
+	}
+
+	@Override
+	public String getTableName() {
+		return ProcedureOccurrence._getTableName();
+	}
+	
+	public static String _getTableName() {
+		return "procedure_occurrence";
+	}
+
+	@Override
+	public String getForeignTableName(String foreignVariable) {
+		return ProcedureOccurrence._getForeignTableName(foreignVariable);
+	}
+	
+	public static String _getForeignTableName(String foreignVariable) {
+		if ("procedureConcept".equals(foreignVariable) || "procedureTypeConcept".equals(foreignVariable)
+				|| "modifierConcept".equals(foreignVariable) || "procedureSourceConcept".equals(foreignVariable))
+			return Concept._getTableName();
+
+		if ("fPerson".equals(foreignVariable))
+			return FPerson._getTableName();
+
+		if ("provider".equals(foreignVariable))
+			return Provider._getTableName();
+
+		if ("visitOccurrence".equals(foreignVariable))
+			return VisitOccurrence._getTableName();
+
+		return null;
+	}
+
+	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return "select * from procedure_occurrence ";
+	}
+
+}

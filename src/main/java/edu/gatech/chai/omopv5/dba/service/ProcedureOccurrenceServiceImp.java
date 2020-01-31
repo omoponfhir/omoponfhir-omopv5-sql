@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -94,6 +95,12 @@ public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<Procedur
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ProcedureOccurrence construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

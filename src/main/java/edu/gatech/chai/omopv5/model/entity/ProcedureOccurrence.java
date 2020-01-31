@@ -220,6 +220,11 @@ public class ProcedureOccurrence extends BaseEntity {
 		return null;
 	}
 
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return ProcedureOccurrence._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from procedure_occurrence ";
 	}

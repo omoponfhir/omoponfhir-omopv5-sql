@@ -197,19 +197,22 @@ public class FPerson extends Person {
 
 	@Override
 	public String getTableName() {
+		return FPerson._getTableName();
+	}
+	public static String _getTableName() {
 		if ("False".equalsIgnoreCase(System.getenv("F_TABLE"))) {
 			return Person._getTableName();
 		} else {
-			return FPerson._getTableName();
+			return "f_person";
 		}
-	}
-	
-	public static String _getTableName() {
-		return "f_person";
 	}
 	
 	public String getParentTableName() {
 		return Person._getTableName();
+	}
+	
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return FPerson._getSqlTableStatement(parameterList, valueList);
 	}
 	
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {

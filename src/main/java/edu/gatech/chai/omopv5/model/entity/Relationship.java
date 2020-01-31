@@ -109,6 +109,11 @@ public class Relationship extends BaseEntity {
 		return null;
 	}
 
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Relationship._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from relationship ";
 	}

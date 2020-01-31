@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -126,6 +127,12 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CareSite construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

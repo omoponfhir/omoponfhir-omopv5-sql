@@ -22,4 +22,5 @@ import java.util.Map;
 
 public interface IDao {
 	public ResultSet runQuery(String query) throws SQLException;
+	public int updateQuery(String query) throws SQLException;
 }

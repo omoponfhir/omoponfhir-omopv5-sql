@@ -211,6 +211,11 @@ public class Concept extends BaseEntity {
 		return null;
 	}
 	
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Concept._getSqlTableStatement(parameterList, valueList);
+	}
+	
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from concept ";
 	}

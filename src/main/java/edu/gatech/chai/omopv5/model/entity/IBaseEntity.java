@@ -16,10 +16,13 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.util.List;
+
 public interface IBaseEntity {
 	public String getColumnName(String columnVariable);
 	public String getTableName();
 	public String getForeignTableName(String foreignVariable);
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList);
 	public Long getIdAsLong();
 	public String toString();
 }

@@ -16,108 +16,37 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
-import java.util.Date;
 import java.util.List;
 
-public class ConceptRelationshipPK extends BaseEntity {
+public class ConceptRelationshipPK extends ConceptRelationship {
 	/**
 	 * 
 	 */
 
-    private Long concept1;
-    private Long concept2;
-	private String relationshipId;
-	private Date validStartDate;
-	private Date validEndDate;
-	private String invalidReason;
-
-	@Override
-	public Long getIdAsLong() {
-		return null;
-	}
-	
-	public Long getConcept1() {
-		return this.concept1;
-	}
-	
-	public void setConcept1(Long concept1) {
-		this.concept1 = concept1;
+	public ConceptRelationshipPK() {
+		super();
 	}
 
-	public Long getConcept2() {
-		return this.concept2;
-	}
-	
-	public void setConcept2(Long concept2) {
-		this.concept2 = concept2;
-	}
-	
-	public String getRelationshipId() {
-		return this.relationshipId;
-	}
-	
-	public void setRelationshipId(String relationshipId) {
-		this.relationshipId = relationshipId;
-	}
-	
-	public Date getValidStartDate() {
-		return this.validStartDate;
-	}
-	
-	public void setValidStartDate(Date validStartDate) {
-		this.validStartDate = validStartDate;
-	}
-	
-	public Date getValidEndDate() {
-		return this.validEndDate;
-	}
-	
-	public void setValidEndDate(Date validEndDate) {
-		this.validEndDate =validEndDate;
-	}
-	
-	public String getInvalidReason() {
-		return this.invalidReason;
-	}
-	
-	public void setInvalidReason(String invalidReason) {
-		this.invalidReason = invalidReason;
+	public ConceptRelationshipPK(Long concept1, Long concept2, String relationshipId) {
+		super(concept1, concept2, relationshipId);
 	}
 
 	@Override
 	public String getColumnName(String columnVariable) {
 		return ConceptRelationshipPK._getColumnName(columnVariable);
 	}
-	
+
 	public static String _getColumnName(String columnVariable) {
-		if ("concept1".equals(columnVariable) || "id.concept1".equals(columnVariable)) 
-			return "concept_relationship.concept_id_1";
-
-		if ("concept2".equals(columnVariable) || "id.concept2".equals(columnVariable)) 
-			return "concept_relationship.concept_id_2";
-
-		if ("relationshipId".equals(columnVariable) || "id.relationshipId".equals(columnVariable)) 
-			return "concept_relationship.relationship_id";
-
-		if ("validStartDate".equals(columnVariable)) 
-			return "concept_relationship.valid_start_date";
-
-		if ("validEndDate".equals(columnVariable)) 
-			return "concept_relationship.valid_end_date";
-
-		if ("invalidReason".equals(columnVariable)) 
-			return "concept_relationship.invalid_reason";
-
-		return null;
+		return ConceptRelationship._getColumnName(columnVariable);
 	}
 
 	@Override
 	public String getTableName() {
 		return ConceptRelationshipPK._getTableName();
 	}
-	
+
 	public static String _getTableName() {
-		return "concept_relationship";
+		return ConceptRelationship._getTableName();
 	}
 
 	@Override
@@ -125,9 +54,9 @@ public class ConceptRelationshipPK extends BaseEntity {
 		// This table has no foreign tables
 		return null;
 	}
-	
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
-		return "select * from concept_relationship ";
+		return ConceptRelationship._getSqlTableStatement(parameterList, valueList);
 	}
 
 }

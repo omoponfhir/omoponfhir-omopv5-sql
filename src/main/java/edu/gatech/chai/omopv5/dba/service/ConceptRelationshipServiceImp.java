@@ -1,9 +1,11 @@
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import edu.gatech.chai.omopv5.model.entity.ConceptRelationship;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
 
 // TODO: Auto-generated Javadoc
@@ -11,14 +13,14 @@ import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
  * The Class ConceptRelationshipServiceImp.
  */
 @Service
-public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptRelationshipPK>
+public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptRelationship>
 		implements ConceptRelationshipService {
 
 	/**
 	 * Instantiates a new concept relationship service imp.
 	 */
 	public ConceptRelationshipServiceImp() {
-		super(ConceptRelationshipPK.class);
+		super(ConceptRelationship.class);
 	}
 
 	/* (non-Javadoc)
@@ -49,38 +51,38 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 	}
 
 	@Override
-	public List<ConceptRelationshipPK> searchByColumnString(String column, String value) {
+	public List<ConceptRelationship> searchByColumnString(String column, String value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<ConceptRelationshipPK> searchByColumnString(String column, Long value) {
+	public List<ConceptRelationship> searchByColumnString(String column, Long value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<ConceptRelationshipPK> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
+	public List<ConceptRelationship> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
 			String sort) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<ConceptRelationshipPK> searchWithoutParams(int fromIndex, int toIndex, String sort) {
+	public List<ConceptRelationship> searchWithoutParams(int fromIndex, int toIndex, String sort) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ConceptRelationshipPK create(ConceptRelationshipPK entity) {
+	public ConceptRelationshipPK create(ConceptRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ConceptRelationshipPK update(ConceptRelationshipPK entity) {
+	public ConceptRelationshipPK update(ConceptRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -93,6 +95,12 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ConceptRelationship construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

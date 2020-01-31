@@ -15,6 +15,7 @@
  *
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -108,6 +109,12 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Relationship construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

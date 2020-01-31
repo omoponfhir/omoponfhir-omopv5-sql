@@ -329,6 +329,11 @@ public class Person extends BaseEntity {
 		return null;
 	}
 
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Person._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from person ";
 	}

@@ -52,4 +52,19 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		return stmt.executeQuery(query);
 	}
 
+	@Override
+	public int updateQuery(String query) throws SQLException {
+		DataSource ds = databaseConfig.getDataSource();
+		Connection connection = ds.getConnection();
+		Statement stmt = connection.createStatement();
+		
+		// sql string is full completed string rendered by SqlRender.
+		// Now, we translate this to attached database SQL.
+		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+		logger.debug("Query after SqlRender translate to "+databaseConfig.getSqlRenderTargetDialect()+": "+query);
+		System.out.println("Query after SqlRender translate to "+databaseConfig.getSqlRenderTargetDialect()+": "+query);
+		
+		return stmt.executeUpdate(query);
+	}
+
 }

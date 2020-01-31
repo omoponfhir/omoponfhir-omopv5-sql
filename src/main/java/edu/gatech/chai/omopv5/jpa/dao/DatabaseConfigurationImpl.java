@@ -2,9 +2,9 @@ package edu.gatech.chai.omopv5.jpa.dao;
 
 import javax.sql.DataSource;
 
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DatabaseConfigurationImpl implements DatabaseConfiguration {
 
 	private String targetDialect;

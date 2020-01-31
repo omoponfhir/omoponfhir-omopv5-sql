@@ -1,5 +1,6 @@
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,6 +132,12 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FactRelationship construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

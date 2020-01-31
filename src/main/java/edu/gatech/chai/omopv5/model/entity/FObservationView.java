@@ -322,6 +322,11 @@ public class FObservationView extends BaseEntity {
 		return null;
 	}
 
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return FObservationView._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from f_observation_view ";
 	}

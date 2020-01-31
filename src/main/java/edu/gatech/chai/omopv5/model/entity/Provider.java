@@ -243,6 +243,11 @@ public class Provider extends BaseEntity {
 		return null;
 	}
 	
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Provider._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from provider ";
 	}

@@ -150,6 +150,11 @@ public class CareSite extends BaseEntity {
 		return null;
 	}
 	
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return CareSite._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from care_site ";
 	}

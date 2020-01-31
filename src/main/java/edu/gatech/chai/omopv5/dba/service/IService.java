@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
@@ -37,7 +38,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param id the id
 	 * @return the v
 	 */
-	v findById (Long id);
+	public v findById (Long id);
 	
 	/**
 	 * Removes the by id.
@@ -54,7 +55,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param value the value
 	 * @return the list
 	 */
-	List<v> searchByColumnString (String column, String value);
+	public List<v> searchByColumnString (String column, String value);
 	
 	/**
 	 * Search by column string.
@@ -63,7 +64,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param value the value
 	 * @return the list
 	 */
-	List<v> searchByColumnString (String column, Long value);
+	public List<v> searchByColumnString (String column, Long value);
 	
 	/**
 	 * Search with params.
@@ -116,4 +117,6 @@ public interface IService<v extends BaseEntity> {
 	 * @return the size
 	 */
 	Long getSize(List<ParameterWrapper> paramList);
+	
+	v construct(ResultSet rs);
 }

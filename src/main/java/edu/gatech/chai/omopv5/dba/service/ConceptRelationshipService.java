@@ -1,12 +1,13 @@
 package edu.gatech.chai.omopv5.dba.service;
 
+import edu.gatech.chai.omopv5.model.entity.ConceptRelationship;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Interface ConceptRelationshipService.
  */
-public interface ConceptRelationshipService extends IService<ConceptRelationshipPK> {
+public interface ConceptRelationshipService extends IService<ConceptRelationship> {
 	
 	/**
 	 * Find by id.

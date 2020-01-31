@@ -178,6 +178,11 @@ public class Vocabulary extends BaseEntity {
 		return null;
 	}
 	
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Vocabulary._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from vocabulary ";
 	}

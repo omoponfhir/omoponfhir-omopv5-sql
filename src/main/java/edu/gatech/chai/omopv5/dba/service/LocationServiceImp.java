@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -111,6 +112,12 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Location construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

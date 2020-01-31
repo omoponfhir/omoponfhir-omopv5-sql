@@ -265,6 +265,11 @@ public class Measurement extends BaseEntity {
 		return Measurement._getForeignTableName(foreignVariable);
 	}
 	
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Measurement._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getForeignTableName(String foreignVariable) {
 		if ("sourceValueConcept".equals(foreignVariable) || "measurementConcept".equals(foreignVariable)
 				|| "valueAsConcept".equals(foreignVariable) || "operatorConcept".equals(foreignVariable)

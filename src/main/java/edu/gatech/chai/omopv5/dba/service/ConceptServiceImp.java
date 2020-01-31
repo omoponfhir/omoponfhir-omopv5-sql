@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,6 +153,12 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Concept construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

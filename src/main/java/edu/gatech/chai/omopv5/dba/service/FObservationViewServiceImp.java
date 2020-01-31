@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
 
@@ -101,6 +102,12 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FObservationView construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

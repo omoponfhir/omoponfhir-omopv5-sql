@@ -16,6 +16,7 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -93,6 +94,12 @@ public class MeasurementServiceImp extends BaseEntityServiceImp<Measurement> imp
 
 	@Override
 	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Measurement construct(ResultSet rs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

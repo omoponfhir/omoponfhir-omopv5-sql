@@ -271,6 +271,11 @@ public class Observation extends BaseEntity {
 		return null;
 	}
 
+	@Override
+	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+		return Observation._getSqlTableStatement(parameterList, valueList);
+	}
+
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from observation ";
 	}

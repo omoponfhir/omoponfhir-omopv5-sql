@@ -72,42 +72,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	}
 
 	@Override
-	public CareSite findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<CareSite> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<CareSite> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<CareSite> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<CareSite> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public CareSite create(CareSite entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -115,18 +79,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 
 	@Override
 	public CareSite update(CareSite entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

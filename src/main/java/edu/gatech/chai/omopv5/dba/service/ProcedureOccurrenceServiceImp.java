@@ -39,43 +39,6 @@ public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<Procedur
 	}
 
 	@Override
-	public ProcedureOccurrence findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProcedureOccurrence> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProcedureOccurrence> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProcedureOccurrence> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProcedureOccurrence> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ProcedureOccurrence create(ProcedureOccurrence entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -83,18 +46,6 @@ public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<Procedur
 
 	@Override
 	public ProcedureOccurrence update(ProcedureOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -17,7 +17,10 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 
 // TODO: Auto-generated Javadoc
@@ -48,6 +51,38 @@ public interface VocabularyService extends IService<Vocabulary> {
 		if (alias == null || alias.isEmpty())
 			alias = Vocabulary._getTableName();
 
+		try {
+			ResultSetMetaData metaData = rs.getMetaData();
+			int totalColumnSize = metaData.getColumnCount();
+			for (int i = 1; i <= totalColumnSize; i++) {
+				String columnInfo = metaData.getColumnName(i);
+
+				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
+					vocabulary.setId(rs.getString(columnInfo));
+				}
+				
+				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {
+					vocabulary.setName(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_reference")) {
+					vocabulary.setVocabularyReference(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_version")) {
+					vocabulary.setVocabularyVersion(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase("vocabularyConcept_concept_id")) {
+					Concept vocabularyConcept = ConceptService._construct(rs, null, "vocabularyConcept");
+					vocabulary.setVocabularyConcept(vocabularyConcept);
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 		
 		return vocabulary;
 	}

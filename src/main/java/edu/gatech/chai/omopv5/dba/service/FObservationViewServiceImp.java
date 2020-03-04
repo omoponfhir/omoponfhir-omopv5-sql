@@ -18,7 +18,6 @@ package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -46,43 +45,6 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	}
 
 	@Override
-	public FObservationView findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FObservationView> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FObservationView> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FObservationView> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FObservationView> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FObservationView create(FObservationView entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -90,18 +52,6 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 
 	@Override
 	public FObservationView update(FObservationView entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

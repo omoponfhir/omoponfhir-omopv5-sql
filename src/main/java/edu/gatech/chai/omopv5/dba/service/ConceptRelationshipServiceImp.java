@@ -51,31 +51,6 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 	}
 
 	@Override
-	public List<ConceptRelationship> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConceptRelationship> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConceptRelationship> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConceptRelationship> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ConceptRelationshipPK create(ConceptRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -83,18 +58,6 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 
 	@Override
 	public ConceptRelationshipPK update(ConceptRelationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

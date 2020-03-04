@@ -38,43 +38,6 @@ public class ObservationServiceImp extends BaseEntityServiceImp<Observation> imp
 	}
 
 	@Override
-	public Observation findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Observation> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Observation> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Observation> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Observation> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Observation create(Observation entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -82,18 +45,6 @@ public class ObservationServiceImp extends BaseEntityServiceImp<Observation> imp
 
 	@Override
 	public Observation update(Observation entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

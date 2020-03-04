@@ -32,9 +32,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
 import edu.gatech.chai.omopv5.dba.service.ParameterWrapper;
 import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfiguration;
+import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 
 /**
@@ -51,6 +53,9 @@ public class JUnitTest {
 	@Autowired
 	private FPersonService fPersonService;
 	
+	@Autowired
+	private FObservationViewService fObservationViewService;
+
 	@Test
 	public void personTableTest() {
 		ds = new PGPoolingDataSource();
@@ -65,14 +70,21 @@ public class JUnitTest {
 		databaseConfiguration.setDataSource(ds);
 		databaseConfiguration.setSqlRenderTargetDialect("postgresql");		
 
-		List<FPerson> out = fPersonService.searchWithoutParams(0, 10, null);
+		List<FPerson> outFperson = fPersonService.searchWithoutParams(0, 10, null);
+		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
 		
-		logger.debug("Total Returned FPerson: "+out.size());
-		for (FPerson fperson : out) {
+		logger.debug("Total Returned FPerson: "+outFperson.size());
+		for (FPerson fperson : outFperson) {
 			System.out.println(fperson.toString());
 		}
 		
-		assert(out.size() > 0);
+		logger.debug("Total Returned FObservationView: "+outFObs.size());
+		for (FObservationView fObservationView : outFObs) {
+			System.out.println(fObservationView.toString());
+		}
+
+		assert(outFperson.size() > 0);
+		assert(outFObs.size() > 0);
     }
 
 	@Test

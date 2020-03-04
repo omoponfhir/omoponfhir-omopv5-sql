@@ -119,42 +119,6 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 	}
 
 	@Override
-	public Concept findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Concept> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Concept> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Concept> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Concept> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Concept create(Concept entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -162,18 +126,6 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 
 	@Override
 	public Concept update(Concept entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

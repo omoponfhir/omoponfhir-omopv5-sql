@@ -38,43 +38,6 @@ public class VisitOccurrenceServiceImp extends BaseEntityServiceImp<VisitOccurre
 	}
 
 	@Override
-	public VisitOccurrence findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<VisitOccurrence> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<VisitOccurrence> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<VisitOccurrence> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<VisitOccurrence> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public VisitOccurrence create(VisitOccurrence entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -82,18 +45,6 @@ public class VisitOccurrenceServiceImp extends BaseEntityServiceImp<VisitOccurre
 
 	@Override
 	public VisitOccurrence update(VisitOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

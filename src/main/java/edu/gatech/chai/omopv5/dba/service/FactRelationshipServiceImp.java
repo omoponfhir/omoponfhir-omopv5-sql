@@ -87,31 +87,6 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 	}
 
 	@Override
-	public List<FactRelationship> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FactRelationship> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FactRelationship> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<FactRelationship> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FactRelationship create(FactRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -119,18 +94,6 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 
 	@Override
 	public FactRelationship update(FactRelationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -64,31 +64,6 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 	}
 
 	@Override
-	public List<Vocabulary> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Vocabulary> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Vocabulary> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Vocabulary> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Vocabulary create(Vocabulary entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -96,18 +71,6 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 
 	@Override
 	public Vocabulary update(Vocabulary entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

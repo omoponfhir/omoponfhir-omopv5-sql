@@ -39,43 +39,6 @@ public class ConditionOccurrenceServiceImp extends BaseEntityServiceImp<Conditio
     }
 
 	@Override
-	public ConditionOccurrence findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConditionOccurrence> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConditionOccurrence> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConditionOccurrence> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ConditionOccurrence> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ConditionOccurrence create(ConditionOccurrence entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -83,18 +46,6 @@ public class ConditionOccurrenceServiceImp extends BaseEntityServiceImp<Conditio
 
 	@Override
 	public ConditionOccurrence update(ConditionOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

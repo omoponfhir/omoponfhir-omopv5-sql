@@ -1,9 +1,12 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FactRelationship;
 import edu.gatech.chai.omopv5.model.entity.Note;
 
@@ -49,6 +52,39 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 		if (alias == null || alias.isEmpty())
 			alias = FactRelationship._getTableName();
 
+		try {
+			ResultSetMetaData metaData = rs.getMetaData();
+			int totalColumnSize = metaData.getColumnCount();
+			for (int i = 1; i <= totalColumnSize; i++) {
+				String columnInfo = metaData.getColumnName(i);
+
+				if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
+					factRelationship.setDomainConcept1(rs.getLong(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {
+					factRelationship.setFactId1(rs.getLong(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_2")) {
+					factRelationship.setDomainConcept2(rs.getLong(columnInfo));
+				}
+				
+				if (columnInfo.equalsIgnoreCase(alias + "_fact_id_2")) {
+					factRelationship.setFactId2(rs.getLong(columnInfo));
+				}
+				
+				if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
+					Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
+					factRelationship.setRelationshipConcept(relationshipConcept);
+				}
+
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 		
 		return factRelationship;
 	}

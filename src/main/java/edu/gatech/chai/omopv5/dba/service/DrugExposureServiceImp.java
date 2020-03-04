@@ -39,43 +39,6 @@ public class DrugExposureServiceImp extends BaseEntityServiceImp<DrugExposure>
 	}
 
 	@Override
-	public DrugExposure findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long removeById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DrugExposure> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DrugExposure> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DrugExposure> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DrugExposure> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public DrugExposure create(DrugExposure entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -83,18 +46,6 @@ public class DrugExposureServiceImp extends BaseEntityServiceImp<DrugExposure>
 
 	@Override
 	public DrugExposure update(DrugExposure entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

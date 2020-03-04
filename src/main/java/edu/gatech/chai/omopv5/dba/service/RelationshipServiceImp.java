@@ -66,31 +66,6 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	}
 
 	@Override
-	public List<Relationship> searchByColumnString(String column, String value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Relationship> searchByColumnString(String column, Long value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Relationship> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList,
-			String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Relationship> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Relationship create(Relationship entity) {
 		// TODO Auto-generated method stub
 		return null;
@@ -98,18 +73,6 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 
 	@Override
 	public Relationship update(Relationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getSize(List<ParameterWrapper> paramList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

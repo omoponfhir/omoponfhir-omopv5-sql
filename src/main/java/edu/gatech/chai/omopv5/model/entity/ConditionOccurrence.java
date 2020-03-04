@@ -16,21 +16,50 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "condition_occurrence")
 public class ConditionOccurrence extends BaseEntity {
 
+	@Id
+	@Column(name="condition_occurrence_id", nullable=false)
 	private Long id;
+
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@JoinColumn(name="condition_concept_id", referencedColumnName="concept_id", table="concept")
 	private Concept conceptId;
+	
+	@Column(name="condition_start_date")
 	private Date startDate;
+	
+	@Column(name="condition_end_date")
 	private Date endDate;
+	
+	@JoinColumn(name="condition_type_concept_id")
 	private Concept typeConceptId;
+	
+	@Column(name="stop_reason")
 	private String stopReason;
+	
+	@JoinColumn(name="provider_id", table="provider")
 	private Provider provider;
+
+	@JoinColumn(name="visit_occurrence_id", table="visit_occurrence")
 	private VisitOccurrence visitOccurrence;
+
+	@Column(name="condition_source_value")
 	private String conditionSourceValue;
+
+	@JoinColumn(name="condition_source_concept_id", referencedColumnName="concept_id", table="concept")
 	private Concept sourceConceptId;
 
 	public Long getId() {
@@ -132,40 +161,60 @@ public class ConditionOccurrence extends BaseEntity {
 	}
 
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable))
-			return "condition_occurrence.condition_occurrence_id";
 
-		if ("fPerson".equals(columnVariable))
-			return "condition_occurrence.person_id";
-
-		if ("conceptId".equals(columnVariable))
-			return "condition_occurrence.condition_concept_id";
-
-		if ("startDate".equals(columnVariable))
-			return "condition_occurrence.condition_start_date";
-
-		if ("endDate".equals(columnVariable))
-			return "condition_occurrence.condition_end_date";
-
-		if ("typeConceptId".equals(columnVariable))
-			return "condition_occurrence.condition_type_concept_id";
-
-		if ("stopReason".equals(columnVariable))
-			return "condition_occurrence.stop_reason";
-
-		if ("provider".equals(columnVariable))
-			return "condition_occurrence.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable))
-			return "condition_occurrence.visit_occurrence_id";
-
-		if ("conditionSourceValue".equals(columnVariable))
-			return "condition_occurrence.condition_source_value";
-
-		if ("sourceConceptId".equals(columnVariable))
-			return "condition_occurrence.condition_source_concept_id";
+		try {
+			Field field = ConditionOccurrence.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return ConditionOccurrence._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable))
+//			return "condition_occurrence.condition_occurrence_id";
+//
+//		if ("fPerson".equals(columnVariable))
+//			return "condition_occurrence.person_id";
+//
+//		if ("conceptId".equals(columnVariable))
+//			return "condition_occurrence.condition_concept_id";
+//
+//		if ("startDate".equals(columnVariable))
+//			return "condition_occurrence.condition_start_date";
+//
+//		if ("endDate".equals(columnVariable))
+//			return "condition_occurrence.condition_end_date";
+//
+//		if ("typeConceptId".equals(columnVariable))
+//			return "condition_occurrence.condition_type_concept_id";
+//
+//		if ("stopReason".equals(columnVariable))
+//			return "condition_occurrence.stop_reason";
+//
+//		if ("provider".equals(columnVariable))
+//			return "condition_occurrence.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable))
+//			return "condition_occurrence.visit_occurrence_id";
+//
+//		if ("conditionSourceValue".equals(columnVariable))
+//			return "condition_occurrence.condition_source_value";
+//
+//		if ("sourceConceptId".equals(columnVariable))
+//			return "condition_occurrence.condition_source_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -174,6 +223,10 @@ public class ConditionOccurrence extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = ConditionOccurrence.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "condition_occurrence";
 	}
 
@@ -197,7 +250,7 @@ public class ConditionOccurrence extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return ConditionOccurrence._getSqlTableStatement(parameterList, valueList);
 	}
 

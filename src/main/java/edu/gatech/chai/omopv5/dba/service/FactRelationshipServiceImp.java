@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
-import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FactRelationship;
 import edu.gatech.chai.omopv5.model.entity.Note;
 
@@ -137,9 +136,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 	}
 
 	@Override
-	public FactRelationship construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public FactRelationship construct(ResultSet rs, FactRelationship entity, String alias) {
+		return FactRelationshipService._construct(rs, entity, alias);
 	}
 
 }

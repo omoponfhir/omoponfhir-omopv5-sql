@@ -16,18 +16,43 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "note")
 public class Note extends BaseEntity {
+	@Id
+	@Column(name="note_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@Column(name="note_date", nullable=false)
 	private Date date;
+	
+	@Column(name="note_time")
 	private String time;
+	
+	@JoinColumn(name="note_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept typeConcept;
+	
+	@Column(name="note_text", nullable=false)
 	private String noteText;
+
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@Column(name="note_source_value")
 	private String noteSourceValue;
 
 	public Note() {
@@ -122,34 +147,53 @@ public class Note extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "note.note_id";
-
-		if ("fPerson".equals(columnVariable)) 
-			return "note.person_id";
-
-		if ("date".equals(columnVariable)) 
-			return "note.note_date";
-
-		if ("time".equals(columnVariable)) 
-			return "note.note_time";
-
-		if ("typeConcept".equals(columnVariable)) 
-			return "note.note_type_concept_id";
-
-		if ("noteText".equals(columnVariable)) 
-			return "note.note_text";
-
-		if ("provider".equals(columnVariable)) 
-			return "note.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable)) 
-			return "note.visit_occurrence_id";
-
-		if ("noteSourceValue".equals(columnVariable)) 
-			return "note.note_source_value";
+		try {
+			Field field = Note.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Note._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "note.note_id";
+//
+//		if ("fPerson".equals(columnVariable)) 
+//			return "note.person_id";
+//
+//		if ("date".equals(columnVariable)) 
+//			return "note.note_date";
+//
+//		if ("time".equals(columnVariable)) 
+//			return "note.note_time";
+//
+//		if ("typeConcept".equals(columnVariable)) 
+//			return "note.note_type_concept_id";
+//
+//		if ("noteText".equals(columnVariable)) 
+//			return "note.note_text";
+//
+//		if ("provider".equals(columnVariable)) 
+//			return "note.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable)) 
+//			return "note.visit_occurrence_id";
+//
+//		if ("noteSourceValue".equals(columnVariable)) 
+//			return "note.note_source_value";
+//
+//		return null;
 	}
 
 	@Override
@@ -158,6 +202,10 @@ public class Note extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = Note.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "note";
 	}
 
@@ -183,7 +231,7 @@ public class Note extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Note._getSqlTableStatement(parameterList, valueList);
 	}
 

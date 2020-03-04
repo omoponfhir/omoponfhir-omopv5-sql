@@ -16,33 +16,71 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "person")
 public class Person extends BaseEntity {
 
+	@Id
+	@JoinColumn(name = "person_id", table="f_person:f_person", nullable = false)
 	private Long id;
+
+	@JoinColumn(name = "gender_concept_id", referencedColumnName="concept_id", nullable = false)
 	private Concept genderConcept;
+
+	@Column(name = "year_of_birth", nullable = false)
 	private Integer yearOfBirth;
+
+	@Column(name = "month_of_birth")
 	private Integer monthOfBirth;
+
+	@Column(name = "day_of_birth")
 	private Integer dayOfBirth;
+
+	@Column(name = "time_of_birth")
 	private String timeOfBirth;
+
+	@JoinColumn(name = "race_concept_id", referencedColumnName="concept_id", nullable = false)
 	private Concept raceConcept;
+
+	@JoinColumn(name = "ethnicity_concept_id", referencedColumnName="concept_id", nullable = false)
 	private Concept ethnicityConcept;
+
+	@JoinColumn(name = "location_id")
 	private Location location;
+
+	@JoinColumn(name = "provider_id")
 	private Provider provider;
+
+	@JoinColumn(name = "care_site_id")
 	private CareSite careSite;
+
+	@Column(name = "person_source_value")
 	private String personSourceValue;
+
+	@Column(name = "gender_source_value")
 	private String genderSourceValue;
+
+	@JoinColumn(name = "gender_source_concept_id", referencedColumnName="concept_id")
 	private Concept genderSourceConcept;
+
+	@Column(name = "race_source_value")
 	private String raceSourceValue;
+
+	@JoinColumn(name = "race_source_concept_id", referencedColumnName="concept_id")
 	private Concept raceSourceConcept;
+
+	@Column(name = "ethnicity_source_value")
 	private String ethnicitySourceValue;
+
+	@JoinColumn(name = "ethnicity_source_concept_id", referencedColumnName="concept_id")
 	private Concept ethnicitySourceConcept;
-
-//	@OneToMany(orphanRemoval=true, mappedBy="person")
-//	private Set<ConditionOccurrence> conditions;
-
-	// private Death death;
 
 	public Person() {
 		super();
@@ -236,61 +274,37 @@ public class Person extends BaseEntity {
 	}
 
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable))
-			return "person.person_id";
-
-		if ("genderConcept".equals(columnVariable))
-			return "person.gender_concept_id";
-
-		if ("yearOfBirth".equals(columnVariable))
-			return "person.year_of_birth";
-
-		if ("monthOfBirth".equals(columnVariable))
-			return "person.month_of_birth";
-
-		if ("dayOfBirth".equals(columnVariable))
-			return "person.day_of_birth";
-
-		if ("timeOfBirth".equals(columnVariable))
-			return "person.time_of_birth";
-
-		if ("raceConcept".equals(columnVariable))
-			return "person.race_concept_id";
-
-		if ("ethnicityConcept".equals(columnVariable))
-			return "person.ethnicity_concept_id";
-
-		if ("location".equals(columnVariable))
-			return "person.location_id";
-
-		if ("provider".equals(columnVariable))
-			return "person.provider_id";
-
-		if ("careSite".equals(columnVariable))
-			return "person.care_site_id";
-
-		if ("personSourceValue".equals(columnVariable))
-			return "person.person_source_value";
-
-		if ("genderSourceValue".equals(columnVariable))
-			return "person.gender_source_value";
-
-		if ("genderSourceConcept".equals(columnVariable))
-			return "person.gender_source_concept_id";
-
-		if ("raceSourceValue".equals(columnVariable))
-			return "person.race_source_value";
-
-		if ("raceSourceConcept".equals(columnVariable))
-			return "person.race_source_concept_id";
-
-		if ("ethnicitySourceValue".equals(columnVariable))
-			return "person.ethnicity_source_value";
-
-		if ("ethnicitySourceConcept".equals(columnVariable))
-			return "person.ethnicity_source_concept_id";
+		try {
+			Field field = Person.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Person._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+	}
+
+	public static String _getAllfieldsName() {
+		String allFieldsName = new String();
+		Field[] Ffields = FPerson.class.getDeclaredFields();
+		for (Field field : Ffields) {
+			String fieldName = field.getName();
+			if (allFieldsName.isEmpty() == false)
+				allFieldsName = allFieldsName.concat(", ");
+			allFieldsName = allFieldsName.concat(FPerson._getColumnName(fieldName));
+		}
+
+		return allFieldsName;
 	}
 
 	@Override
@@ -299,13 +313,17 @@ public class Person extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = Person.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "person";
 	}
 
 	@Override
 	public String toString() {
 		String out = "" + "person_id: " + this.getId() + "\n" + "gender_concept_id: "
-				+ (this.getGenderConcept() == null ? "\n" : this.getGenderConcept().getId() + "\n");
+				+ (this.getGenderConcept() == null ? "\n" : this.getGenderConcept().getName() + "\n");
 
 		return out;
 	}
@@ -319,18 +337,18 @@ public class Person extends BaseEntity {
 
 		if ("location".equals(foreignVariable))
 			return Location._getTableName();
-		
+
 		if ("provider".equals(foreignVariable))
 			return Provider._getTableName();
-		
+
 		if ("careSite".equals(foreignVariable))
 			return CareSite._getTableName();
-		
+
 		return null;
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Person._getSqlTableStatement(parameterList, valueList);
 	}
 

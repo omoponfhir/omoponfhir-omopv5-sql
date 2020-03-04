@@ -98,9 +98,8 @@ public class NoteServiceImp extends BaseEntityServiceImp<Note> implements NoteSe
 	}
 
 	@Override
-	public Note construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Note construct(ResultSet rs, Note entity, String alias) {
+		return NoteService._construct(rs, entity, alias);
 	}
 
 }

@@ -16,16 +16,36 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "location")
 public class Location extends BaseEntity { 
 	
+	@Id
+	@Column(name="location_id", nullable=false)
 	private Long id;
+	
+	@Column(name="address_1")
 	private String address1;
+	
+	@Column(name="address_2")
 	private String address2;
+	
+	@Column(name="city")
 	private String city;
+	
+	@Column(name="state")
 	private String state;
+	
+	@Column(name="zip")
 	private String zipCode;
+	
+	@Column(name="location_source_value")
 	private String locationSourceValue;
 
 	public Location() {
@@ -113,28 +133,47 @@ public class Location extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "location.location_id";
-
-		if ("address1".equals(columnVariable)) 
-			return "location.address_1";
-
-		if ("address2".equals(columnVariable)) 
-			return "location.address_2";
-
-		if ("city".equals(columnVariable)) 
-			return "location.city";
-
-		if ("state".equals(columnVariable)) 
-			return "location.state";
-
-		if ("zipCode".equals(columnVariable)) 
-			return "location.zip";
-
-		if ("locationSourceValue".equals(columnVariable)) 
-			return "location.location_source_value";
+		try {
+			Field field = Location.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Location._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "location.location_id";
+//
+//		if ("address1".equals(columnVariable)) 
+//			return "location.address_1";
+//
+//		if ("address2".equals(columnVariable)) 
+//			return "location.address_2";
+//
+//		if ("city".equals(columnVariable)) 
+//			return "location.city";
+//
+//		if ("state".equals(columnVariable)) 
+//			return "location.state";
+//
+//		if ("zipCode".equals(columnVariable)) 
+//			return "location.zip";
+//
+//		if ("locationSourceValue".equals(columnVariable)) 
+//			return "location.location_source_value";
+//
+//		return null;
 	}
 
 	@Override
@@ -143,6 +182,10 @@ public class Location extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = Location.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "location";
 	}
 
@@ -157,7 +200,7 @@ public class Location extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Location._getSqlTableStatement(parameterList, valueList);
 	}
 

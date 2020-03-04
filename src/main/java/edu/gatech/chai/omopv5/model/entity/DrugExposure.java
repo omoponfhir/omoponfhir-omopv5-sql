@@ -16,30 +16,79 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "drug_exposure")
 public class DrugExposure extends BaseEntity {
+	@Id
+	@Column(name="drug_exposure_id", nullable=false)
 	private Long id;
+	
+	@Column(name="days_supply")
 	private Integer daysSupply;
+	
+	@Column(name="sig")
 	private String sig;
+	
+	@JoinColumn(name="route_concept_id", referencedColumnName="concept_id")
 	private Concept routeConcept;
+	
+	@Column(name="effective_drug_dose")
 	private Double effectiveDrugDose;
+	
+	@JoinColumn(name="dose_unit_concept_id", referencedColumnName="concept_id")
 	private Concept doseUnitConcept;
+	
+	@Column(name="lot_number")
 	private String lotNumber;
+	
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@Column(name="drug_source_value")
 	private String drugSourceValue;
+	
+	@JoinColumn(name="drug_source_concept_id", referencedColumnName="concept_id")
 	private Concept drugSourceConcept;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@Column(name="route_source_value")
 	private String routeSourceValue;
+	
+	@Column(name="dose_unit_source_value")
 	private String doseUnitSourceValue;
+	
+	@JoinColumn(name="drug_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept drugConcept;
+	
+	@Column(name="drug_exposure_start_date", nullable=false)
 	private Date drugExposureStartDate;
+	
+	@Column(name="drug_exposure_end_date")
 	private Date drugExposureEndDate;
+	
+	@JoinColumn(name="drug_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept drugTypeConcept;
+	
+	@Column(name="stop_reason")
 	private String stopReason;
+	
+	@Column(name="refills")
 	private Integer refills;
+	
+	@Column(name="quantity")
 	private Double quantity;
 
 	public DrugExposure() {
@@ -228,70 +277,89 @@ public class DrugExposure extends BaseEntity {
 	}
 
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable))
-			return "drug_exposure.drug_exposure_id";
-
-		if ("daysSupply".equals(columnVariable))
-			return "drug_exposure.days_supply";
-
-		if ("sig".equals(columnVariable))
-			return "drug_exposure.sig";
-
-		if ("routeConcept".equals(columnVariable))
-			return "drug_exposure.route_concept_id";
-
-		if ("effectiveDrugDose".equals(columnVariable))
-			return "drug_exposure.effective_drug_dose";
-
-		if ("doseUnitConcept".equals(columnVariable))
-			return "drug_exposure.dose_unit_concept_id";
-
-		if ("lotNumber".equals(columnVariable))
-			return "drug_exposure.lot_number";
-
-		if ("provider".equals(columnVariable))
-			return "drug_exposure.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable))
-			return "drug_exposure.visit_occurrence_id";
-
-		if ("drugSourceValue".equals(columnVariable))
-			return "drug_exposure.drug_source_value";
-
-		if ("drugSourceConcept".equals(columnVariable))
-			return "drug_exposure.drug_source_concept_id";
-
-		if ("fPerson".equals(columnVariable))
-			return "drug_exposure.person_id";
-
-		if ("routeSourceValue".equals(columnVariable))
-			return "drug_exposure.route_source_value";
-
-		if ("doseUnitSourceValue".equals(columnVariable))
-			return "drug_exposure.dose_unit_source_value";
-
-		if ("drugConcept".equals(columnVariable))
-			return "drug_exposure.drug_concept_id";
-
-		if ("drugExposureStartDate".equals(columnVariable))
-			return "drug_exposure.drug_exposure_start_date";
-
-		if ("drugExposureEndDate".equals(columnVariable))
-			return "drug_exposure.drug_exposure_end_date";
-
-		if ("drugTypeConcept".equals(columnVariable))
-			return "drug_exposure.drug_type_concept_id";
-
-		if ("stopReason".equals(columnVariable))
-			return "drug_exposure.stop_reason";
-
-		if ("refills".equals(columnVariable))
-			return "drug_exposure.refills";
-
-		if ("quantity".equals(columnVariable))
-			return "drug_exposure.quantity";
+		try {
+			Field field = DrugExposure.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return DrugExposure._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable))
+//			return "drug_exposure.drug_exposure_id";
+//
+//		if ("daysSupply".equals(columnVariable))
+//			return "drug_exposure.days_supply";
+//
+//		if ("sig".equals(columnVariable))
+//			return "drug_exposure.sig";
+//
+//		if ("routeConcept".equals(columnVariable))
+//			return "drug_exposure.route_concept_id";
+//
+//		if ("effectiveDrugDose".equals(columnVariable))
+//			return "drug_exposure.effective_drug_dose";
+//
+//		if ("doseUnitConcept".equals(columnVariable))
+//			return "drug_exposure.dose_unit_concept_id";
+//
+//		if ("lotNumber".equals(columnVariable))
+//			return "drug_exposure.lot_number";
+//
+//		if ("provider".equals(columnVariable))
+//			return "drug_exposure.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable))
+//			return "drug_exposure.visit_occurrence_id";
+//
+//		if ("drugSourceValue".equals(columnVariable))
+//			return "drug_exposure.drug_source_value";
+//
+//		if ("drugSourceConcept".equals(columnVariable))
+//			return "drug_exposure.drug_source_concept_id";
+//
+//		if ("fPerson".equals(columnVariable))
+//			return "drug_exposure.person_id";
+//
+//		if ("routeSourceValue".equals(columnVariable))
+//			return "drug_exposure.route_source_value";
+//
+//		if ("doseUnitSourceValue".equals(columnVariable))
+//			return "drug_exposure.dose_unit_source_value";
+//
+//		if ("drugConcept".equals(columnVariable))
+//			return "drug_exposure.drug_concept_id";
+//
+//		if ("drugExposureStartDate".equals(columnVariable))
+//			return "drug_exposure.drug_exposure_start_date";
+//
+//		if ("drugExposureEndDate".equals(columnVariable))
+//			return "drug_exposure.drug_exposure_end_date";
+//
+//		if ("drugTypeConcept".equals(columnVariable))
+//			return "drug_exposure.drug_type_concept_id";
+//
+//		if ("stopReason".equals(columnVariable))
+//			return "drug_exposure.stop_reason";
+//
+//		if ("refills".equals(columnVariable))
+//			return "drug_exposure.refills";
+//
+//		if ("quantity".equals(columnVariable))
+//			return "drug_exposure.quantity";
+//
+//		return null;
 	}
 
 	@Override
@@ -300,6 +368,10 @@ public class DrugExposure extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = DrugExposure.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "drug_exposure";
 	}
 
@@ -327,7 +399,7 @@ public class DrugExposure extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return DrugExposure._getSqlTableStatement(parameterList, valueList);
 	}
 

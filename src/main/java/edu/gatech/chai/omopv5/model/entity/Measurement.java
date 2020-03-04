@@ -16,27 +16,70 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "measurement")
 public class Measurement extends BaseEntity {
+	@Id
+	@Column(name="measurement_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
-	private String sourceValue; 
-	private Concept sourceValueConcept; 
+	
+	@Column(name="measurement_source_value")
+	private String sourceValue;
+	
+	@JoinColumn(name="measurement_source_concept_id", referencedColumnName="concept_id")
+	private Concept sourceValueConcept;
+	
+	@JoinColumn(name="measurement_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept measurementConcept;
+	
+	@Column(name="value_as_number")
 	private Double valueAsNumber;
+	
+	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
 	private Concept valueAsConcept;
+	
+	@Column(name="value_source_value")
 	private String valueSourceValue;
+	
+	@JoinColumn(name="operator_concept_id", referencedColumnName="concept_id")
 	private Concept operatorConcept;
+	
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
 	private Concept unitConcept;
-	private String unitSourceValue; 
+	
+	@Column(name="unit_source_value")
+	private String unitSourceValue;
+	
+	@Column(name="range_low")
 	private Double rangeLow;
+	
+	@Column(name="range_high")
 	private Double rangeHigh;
+	
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@Column(name="measurement_date", nullable=false)
 	private Date date;
+	
+	@Column(name="measurement_time")
 	private String time;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept type;
 
 	public Long getId() {
@@ -194,61 +237,80 @@ public class Measurement extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "measurement.measurement_id";
-
-		if ("fPerson".equals(columnVariable)) 
-			return "measurement.person_id";
-
-		if ("sourceValue".equals(columnVariable)) 
-			return "measurement.measurement_source_value";
-
-		if ("sourceValueConcept".equals(columnVariable)) 
-			return "measurement.measurement_source_concept_id";
-
-		if ("measurementConcept".equals(columnVariable)) 
-			return "measurement.measurement_concept_id";
-
-		if ("valueAsNumber".equals(columnVariable)) 
-			return "measurement.value_as_number";
-
-		if ("valueAsConcept".equals(columnVariable)) 
-			return "measurement.value_as_concept_id";
-
-		if ("valueSourceValue".equals(columnVariable)) 
-			return "measurement.value_source_value";
-
-		if ("operatorConcept".equals(columnVariable)) 
-			return "measurement.operator_concept_id";
-
-		if ("unitConcept".equals(columnVariable)) 
-			return "measurement.unit_concept_id";
-
-		if ("unitSourceValue".equals(columnVariable)) 
-			return "measurement.unit_source_value";
-
-		if ("rangeLow".equals(columnVariable)) 
-			return "measurement.range_low";
-
-		if ("rangeHigh".equals(columnVariable)) 
-			return "measurement.range_high";
-
-		if ("provider".equals(columnVariable)) 
-			return "measurement.provider_id";
-
-		if ("date".equals(columnVariable)) 
-			return "measurement.measurement_date";
-
-		if ("time".equals(columnVariable)) 
-			return "measurement.measurement_time";
-
-		if ("visitOccurrence".equals(columnVariable)) 
-			return "measurement.visit_occurrence_id";
-
-		if ("type".equals(columnVariable)) 
-			return "measurement.measurement_type_concept_id";
+		try {
+			Field field = Measurement.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Measurement._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "measurement.measurement_id";
+//
+//		if ("fPerson".equals(columnVariable)) 
+//			return "measurement.person_id";
+//
+//		if ("sourceValue".equals(columnVariable)) 
+//			return "measurement.measurement_source_value";
+//
+//		if ("sourceValueConcept".equals(columnVariable)) 
+//			return "measurement.measurement_source_concept_id";
+//
+//		if ("measurementConcept".equals(columnVariable)) 
+//			return "measurement.measurement_concept_id";
+//
+//		if ("valueAsNumber".equals(columnVariable)) 
+//			return "measurement.value_as_number";
+//
+//		if ("valueAsConcept".equals(columnVariable)) 
+//			return "measurement.value_as_concept_id";
+//
+//		if ("valueSourceValue".equals(columnVariable)) 
+//			return "measurement.value_source_value";
+//
+//		if ("operatorConcept".equals(columnVariable)) 
+//			return "measurement.operator_concept_id";
+//
+//		if ("unitConcept".equals(columnVariable)) 
+//			return "measurement.unit_concept_id";
+//
+//		if ("unitSourceValue".equals(columnVariable)) 
+//			return "measurement.unit_source_value";
+//
+//		if ("rangeLow".equals(columnVariable)) 
+//			return "measurement.range_low";
+//
+//		if ("rangeHigh".equals(columnVariable)) 
+//			return "measurement.range_high";
+//
+//		if ("provider".equals(columnVariable)) 
+//			return "measurement.provider_id";
+//
+//		if ("date".equals(columnVariable)) 
+//			return "measurement.measurement_date";
+//
+//		if ("time".equals(columnVariable)) 
+//			return "measurement.measurement_time";
+//
+//		if ("visitOccurrence".equals(columnVariable)) 
+//			return "measurement.visit_occurrence_id";
+//
+//		if ("type".equals(columnVariable)) 
+//			return "measurement.measurement_type_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -257,6 +319,10 @@ public class Measurement extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = Measurement.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "measurement";
 	}
 
@@ -266,7 +332,7 @@ public class Measurement extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Measurement._getSqlTableStatement(parameterList, valueList);
 	}
 

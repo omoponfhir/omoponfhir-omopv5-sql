@@ -16,6 +16,8 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.Relationship;
 
 // TODO: Auto-generated Javadoc
@@ -39,5 +41,15 @@ public interface RelationshipService extends IService<Relationship> {
 	 * @return the string
 	 */
 	public String removeById(String id);
+
+	public static Relationship _construct(ResultSet rs, Relationship relationship, String alias) {
+		if (relationship == null) relationship = new Relationship();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Relationship._getTableName();
+
+		
+		return relationship;
+	}
 
 }

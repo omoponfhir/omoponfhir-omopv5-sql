@@ -16,19 +16,35 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "concept_relationship")
 public class ConceptRelationship extends BaseEntity {
 	/**
 	 * 
 	 */
 
-    private Long concept1;
+	@Column(name="concept_id_1", nullable=false)
+	private Long concept1;
+	
+	@Column(name="concept_id_2", nullable=false)
     private Long concept2;
+	
+	@Column(name="relationship_id", nullable=false)
 	private String relationshipId;
+	
+	@Column(name="valid_start_date", nullable=false)
 	private Date validStartDate;
+	
+	@Column(name="valid_end_date", nullable=false)
 	private Date validEndDate;
+	
+	@Column(name="invalid_reason")
 	private String invalidReason;
 
     public ConceptRelationship() {
@@ -109,25 +125,44 @@ public class ConceptRelationship extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("concept1".equals(columnVariable) || "id.concept1".equals(columnVariable)) 
-			return "concept_relationship.concept_id_1";
-
-		if ("concept2".equals(columnVariable) || "id.concept2".equals(columnVariable)) 
-			return "concept_relationship.concept_id_2";
-
-		if ("relationshipId".equals(columnVariable) || "id.relationshipId".equals(columnVariable)) 
-			return "concept_relationship.relationship_id";
-
-		if ("validStartDate".equals(columnVariable)) 
-			return "concept_relationship.valid_start_date";
-
-		if ("validEndDate".equals(columnVariable)) 
-			return "concept_relationship.valid_end_date";
-
-		if ("invalidReason".equals(columnVariable)) 
-			return "concept_relationship.invalid_reason";
+		try {
+			Field field = ConceptRelationship.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return ConceptRelationship._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+		
+//		if ("concept1".equals(columnVariable) || "id.concept1".equals(columnVariable)) 
+//			return "concept_relationship.concept_id_1";
+//
+//		if ("concept2".equals(columnVariable) || "id.concept2".equals(columnVariable)) 
+//			return "concept_relationship.concept_id_2";
+//
+//		if ("relationshipId".equals(columnVariable) || "id.relationshipId".equals(columnVariable)) 
+//			return "concept_relationship.relationship_id";
+//
+//		if ("validStartDate".equals(columnVariable)) 
+//			return "concept_relationship.valid_start_date";
+//
+//		if ("validEndDate".equals(columnVariable)) 
+//			return "concept_relationship.valid_end_date";
+//
+//		if ("invalidReason".equals(columnVariable)) 
+//			return "concept_relationship.invalid_reason";
+//
+//		return null;
 	}
 
 	@Override
@@ -136,6 +171,10 @@ public class ConceptRelationship extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = ConceptRelationship.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "concept_relationship";
 	}
 
@@ -146,7 +185,7 @@ public class ConceptRelationship extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return ConceptRelationship._getSqlTableStatement(parameterList, valueList);
 	}
 

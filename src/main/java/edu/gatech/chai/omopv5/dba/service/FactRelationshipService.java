@@ -1,5 +1,6 @@
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
@@ -41,4 +42,15 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 	 */
 	public List<FactRelationship> searchFactRelationship(Long domainConcept1, Long factId1, Long domainConcept2,
 			Long factId2, Long relationshipId);
+	
+	public static FactRelationship _construct(ResultSet rs, FactRelationship factRelationship, String alias) {
+		if (factRelationship == null) factRelationship = new FactRelationship();
+		
+		if (alias == null || alias.isEmpty())
+			alias = FactRelationship._getTableName();
+
+		
+		return factRelationship;
+	}
+
 }

@@ -15,6 +15,7 @@
  *
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
+
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -114,11 +115,8 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	}
 
 	@Override
-	public Relationship construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Relationship construct(ResultSet rs, Relationship entity, String alias) {
+		return RelationshipService._construct(rs, entity, alias);
 	}
-
-	
 	
 }

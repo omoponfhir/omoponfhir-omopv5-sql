@@ -132,9 +132,8 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	}
 
 	@Override
-	public CareSite construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public CareSite construct(ResultSet rs, CareSite entity, String alias) {
+		return CareSiteService._construct(rs, entity, alias);
 	}
 
 }

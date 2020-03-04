@@ -16,32 +16,81 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "f_observation_view")
 public class FObservationView extends BaseEntity {
 
+	@Id
+	@Column(name="observation_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", nullable=false)
 	private FPerson fPerson;
+	
+	@JoinColumn(name="observation_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept observationConcept;
+	
+	@Column(name="observation_date", nullable=false)
 	private Date date;
+	
+	@Column(name="observation_time")
 	private String time;
+	
+	@Column(name="value_as_string")
 	private String valueAsString;
+	
+	@Column(name="value_as_number")
 	private Double valueAsNumber;
+	
+	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
 	private Concept valueAsConcept;
+	
+	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept typeConcept;
+	
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@Column(name="source_value")
 	private String sourceValue;
+	
+	@JoinColumn(name="source_concept_id", referencedColumnName="concept_id")
 	private Concept sourceConcept;
+	
+	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id")
 	private Concept qualifierConcept;
+	
+	@Column(name="qualifier_source_value")
 	private String qualifierSourceValue;
+	
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
 	private Concept unitConcept;
+	
+	@Column(name="unit_source_value")
 	private String unitSourceValue;
+	
+	@Column(name="range_low")
 	private BigDecimal rangeLow;
+	
+	@Column(name="range_high")
 	private BigDecimal rangeHigh;
+	
+	@Column(name="value_source_value")
 	private String valueSourceValue;
+	
+	@JoinColumn(name="observation_operator_concept_id", referencedColumnName="concept_id")
 	private Concept operatorConcept;
 
 	public Long getId() {
@@ -223,70 +272,89 @@ public class FObservationView extends BaseEntity {
 	}
 
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable))
-			return "f_observation_view.observation_id";
-
-		if ("fPerson".equals(columnVariable))
-			return "f_observation_view.person_id";
-
-		if ("observationConcept".equals(columnVariable))
-			return "f_observation_view.observation_concept_id";
-
-		if ("date".equals(columnVariable))
-			return "f_observation_view.observation_date";
-
-		if ("time".equals(columnVariable))
-			return "f_observation_view.observation_time";
-
-		if ("valueAsString".equals(columnVariable))
-			return "f_observation_view.value_as_string";
-
-		if ("valueAsNumber".equals(columnVariable))
-			return "f_observation_view.value_as_number";
-
-		if ("valueAsConcept".equals(columnVariable))
-			return "f_observation_view.value_as_concept_id";
-
-		if ("typeConcept".equals(columnVariable))
-			return "f_observation_view.observation_type_concept_id";
-
-		if ("provider".equals(columnVariable))
-			return "f_observation_view.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable))
-			return "f_observation_view.visit_occurrence_id";
-
-		if ("sourceValue".equals(columnVariable))
-			return "f_observation_view.source_value";
-
-		if ("sourceConcept".equals(columnVariable))
-			return "f_observation_view.source_concept_id";
-
-		if ("qualifierConcept".equals(columnVariable))
-			return "f_observation_view.qualifier_concept_id";
-
-		if ("qualifierSourceValue".equals(columnVariable))
-			return "f_observation_view.qualifier_source_value";
-
-		if ("unitConcept".equals(columnVariable))
-			return "f_observation_view.unit_concept_id";
-
-		if ("unitSourceValue".equals(columnVariable))
-			return "f_observation_view.unit_source_value";
-
-		if ("rangeLow".equals(columnVariable))
-			return "f_observation_view.range_low";
-
-		if ("rangeHigh".equals(columnVariable))
-			return "f_observation_view.range_high";
-
-		if ("valueSourceValue".equals(columnVariable))
-			return "f_observation_view.value_source_value";
-
-		if ("operatorConcept".equals(columnVariable))
-			return "f_observation_view.observation_operator_concept_id";
+		try {
+			Field field = FObservationView.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return FObservationView._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable))
+//			return "f_observation_view.observation_id";
+//
+//		if ("fPerson".equals(columnVariable))
+//			return "f_observation_view.person_id";
+//
+//		if ("observationConcept".equals(columnVariable))
+//			return "f_observation_view.observation_concept_id";
+//
+//		if ("date".equals(columnVariable))
+//			return "f_observation_view.observation_date";
+//
+//		if ("time".equals(columnVariable))
+//			return "f_observation_view.observation_time";
+//
+//		if ("valueAsString".equals(columnVariable))
+//			return "f_observation_view.value_as_string";
+//
+//		if ("valueAsNumber".equals(columnVariable))
+//			return "f_observation_view.value_as_number";
+//
+//		if ("valueAsConcept".equals(columnVariable))
+//			return "f_observation_view.value_as_concept_id";
+//
+//		if ("typeConcept".equals(columnVariable))
+//			return "f_observation_view.observation_type_concept_id";
+//
+//		if ("provider".equals(columnVariable))
+//			return "f_observation_view.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable))
+//			return "f_observation_view.visit_occurrence_id";
+//
+//		if ("sourceValue".equals(columnVariable))
+//			return "f_observation_view.source_value";
+//
+//		if ("sourceConcept".equals(columnVariable))
+//			return "f_observation_view.source_concept_id";
+//
+//		if ("qualifierConcept".equals(columnVariable))
+//			return "f_observation_view.qualifier_concept_id";
+//
+//		if ("qualifierSourceValue".equals(columnVariable))
+//			return "f_observation_view.qualifier_source_value";
+//
+//		if ("unitConcept".equals(columnVariable))
+//			return "f_observation_view.unit_concept_id";
+//
+//		if ("unitSourceValue".equals(columnVariable))
+//			return "f_observation_view.unit_source_value";
+//
+//		if ("rangeLow".equals(columnVariable))
+//			return "f_observation_view.range_low";
+//
+//		if ("rangeHigh".equals(columnVariable))
+//			return "f_observation_view.range_high";
+//
+//		if ("valueSourceValue".equals(columnVariable))
+//			return "f_observation_view.value_source_value";
+//
+//		if ("operatorConcept".equals(columnVariable))
+//			return "f_observation_view.observation_operator_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -295,6 +363,10 @@ public class FObservationView extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = FObservationView.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "f_observation_view";
 	}
 
@@ -323,7 +395,7 @@ public class FObservationView extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return FObservationView._getSqlTableStatement(parameterList, valueList);
 	}
 

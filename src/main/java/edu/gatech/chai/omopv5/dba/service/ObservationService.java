@@ -16,11 +16,22 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.Observation;
 
 /**
  * The Interface ObservationService.
  */
 public interface ObservationService extends IService<Observation> {
+	public static Observation _construct(ResultSet rs, Observation observation, String alias) {
+		if (observation == null) observation = new Observation();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Observation._getTableName();
+
+		
+		return observation;
+	}
 	
 }

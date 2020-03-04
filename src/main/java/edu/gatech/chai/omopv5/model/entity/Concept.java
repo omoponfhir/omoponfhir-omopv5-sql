@@ -16,20 +16,46 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "concept")
 public class Concept extends BaseEntity {
 
+	@Id
+	@Column(name="concept_id", nullable=false)
 	private Long id;
+
+	@Column(name="concept_name", nullable=false)
 	private String name;
+	
+	@Column(name="domain_id", nullable=false)
 	private String domain;
+	
+	@Column(name="concept_class_id", nullable=false)
 	private String conceptClass;
+	
+	@Column(name="standard_concept")
 	private Character standardConcept;
+	
+	@Column(name="vocabulary_id", nullable=false)
 	private String vocabulary;
+
+	@Column(name="concept_code", nullable=false)
 	private String conceptCode;
+	
+	@Column(name="valid_start_date", nullable=false)
 	private Date validStartDate;
+
+	@Column(name="valid_end_date", nullable=false)
 	private Date validEndDate;
+	
+	@Column(name="invalid_reason")
 	private String invalidReason;
 
 	public Concept() {
@@ -162,37 +188,56 @@ public class Concept extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "concept.concept_id";
-		
-		if ("name".equals(columnVariable))
-			return "concept.concept_name";
-		
-		if ("domain".equals(columnVariable))
-			return "concept.domain_id";
-		
-		if ("conceptClass".equals(columnVariable))
-			return "concept.concept_class_id";
-		
-		if ("standard_concept".equals(columnVariable))
-			return "concept.standardConcept";
-		
-		if ("vocabulary".equals(columnVariable))
-			return "concept.vocabulary_id";
-		
-		if ("conceptCode".equals(columnVariable))
-			return "concept.concept_code";
-		
-		if ("validStartDate".equals(columnVariable))
-			return "concept.valid_start_date";
-		
-		if ("validEndDate".equals(columnVariable))
-			return "concept.valid_end_date";
-		
-		if ("invalidReason".equals(columnVariable))
-			return "concept.invalid_reason";
-		
+		try {
+			Field field = Concept.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Concept._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "concept.concept_id";
+//		
+//		if ("name".equals(columnVariable))
+//			return "concept.concept_name";
+//		
+//		if ("domain".equals(columnVariable))
+//			return "concept.domain_id";
+//		
+//		if ("conceptClass".equals(columnVariable))
+//			return "concept.concept_class_id";
+//		
+//		if ("standard_concept".equals(columnVariable))
+//			return "concept.standard_concept";
+//		
+//		if ("vocabulary".equals(columnVariable))
+//			return "concept.vocabulary_id";
+//		
+//		if ("conceptCode".equals(columnVariable))
+//			return "concept.concept_code";
+//		
+//		if ("validStartDate".equals(columnVariable))
+//			return "concept.valid_start_date";
+//		
+//		if ("validEndDate".equals(columnVariable))
+//			return "concept.valid_end_date";
+//		
+//		if ("invalidReason".equals(columnVariable))
+//			return "concept.invalid_reason";
+//		
+//		return null;
 	}
 
 	@Override
@@ -212,7 +257,7 @@ public class Concept extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Concept._getSqlTableStatement(parameterList, valueList);
 	}
 	

@@ -16,31 +16,74 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 /** 
  * This class adds some properties to the Omop data model Person, in order to provide
  * all the data specified for FHIR.
  * @author Ismael Sarmento
  */
+@Table(name = "f_person")
 public class FPerson extends Person {
+	@JoinColumn(name="person_id", table="person:person", nullable=false)
+	private Long id;
+	
+	@Column(name="family_name")
 	private String familyName;
+	
+	@Column(name="given1_name")	
 	private String givenName1;
+	
+	@Column(name="given2_name")
 	private String givenName2;
+
+	@Column(name="prefix_name")
 	private String prefixName;
+	
+	@Column(name="suffix_name")
 	private String suffixName;
+	
+	@Column(name="preferred_language")
 	private String preferredLanguage;
+	
+	@Column(name="ssn")
 	private String ssn;
+	
+	@Column(name="maritalstatus")
 	private String maritalStatus;
+	
+	@Column(name="active")
 	private Short active;
+	
+	@Column(name="contact_point1")
 	private String contactPoint1;
+	
+	@Column(name="contact_point2")
 	private String contactPoint2;
+	
+	@Column(name="contact_point3")
 	private String contactPoint3;
 	
 	public FPerson() {
 		super();
 	}
 
+//	public Long getId() {
+//		if (id == null) 
+//			return super.getId();
+//		return id;
+//	}
+//	
+//	public void setId(Long id) {
+//		this.id = id;
+//		super.setId(id);
+//	}
+	
 	public String getFamilyName() {
 		return familyName;
 	}
@@ -156,41 +199,21 @@ public class FPerson extends Person {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("familyName".equals(columnVariable)) 
-			return "f_person.family_name";
-
-		if ("givenName1".equals(columnVariable)) 
-			return "f_person.given1_name";
-
-		if ("givenName2".equals(columnVariable)) 
-			return "f_person.given2_name";
-
-		if ("prefixName".equals(columnVariable)) 
-			return "f_person.prefix_name";
-
-		if ("suffixName".equals(columnVariable)) 
-			return "f_person.suffix_name";
-
-		if ("preferredLanguage".equals(columnVariable)) 
-			return "f_person.preferred_language";
-
-		if ("ssn".equals(columnVariable)) 
-			return "f_person.ssn";
-
-		if ("maritalStatus".equals(columnVariable)) 
-			return "f_person.maritalstatus";
-
-		if ("active".equals(columnVariable)) 
-			return "f_person.active";
-
-		if ("contactPoint1".equals(columnVariable)) 
-			return "f_person.contact_point1";
-
-		if ("contactPoint2".equals(columnVariable)) 
-			return "f_person.contact_point2";
-
-		if ("contactPoint3".equals(columnVariable)) 
-			return "f_person.contact_point3";
+		try {
+			Field field = FPerson.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field="+field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return Person._getColumnName(columnVariable);
 	}
@@ -199,10 +222,15 @@ public class FPerson extends Person {
 	public String getTableName() {
 		return FPerson._getTableName();
 	}
+	
 	public static String _getTableName() {
 		if ("False".equalsIgnoreCase(System.getenv("F_TABLE"))) {
 			return Person._getTableName();
 		} else {
+			Table annotation = FPerson.class.getDeclaredAnnotation(Table.class);
+			if (annotation != null) {
+				return annotation.name();
+			}
 			return "f_person";
 		}
 	}
@@ -211,18 +239,31 @@ public class FPerson extends Person {
 		return Person._getTableName();
 	}
 	
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
-		return FPerson._getSqlTableStatement(parameterList, valueList);
+	public static String _getAllfieldsName() {
+		String allFieldsName = new String();
+		Field[] fields = Person.class.getDeclaredFields();
+		for (Field field : fields) {
+			String fieldName = field.getName();
+			if (allFieldsName.isEmpty() == false)
+				allFieldsName = allFieldsName.concat(", ");
+			allFieldsName = allFieldsName.concat(Person._getColumnName(fieldName));
+		}
+		
+		return allFieldsName;
 	}
 	
-	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
-		String sql;
-		if ("False".equalsIgnoreCase(System.getenv("F_TABLE"))) {
-			sql = "select * from person ";
-		} else {
-			sql = "select * from person inner join f_person ON person.person_id=f_person.person_id ";
-		}
-
-		return sql;
-	}
+//	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
+//		return FPerson._getSqlSelectTableStatement(parameterList, valueList);
+//	}
+//	
+//	public static String _getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
+//		String sql;
+//		if ("False".equalsIgnoreCase(System.getenv("F_TABLE"))) {
+//			sql = "select * from person p";
+//		} else {
+//			sql = "select * from person p inner join f_person fp ON p.person_id=fp.person_id ";
+//		}
+//
+//		return sql;
+//	}
 }

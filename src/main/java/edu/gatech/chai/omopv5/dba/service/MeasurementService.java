@@ -16,11 +16,22 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.Measurement;
 
 /**
  * The Interface MeasurementService.
  */
 public interface MeasurementService extends IService<Measurement> {
+	public static Measurement _construct(ResultSet rs, Measurement measurement, String alias) {
+		if (measurement == null) measurement = new Measurement();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Measurement._getTableName();
+
+		
+		return measurement;
+	}
 
 }

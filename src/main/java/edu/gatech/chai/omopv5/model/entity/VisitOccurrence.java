@@ -16,21 +16,52 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "visit_occurrence")
 public class VisitOccurrence extends BaseEntity {
+	@Id
+	@Column(name="visit_occurrence_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@JoinColumn(name="visit_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept visitConcept;
+	
+	@Column(name="visit_start_date", nullable=false)
 	private Date startDate;
+	
+	@Column(name="visit_start_time")
 	private String startTime;
+	
+	@Column(name="visit_end_date", nullable=false)
 	private Date endDate;
+
+	@Column(name="visit_end_time")
 	private String endTime;
+	
+	@JoinColumn(name="visit_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept visitTypeConcept;
+
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="care_site_id")
 	private CareSite careSite; //FIXME field names should reflect fhir names, for validation purposes.
+	
+	@Column(name="visit_source_value")
 	private String visitSourceValue;
+	
+	@JoinColumn(name="visit_source_concept_id", referencedColumnName="concept_id")
 	private Concept visitSourceConcept;
 	
 
@@ -148,43 +179,62 @@ public class VisitOccurrence extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "visit_occurrence.visit_occurrence_id";
-
-		if ("fPerson".equals(columnVariable)) 
-			return "visit_occurrence.person_id";
-
-		if ("visitConcept".equals(columnVariable)) 
-			return "visit_occurrence.visit_concept_id";
-
-		if ("startDate".equals(columnVariable)) 
-			return "visit_occurrence.visit_start_date";
-
-		if ("startTime".equals(columnVariable)) 
-			return "visit_occurrence.visit_start_time";
-
-		if ("endDate".equals(columnVariable)) 
-			return "visit_occurrence.visit_end_date";
-
-		if ("endTime".equals(columnVariable)) 
-			return "visit_occurrence.visit_end_time";
-
-		if ("visitTypeConcept".equals(columnVariable)) 
-			return "visit_occurrence.visit_type_concept_id";
-
-		if ("provider".equals(columnVariable)) 
-			return "visit_occurrence.provider_id";
-
-		if ("careSite".equals(columnVariable)) 
-			return "visit_occurrence.care_site_id";
-
-		if ("visitSourceValue".equals(columnVariable)) 
-			return "visit_occurrence.visit_source_value";
-
-		if ("visitSourceConcept".equals(columnVariable)) 
-			return "visit_occurrence.visit_source_concept_id";
+		try {
+			Field field = VisitOccurrence.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return VisitOccurrence._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "visit_occurrence.visit_occurrence_id";
+//
+//		if ("fPerson".equals(columnVariable)) 
+//			return "visit_occurrence.person_id";
+//
+//		if ("visitConcept".equals(columnVariable)) 
+//			return "visit_occurrence.visit_concept_id";
+//
+//		if ("startDate".equals(columnVariable)) 
+//			return "visit_occurrence.visit_start_date";
+//
+//		if ("startTime".equals(columnVariable)) 
+//			return "visit_occurrence.visit_start_time";
+//
+//		if ("endDate".equals(columnVariable)) 
+//			return "visit_occurrence.visit_end_date";
+//
+//		if ("endTime".equals(columnVariable)) 
+//			return "visit_occurrence.visit_end_time";
+//
+//		if ("visitTypeConcept".equals(columnVariable)) 
+//			return "visit_occurrence.visit_type_concept_id";
+//
+//		if ("provider".equals(columnVariable)) 
+//			return "visit_occurrence.provider_id";
+//
+//		if ("careSite".equals(columnVariable)) 
+//			return "visit_occurrence.care_site_id";
+//
+//		if ("visitSourceValue".equals(columnVariable)) 
+//			return "visit_occurrence.visit_source_value";
+//
+//		if ("visitSourceConcept".equals(columnVariable)) 
+//			return "visit_occurrence.visit_source_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -193,6 +243,10 @@ public class VisitOccurrence extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = VisitOccurrence.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "visit_occurrence";
 	}
 
@@ -219,7 +273,7 @@ public class VisitOccurrence extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return VisitOccurrence._getSqlTableStatement(parameterList, valueList);
 	}
 

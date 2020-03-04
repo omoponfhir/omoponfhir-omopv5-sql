@@ -16,11 +16,22 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.Note;
 
 /**
  * The Interface NoteService.
  */
 public interface NoteService extends IService<Note> {
+	public static Note _construct(ResultSet rs, Note note, String alias) {
+		if (note == null) note = new Note();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Note._getTableName();
+
+		
+		return note;
+	}
 
 }

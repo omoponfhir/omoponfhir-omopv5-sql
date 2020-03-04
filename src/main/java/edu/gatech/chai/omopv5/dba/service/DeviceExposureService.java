@@ -16,11 +16,22 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.DeviceExposure;
 
 /**
  * The Interface DeviceExposureService.
  */
 public interface DeviceExposureService extends IService<DeviceExposure> {
+	public static DeviceExposure _construct(ResultSet rs, DeviceExposure deviceExposure, String alias) {
+		if (deviceExposure == null) deviceExposure = new DeviceExposure();
+		
+		if (alias == null || alias.isEmpty())
+			alias = DeviceExposure._getTableName();
+
+		
+		return deviceExposure;
+	}
 
 }

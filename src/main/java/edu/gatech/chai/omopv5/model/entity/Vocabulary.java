@@ -16,18 +16,35 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 /**
  * 
  * @author Myung Choi
  */
+@Table(name = "vocabulary")
 public class Vocabulary extends BaseEntity {
 	
+	@Id
+	@Column(name="vocabulary_id", nullable=false)
 	private String id;
+	
+	@Column(name="vocabulary_name", nullable=false)
 	private String name;
+	
+	@Column(name="vocabulary_reference")
 	private String vocabularyReference;
+	
+	@Column(name="vocabulary_version")
 	private String vocabularyVersion;
+	
+	@JoinColumn(name="vocabulary_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept vocabularyConcept;
 
 	public Vocabulary() {
@@ -139,22 +156,41 @@ public class Vocabulary extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "vocabulary.vocabulary_id";
-
-		if ("name".equals(columnVariable)) 
-			return "vocabulary.vocabulary_name";
-
-		if ("vocabularyReference".equals(columnVariable)) 
-			return "vocabulary.vocabulary_reference";
-
-		if ("vocabularyVersion".equals(columnVariable)) 
-			return "vocabulary.vocabulary_version";
-
-		if ("vocabularyConcept".equals(columnVariable)) 
-			return "vocabulary.vocabulary_concept_id";
+		try {
+			Field field = Vocabulary.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Vocabulary._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "vocabulary.vocabulary_id";
+//
+//		if ("name".equals(columnVariable)) 
+//			return "vocabulary.vocabulary_name";
+//
+//		if ("vocabularyReference".equals(columnVariable)) 
+//			return "vocabulary.vocabulary_reference";
+//
+//		if ("vocabularyVersion".equals(columnVariable)) 
+//			return "vocabulary.vocabulary_version";
+//
+//		if ("vocabularyConcept".equals(columnVariable)) 
+//			return "vocabulary.vocabulary_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -163,6 +199,10 @@ public class Vocabulary extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = Vocabulary.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "vocabulary";
 	}
 
@@ -179,7 +219,7 @@ public class Vocabulary extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Vocabulary._getSqlTableStatement(parameterList, valueList);
 	}
 

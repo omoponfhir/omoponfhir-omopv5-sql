@@ -1,13 +1,27 @@
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
-public class FactRelationship extends BaseEntity {
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
+@Table(name = "fact_relationship")
+public class FactRelationship extends BaseEntity {
+	@Column(name="domain_concept_id_1", nullable=false)
 	private Long domainConcept1;
+	
+	@Column(name="fact_id_1", nullable=false)
 	private Long factId1;
+	
+	@Column(name="domain_concept_id_2", nullable=false)
 	private Long domainConcept2;
+	
+	@Column(name="fact_id_2", nullable=false)
 	private Long factId2;
+	
+	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept relationshipConcept;
 	
 	public Long getDomainConcept1() {
@@ -61,22 +75,41 @@ public class FactRelationship extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("domainConcept1".equals(columnVariable)) 
-			return "fact_relationship.domain_concept_id_1";
-
-		if ("factId1".equals(columnVariable)) 
-			return "fact_relationship.fact_id_1";
-
-		if ("domainConcept2".equals(columnVariable)) 
-			return "fact_relationship.domain_concept_id_2";
-
-		if ("factId2".equals(columnVariable)) 
-			return "fact_relationship.fact_id_2";
-
-		if ("relationshipConcept".equals(columnVariable)) 
-			return "fact_relationship.relationship_concept_id";
+		try {
+			Field field = FactRelationship.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return FactRelationship._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("domainConcept1".equals(columnVariable)) 
+//			return "fact_relationship.domain_concept_id_1";
+//
+//		if ("factId1".equals(columnVariable)) 
+//			return "fact_relationship.fact_id_1";
+//
+//		if ("domainConcept2".equals(columnVariable)) 
+//			return "fact_relationship.domain_concept_id_2";
+//
+//		if ("factId2".equals(columnVariable)) 
+//			return "fact_relationship.fact_id_2";
+//
+//		if ("relationshipConcept".equals(columnVariable)) 
+//			return "fact_relationship.relationship_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -85,6 +118,10 @@ public class FactRelationship extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = FactRelationship.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "fact_relationship";
 	}
 
@@ -101,7 +138,7 @@ public class FactRelationship extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return FactRelationship._getSqlTableStatement(parameterList, valueList);
 	}
 

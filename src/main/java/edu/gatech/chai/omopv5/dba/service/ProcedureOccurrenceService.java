@@ -16,11 +16,22 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.ProcedureOccurrence;
 
 /**
  * The Interface ProcedureOccurrenceService.
  */
 public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence> {
+	public static ProcedureOccurrence _construct(ResultSet rs, ProcedureOccurrence procedureOccurrence, String alias) {
+		if (procedureOccurrence == null)
+			procedureOccurrence = new ProcedureOccurrence();
+
+		if (alias == null || alias.isEmpty())
+			alias = ProcedureOccurrence._getTableName();
+
+		return procedureOccurrence;
+	}
 
 }

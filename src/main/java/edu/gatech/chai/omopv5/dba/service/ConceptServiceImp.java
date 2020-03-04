@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +49,17 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		List<Concept> concepts = new ArrayList<Concept>();
 		
 		if ("Ingredient".equals(concept.getConceptClass())) {
-			// This is ingredient. Just return null
+			// This is ingredient. Just return empty list
 			return concepts;
 		}
 		
-		String sqlQuery = null;
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+		
+		String sql = null;
 		if ("NDC".equals(concept.getVocabulary())) {
 			// Use JPQL
-			sqlQuery = "select c "
+			sql = "select c "
 					+ "FROM Concept src "
 					+ "JOIN ConceptRelationship cr on src.id = cr.conceptId1 "
 			        + "AND cr.relationship_id = 'Maps to' "
@@ -72,7 +76,7 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 			        + "AND src.invalidReason is null";
 		} else if ("RxNorm".equals(concept.getVocabulary())) {
 			// when RxNorm.
-			sqlQuery = "select c "
+			sql = "select c "
 					+ "FROM Concept src " 
 					+ "JOIN ConceptAncestor ca ON ca.descendantConcept = src.id "
 					+ "JOIN Concept c ON ca.ancestorConcept = c.id "
@@ -86,7 +90,24 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 			return concepts;
 		}
 		
-		return null;
+		sql = renderedSql(sql, parameterList, valueList);
+
+		System.out.println(sql);
+
+		try {
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+			while (rs.next()) {
+				Concept entity = ConceptService._construct(rs, null, "c");
+				if (entity != null) {
+					concepts.add(entity);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return concepts;
 	}
 
 	/* (non-Javadoc)
@@ -158,8 +179,8 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 	}
 
 	@Override
-	public Concept construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Concept construct(ResultSet rs, Concept entity, String alias) {
+		return ConceptService._construct(rs, entity, alias);
 	}
+
 }

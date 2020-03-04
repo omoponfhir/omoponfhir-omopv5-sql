@@ -16,23 +16,56 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "provider")
 public class Provider extends BaseEntity {
 
+	@Id
+	@Column(name="provider_id", nullable=false)
 	private Long id;
+	
+	@Column(name="provider_name", nullable=false)
 	private String providerName;
+	
+	@Column(name="npi", nullable=false)
 	private String npi;
+	
+	@Column(name="dea", nullable=false)
 	private String dea;
+	
+	@JoinColumn(name="specialty_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept specialtyConcept;
+	
+	@JoinColumn(name="care_site_id", nullable=false)
 	private CareSite careSite;
+	
+	@Column(name="year_of_birth", nullable=false)
 	private Integer yearOfBirth;
+	
+	@JoinColumn(name="gender_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept genderConcept;
+	
+	@Column(name="provider_source_value", nullable=false)
 	private String providerSourceValue;
+
+	@Column(name="specialty_source_value", nullable=false)
 	private String specialtySourceValue;
+	
+	@JoinColumn(name="specialty_source_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept specialtySourceConcept;
+	
+	@Column(name="gender_source_value")
 	private String genderSourceValue;
-	private Concept genderSourceConcept;
+	
+	@JoinColumn(name="gender_source_concept_id", referencedColumnName="concept_id")
+	private Concept genderSourceConcept;	
 
 	public Provider() {
 		super();
@@ -176,46 +209,65 @@ public class Provider extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "provider.provider_id";
-
-		if ("providerName".equals(columnVariable)) 
-			return "provider.provider_name";
-
-		if ("npi".equals(columnVariable)) 
-			return "provider.npi";
-
-		if ("dea".equals(columnVariable)) 
-			return "provider.dea";
-
-		if ("specialtyConcept".equals(columnVariable)) 
-			return "provider.specialty_concept_id";
-
-		if ("careSite".equals(columnVariable)) 
-			return "provider.care_site_id";
-
-		if ("yearOfBirth".equals(columnVariable)) 
-			return "provider.year_of_birth";
-
-		if ("genderConcept".equals(columnVariable)) 
-			return "provider.gender_concept_id";
-
-		if ("providerSourceValue".equals(columnVariable)) 
-			return "provider.provider_source_value";
-
-		if ("specialtySourceValue".equals(columnVariable)) 
-			return "provider.specialty_source_value";
-
-		if ("specialtySourceConcept".equals(columnVariable)) 
-			return "provider.specialty_source_concept_id";
-
-		if ("genderSourceValue".equals(columnVariable)) 
-			return "provider.gender_source_value";
-
-		if ("genderSourceConcept".equals(columnVariable)) 
-			return "provider.gender_source_concept_id";
+		try {
+			Field field = Provider.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return Provider._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "provider.provider_id";
+//
+//		if ("providerName".equals(columnVariable)) 
+//			return "provider.provider_name";
+//
+//		if ("npi".equals(columnVariable)) 
+//			return "provider.npi";
+//
+//		if ("dea".equals(columnVariable)) 
+//			return "provider.dea";
+//
+//		if ("specialtyConcept".equals(columnVariable)) 
+//			return "provider.specialty_concept_id";
+//
+//		if ("careSite".equals(columnVariable)) 
+//			return "provider.care_site_id";
+//
+//		if ("yearOfBirth".equals(columnVariable)) 
+//			return "provider.year_of_birth";
+//
+//		if ("genderConcept".equals(columnVariable)) 
+//			return "provider.gender_concept_id";
+//
+//		if ("providerSourceValue".equals(columnVariable)) 
+//			return "provider.provider_source_value";
+//
+//		if ("specialtySourceValue".equals(columnVariable)) 
+//			return "provider.specialty_source_value";
+//
+//		if ("specialtySourceConcept".equals(columnVariable)) 
+//			return "provider.specialty_source_concept_id";
+//
+//		if ("genderSourceValue".equals(columnVariable)) 
+//			return "provider.gender_source_value";
+//
+//		if ("genderSourceConcept".equals(columnVariable)) 
+//			return "provider.gender_source_concept_id";
+//
+//		return null;
 	}
 
 	@Override
@@ -224,6 +276,10 @@ public class Provider extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = Provider.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "provider";
 	}
 
@@ -244,7 +300,7 @@ public class Provider extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return Provider._getSqlTableStatement(parameterList, valueList);
 	}
 

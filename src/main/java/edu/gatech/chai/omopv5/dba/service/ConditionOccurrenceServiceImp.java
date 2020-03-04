@@ -100,8 +100,8 @@ public class ConditionOccurrenceServiceImp extends BaseEntityServiceImp<Conditio
 	}
 
 	@Override
-	public ConditionOccurrence construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public ConditionOccurrence construct(ResultSet rs, ConditionOccurrence entity, String alias) {
+		return ConditionOccurrenceService._construct(rs, entity, alias);
 	}
+
 }

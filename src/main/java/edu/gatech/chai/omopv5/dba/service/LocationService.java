@@ -16,6 +16,10 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import edu.gatech.chai.omopv5.model.entity.Location;
 
 // TODO: Auto-generated Javadoc
@@ -35,4 +39,55 @@ public interface LocationService extends IService<Location> {
 	 * @return the location
 	 */
 	public Location searchByAddress(String line1, String line2, String city, String state, String zipCode);
+	
+	public static Location _construct(ResultSet rs, Location location, String alias) {
+		if (location == null) location = new Location();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Location._getTableName();
+
+		ResultSetMetaData metaData;
+		try {
+			metaData = rs.getMetaData();
+			int totalColumnSize = metaData.getColumnCount();
+			for (int i = 1; i <= totalColumnSize; i++) {
+				String columnInfo = metaData.getColumnName(i);
+
+				if (columnInfo.equalsIgnoreCase(alias + "_location_id")) {
+					location.setId(rs.getLong(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {
+					location.setAddress1(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_address_2")) {
+					location.setAddress2(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_city")) {
+					location.setCity(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_state")) {
+					location.setState(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
+					location.setZipCode(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
+					location.setLocationSourceValue(rs.getString(columnInfo));
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return location;
+	}
+
 }

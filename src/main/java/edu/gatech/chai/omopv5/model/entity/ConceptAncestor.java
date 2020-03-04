@@ -16,16 +16,29 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "concept_ancestor")
 public class ConceptAncestor extends BaseEntity {
 	/**
 	 * 
 	 */
 
+	@JoinColumn(name="ancestor_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
 	private Concept ancestorConcept;
+
+	@JoinColumn(name="descendant_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
 	private Concept descendantConcept;
+	
+	@Column(name="min_levels_of_separation", nullable=false)
 	private Integer minLevelsOfSeparation;
+	
+	@Column(name="max_levels_of_separation", nullable=false)
 	private Integer maxLevelsOfSeparation;
 	
 	public Concept getAncestorConcept() {
@@ -56,20 +69,39 @@ public class ConceptAncestor extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("ancestorConcept".equals(columnVariable)) 
-			return "concept_ancestor.ancestor_concept_id";
-
-		if ("descendantConcept".equals(columnVariable)) 
-			return "concept_ancestor.descendant_concept_id";
-
-		if ("minLevelsOfSeparation".equals(columnVariable)) 
-			return "concept_ancestor.min_levels_of_separation";
-
-
-		if ("maxLevelsOfSeparation".equals(columnVariable)) 
-			return "concept_ancestor.max_levels_of_separation";
+		try {
+			Field field = ConceptAncestor.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return ConceptAncestor._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("ancestorConcept".equals(columnVariable)) 
+//			return "concept_ancestor.ancestor_concept_id";
+//
+//		if ("descendantConcept".equals(columnVariable)) 
+//			return "concept_ancestor.descendant_concept_id";
+//
+//		if ("minLevelsOfSeparation".equals(columnVariable)) 
+//			return "concept_ancestor.min_levels_of_separation";
+//
+//
+//		if ("maxLevelsOfSeparation".equals(columnVariable)) 
+//			return "concept_ancestor.max_levels_of_separation";
+//
+//		return null;
 	}
 
 	@Override
@@ -78,6 +110,10 @@ public class ConceptAncestor extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = ConceptAncestor.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "concept_ancestor";
 	}
 
@@ -94,7 +130,7 @@ public class ConceptAncestor extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return ConceptAncestor._getSqlTableStatement(parameterList, valueList);
 	}
 

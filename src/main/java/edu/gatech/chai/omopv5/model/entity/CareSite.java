@@ -16,15 +16,34 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "care_site")
 public class CareSite extends BaseEntity {
 	
+	@Id
+	@Column(name="care_site_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="location_id", table="location")
 	private Location location;
-	private Concept placeOfServiceConcept;	
+
+	@JoinColumn(name="place_of_service_concept_id", referencedColumnName="concept_id", table="concept")
+	private Concept placeOfServiceConcept;
+	
+	@Column(name="care_site_name")
 	private String careSiteName;
+	
+	@Column(name="care_site_source_value")
 	private String careSiteSourceValue;
+	
+	@Column(name="place_of_service_source_value")
 	private String placeOfServiceSourceValue;
 	
 	public CareSite() {
@@ -105,25 +124,44 @@ public class CareSite extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "care_site.care_site_id";
-		
-		if ("location".equals(columnVariable))
-			return "care_site.location_id";
-		
-		if ("placeOfServiceConcept".equals(columnVariable))
-			return "care_site.place_of_service_concept_id";
-		
-		if ("careSiteName".equals(columnVariable))
-			return "care_site.care_site_name";
-		
-		if ("careSiteSourceValue".equals(columnVariable))
-			return "care_site.care_site_source_value";
-		
-		if ("placeOfServiceSourceValue".equals(columnVariable))
-			return "care_site.place_of_service_source_value";
-		
+		try {
+			Field field = CareSite.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return CareSite._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "care_site.care_site_id";
+//		
+//		if ("location".equals(columnVariable))
+//			return "care_site.location_id";
+//		
+//		if ("placeOfServiceConcept".equals(columnVariable))
+//			return "care_site.place_of_service_concept_id";
+//		
+//		if ("careSiteName".equals(columnVariable))
+//			return "care_site.care_site_name";
+//		
+//		if ("careSiteSourceValue".equals(columnVariable))
+//			return "care_site.care_site_source_value";
+//		
+//		if ("placeOfServiceSourceValue".equals(columnVariable))
+//			return "care_site.place_of_service_source_value";
+//		
+//		return null;
 	}
 	
 	@Override
@@ -132,6 +170,10 @@ public class CareSite extends BaseEntity {
 	}
 
 	public static String _getTableName() {
+		Table annotation = CareSite.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "care_site";
 	}
 
@@ -151,7 +193,7 @@ public class CareSite extends BaseEntity {
 	}
 	
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return CareSite._getSqlTableStatement(parameterList, valueList);
 	}
 

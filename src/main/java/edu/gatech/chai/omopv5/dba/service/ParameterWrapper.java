@@ -18,7 +18,6 @@ package edu.gatech.chai.omopv5.dba.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +27,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -242,25 +245,26 @@ public class ParameterWrapper {
 			NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String subWhereRelation = "";
 		String where = "";
-		String joinTables = "";
+		Table tableAnnotation = entityClass.getDeclaredAnnotation(Table.class);
+		if (tableAnnotation == null) {
+			Class<?> parentEntityClass = entityClass.getSuperclass();
+			if (parentEntityClass != null) {
+				tableAnnotation = parentEntityClass.getDeclaredAnnotation(Table.class);
+				if (tableAnnotation == null) {
+					logger.error("Table annotation is not available for " + entityClass.getCanonicalName());
+					return null;
+				}
+			}
+		}
 
-		// Get my tablename.
-//		Method method = entityClass.getDeclaredMethod("_getTableName");
-//		String myTableName = (String) method.invoke(null);
+		String tableName = tableAnnotation.name();
+
+//		Method method = entityClass.getDeclaredMethod("_getColumnName", String.class);
+//		String myTablePrimaryId = (String) method.invoke(null, "id");
+
+//		parameterList.add("tableId0");
+//		valueList.add(myTablePrimaryId);
 //
-		Method method = entityClass.getDeclaredMethod("_getColumnName", String.class);
-		String myTablePrimaryId = (String) method.invoke(null, "id");
-
-//		joinTables = "@table0" + " " + "@tableAlias0";
-//		parameterList.add("table0");
-//		valueList.add(myTableName);
-//
-//		parameterList.add("tableAlias0");
-//		valueList.add("t0");
-//		
-		parameterList.add("tableId0");
-		valueList.add(myTablePrimaryId);
-
 		// paramList has FHIR parameters mapped Omop parameters (or columns).
 		int i = 0;
 		for (ParameterWrapper param : paramList) {
@@ -286,7 +290,7 @@ public class ParameterWrapper {
 					_valueName = valueIter.next();
 
 				if ("String".equals(param.getParameterType())) {
-					valueName = "'"+_valueName+"'";
+					valueName = "'" + _valueName + "'";
 				} else if ("Code:In".equals(param.getParameterType())) {
 					// change oper to in and put valueName in parenthesis
 					valueName = "(" + _valueName + ")";
@@ -301,14 +305,31 @@ public class ParameterWrapper {
 				logger.debug("--- Attribute name:" + attributeName);
 				logger.debug("--- value:" + valueName);
 				logger.debug("--- operator:" + oper);
+
+				Field field = entityClass.getDeclaredField(attributeName);
+
 				String[] columnPath = attributeName.split("\\.");
 				if (columnPath.length == 1) {
-					Method getColumnName = entityClass.getDeclaredMethod("_getColumnName", String.class);
-					String columnName = (String) getColumnName.invoke(null, attributeName);
+					// If columnPath is not set, then this is where statement for local
+					// table columns.
+
+					// the attribute name needs to be changed to alias.sqlColumnName format.
+					Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+
+					String sqlColumnName;
+					if (columnAnnotation != null) {
+						sqlColumnName = tableName + "." + columnAnnotation.name();
+					} else {
+						logger.error("Column annotation is mission for this attribute, " + attributeName);
+						return null;
+					}
+
+//					Method getColumnName = entityClass.getDeclaredMethod("_getColumnName", String.class);
+//					String columnName = (String) getColumnName.invoke(null, attributeName);
+
 					String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
 					parameterList.add("column" + i);
-					valueList.add(columnName);
-
+					valueList.add(sqlColumnName);
 					parameterList.add("value" + i);
 					valueList.add(valueName);
 
@@ -318,106 +339,135 @@ public class ParameterWrapper {
 						subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
 					}
 				} else if (columnPath.length == 2) {
-					Method getForeignTable = entityClass.getDeclaredMethod("_getForeignTableName", String.class);
-					String foreignTableName = (String) getForeignTable.invoke(null, columnPath[0]);
+					// columnPath exists. This means that the column is in a foreign table.
+					// We need to find a proper alias.
+					//
+					// columnPath[0]: variableName in this table for the foreign table.
+					// columnPath[1]: column variable in the foreign table class column variable.
+					//
+					// The annotation for this field must be JoinColumn.
+					JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinColumnAnnotation == null) {
+						logger.error("JoinColumn is missing for this attribute, " + attributeName);
 
-					Field field = entityClass.getDeclaredField(columnPath[0]);
-					Class<?> foreignClass = field.getType();
-					Method getForeignTableColumnName = foreignClass.getDeclaredMethod("_getColumnName", String.class);
-					String foreignTablePrimaryId = (String) getForeignTableColumnName.invoke(null, "id");
-					String foreignTableColumnName = foreignTablePrimaryId;
-
-					// Add this foreignTableName into joinTables with its alias(columnPath[0])
-					if (joinTables.contains(foreignTableName) == false) {
-						joinTables = joinTables + " inner join @table" + i + " on " + "@tableId0" + "=@tableId" + i;
-
-						parameterList.add("@table" + i);
-						valueList.add(foreignTableName);
-
-						parameterList.add("@tableId" + i);
-						valueList.add(foreignTablePrimaryId);
+						return null;
 					}
 
-					if ("id".equals(columnPath[1]) == false) {
-						// Add this to where.
-						foreignTableColumnName = (String) getForeignTableColumnName.invoke(null, columnPath[1]);
-						String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
-						parameterList.add("column" + i);
-						valueList.add(foreignTableColumnName);
+					// Now, check if the foreign table column exists and get real sql column name.
+					Class<?> fTableClazz = field.getDeclaringClass();
+					String sqlColumnName = SqlUtil.getSqlColumnName(fTableClazz, columnPath[1]);
+					if (sqlColumnName == null) {
+						logger.error("Failed to get sql column name for table=" + fTableClazz.getCanonicalName()
+								+ " with attributeName=" + attributeName);
 
-						parameterList.add("value" + i);
-						valueList.add(valueName);
-
-						if (subWhere.isEmpty() || "".equals(subWhere)) {
-							subWhere = subWhereToAdd;
-						} else {
-							subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
-						}
-					}
-				} else if (columnPath.length == 3) {
-					Method getForeignTable = entityClass.getDeclaredMethod("_getForeignTableName", String.class);
-					String foreignTableName = (String) getForeignTable.invoke(null, columnPath[0]);
-
-					Field field = entityClass.getDeclaredField(columnPath[0]);
-					Class<?> foreignClass = field.getType();
-					Method getForeignTableColumnName = foreignClass.getDeclaredMethod("_getColumnName", String.class);
-					String foreignTable1PrimaryId = (String) getForeignTableColumnName.invoke(null, "id");
-
-					// Add this foreignTableName into joinTables with its alias(columnPath[0])
-					if (joinTables.contains(foreignTableName) == false) {
-						joinTables = joinTables + " inner join @table" + i + " on " + "@tableId0" + "=@tableId" + i;
-
-						parameterList.add("@table" + i);
-						valueList.add(foreignTableName);
-
-						parameterList.add("@tableId" + i);
-						valueList.add(foreignTable1PrimaryId);
+						return null;
 					}
 
-					i++;
-
-					getForeignTable = foreignClass.getDeclaredMethod("_getForeignTableName", String.class);
-					String foreignTable2Name = (String) getForeignTable.invoke(null, columnPath[1]);
-
-					field = foreignClass.getDeclaredField(columnPath[1]);
-					foreignClass = field.getType();
-					getForeignTableColumnName = foreignClass.getDeclaredMethod("_getColumnName", String.class);
-					String foreignTable2PrimaryId = (String) getForeignTableColumnName.invoke(null, "id");
-
-					// Add this foreignTableName into joinTables with its alias(columnPath[1])
-					if (joinTables.contains(foreignTable2Name) == false) {
-						joinTables = joinTables + " inner join @table" + i + " @tableAlias" + i + " on " + "@tableId"
-								+ (i - 1) + "=@tableId" + i;
-
-						parameterList.add("@table" + i);
-						valueList.add(foreignTable2Name);
-
-						parameterList.add("@tableId" + i);
-						valueList.add(foreignTable2PrimaryId);
-					}
-
-					if ("id".equals(columnPath[2]) == false) {
-						// Add this to where.
-						String foreignTableColumnName = (String) getForeignTableColumnName.invoke(null, columnPath[2]);
-						String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
-						parameterList.add("column" + i);
-						valueList.add(foreignTableColumnName);
-
-						parameterList.add("value" + i);
-						valueList.add(valueName);
-
-						if (subWhere.isEmpty() || "".equals(subWhere)) {
-							subWhere = subWhereToAdd;
-						} else {
-							subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
+					// Now, we have SQL Column name. We need to use alias so we use right joined
+					// table.
+					// The default alias for JoinColumn is its variable name. But, we could have
+					// one-to-one mapping (f_person). In this case, we may have different alias,
+					// which is
+					// specified in JoinColumn annotation at table().
+					//
+					// fTableClazz should have a right class (updated with a class used in
+					// SqlUtil.getSqlColumnName.
+					String alias = columnPath[0];
+					String aliasInfo = joinColumnAnnotation.table();
+					if (aliasInfo != null && !aliasInfo.equals("")) {
+						Table referredTableAnnotation = fTableClazz.getDeclaredAnnotation(Table.class);
+						if (referredTableAnnotation != null) {
+							String referredTableName = referredTableAnnotation.name();
+							String[] aliasTables = aliasInfo.split(",");
+							for (String aliasTable : aliasTables) {
+								String[] tables = aliasTable.split(":");
+								if (tables[0].equals(referredTableName) && tables.length == 2) {
+									alias = tables[1];
+									break;
+								}
+							}
 						}
 					}
 
+					sqlColumnName = alias + "." + sqlColumnName;
+
+					String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
+					parameterList.add("column" + i);
+					valueList.add(sqlColumnName);
+					parameterList.add("value" + i);
+					valueList.add(valueName);
+
+					if (subWhere.isEmpty() || "".equals(subWhere)) {
+						subWhere = subWhereToAdd;
+					} else {
+						subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
+					}
+
+					// See if the alias is defined in the table attribute of JoinColumn
+//					String foreignTableInfo = joinColumnAnnotation.table();
+//					if (foreignTableInfo != null && foreignTableInfo != "") {
+//						String[] foreignTables = foreignTableInfo.split(",");
+//
+//						Table fTableClassAnnotation = fTableClazz.getAnnotation(Table.class);
+//						String fTableClassName = fTableClassAnnotation.name();
+//
+//						for (String foreignTable : foreignTables) {
+//							String fTableName;
+//							String fTableAlias;
+//							String[] fTableNameAlias = foreignTable.split(":");
+//							if (fTableNameAlias.length == 2) {
+//								fTableName = fTableNameAlias[0];
+//								fTableAlias = fTableNameAlias[1];
+//							} else {
+//								fTableName = fTableNameAlias[0];
+//								fTableAlias = columnPath[0];
+//							}
+//
+//							// Check if
+//						}
+//					}
+
+//					Method getForeignTable = entityClass.getDeclaredMethod("_getForeignTableName", String.class);
+//					String foreignTableName = (String) getForeignTable.invoke(null, columnPath[0]);
+//
+//					Field field = entityClass.getDeclaredField(columnPath[0]);
+//					Class<?> foreignClass = field.getType();
+//					Method getForeignTableColumnName = foreignClass.getDeclaredMethod("_getColumnName", String.class);
+//					String foreignTablePrimaryId = (String) getForeignTableColumnName.invoke(null, "id");
+//					String foreignTableColumnName = foreignTablePrimaryId;
+//
+//					// Add this foreignTableName into joinTables with its alias(columnPath[0])
+//					if (joinTables.contains(foreignTableName) == false) {
+//						joinTables = joinTables + " inner join @table" + i + " on " + "@tableId0" + "=@tableId" + i;
+//
+//						parameterList.add("table" + i);
+//						valueList.add(foreignTableName);
+//
+//						parameterList.add("tableId" + i);
+//						valueList.add(foreignTablePrimaryId);
+//					}
+//
+//					if ("id".equals(columnPath[1]) == false) {
+//						// Add this to where.
+//						foreignTableColumnName = (String) getForeignTableColumnName.invoke(null, columnPath[1]);
+//						String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
+//						parameterList.add("column" + i);
+//						valueList.add(foreignTableColumnName);
+//
+//						parameterList.add("value" + i);
+//						valueList.add(valueName);
+//
+//						if (subWhere.isEmpty() || "".equals(subWhere)) {
+//							subWhere = subWhereToAdd;
+//						} else {
+//							subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
+//						}
+//					}
 				} else {
-					// We don't support more than 3 level.
-					logger.warn("ParameterWrapper attribute has more then 3 level foreign keys");
+					// We don't support more than 2 level.
+					logger.warn("ParameterWrapper attribute has more then 2 level foreign keys");
 				}
-				
+
 				i++;
 			}
 			if (!subWhere.isEmpty() && !"".equals(subWhere))
@@ -434,14 +484,15 @@ public class ParameterWrapper {
 					where = subWhere;
 				} else {
 					where = subWhere;
-				}				
+				}
 			}
 		}
 
-		if (where == null || where.isEmpty())
-			return null;
-
-		return joinTables + " where " + where;
+		if (where == null || where.isEmpty()) {
+			return "";
+		} else {
+			return " where " + where;
+		}
 	}
 
 }

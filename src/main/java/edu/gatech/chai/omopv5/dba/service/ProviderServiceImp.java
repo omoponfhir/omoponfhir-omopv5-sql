@@ -30,76 +30,76 @@ import edu.gatech.chai.omopv5.model.entity.Provider;
 @Service
 public class ProviderServiceImp extends BaseEntityServiceImp<Provider> implements ProviderService {
 
-  /**
-   * Instantiates a new provider service imp.
-   */
-  public ProviderServiceImp() {
+	/**
+	 * Instantiates a new provider service imp.
+	 */
+	public ProviderServiceImp() {
 		super(Provider.class);
 	}
 
-@Override
-public Provider findById(Long id) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Provider findById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Long removeById(Long id) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Long removeById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public List<Provider> searchByColumnString(String column, String value) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public List<Provider> searchByColumnString(String column, String value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public List<Provider> searchByColumnString(String column, Long value) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public List<Provider> searchByColumnString(String column, Long value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public List<Provider> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public List<Provider> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public List<Provider> searchWithoutParams(int fromIndex, int toIndex, String sort) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public List<Provider> searchWithoutParams(int fromIndex, int toIndex, String sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Provider create(Provider entity) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Provider create(Provider entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Provider update(Provider entity) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Provider update(Provider entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Long getSize() {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Long getSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Long getSize(List<ParameterWrapper> paramList) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Long getSize(List<ParameterWrapper> paramList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public Provider construct(ResultSet rs) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Provider construct(ResultSet rs, Provider entity, String alias) {
+		return ProviderService._construct(rs, entity, alias);
+	}
+
 }

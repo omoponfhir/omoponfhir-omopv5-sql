@@ -117,9 +117,8 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	}
 
 	@Override
-	public Location construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public Location construct(ResultSet rs, Location entity, String alias) {
+		return LocationService._construct(rs, entity, alias);
 	}
 
 }

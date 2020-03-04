@@ -16,7 +16,9 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,8 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -86,7 +93,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return this.entity;
 	}
 
-	private String renderedSql(String sql, List<String> parameterList, List<String> valueList) {
+	protected String renderedSql(String sql, List<String> parameterList, List<String> valueList) {
 		String[] parameters = new String[parameterList.size()];
 		parameters = parameterList.toArray(parameters);
 
@@ -96,8 +103,248 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 	}
 
+	protected String getSqlTableName() {
+		Table annotation = getEntityClass().getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		} else {
+			return null;
+		}
+	}
+
+//	private String getAliasedSqlColumnName(String tableInfo, String columnName, String sqlColumnName) {
+//		String alias = columnName;
+//		String[] tables = tableInfo.split(",");
+//		for (String table : tables) {
+//			String[] tableNameAlias = table.split(":");
+//			if (tableNameAlias.length == 1) {
+//				alias = columnName;
+//			} else {
+//				alias = tableNameAlias[1];
+//			}
+//		}
+//
+//		return alias + "." + sqlColumnName;
+//	}
+
+	public String getSqlTableColumnName(Field field) {
+		if (field != null) {
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			if (columnAnnotation != null) {
+				return columnAnnotation.name();
+			} else {
+				JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+				if (joinColumnAnnotation != null) {
+					return joinColumnAnnotation.name();
+				}
+				System.out.println("ERROR: annotation is null for field=" + field.toString());
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public String getSqlTableColumnName(String columnName) {
+		Class<T> clazz = getEntityClass();
+		Class<? super T> parentClazz = clazz.getSuperclass();
+		String sqlColumnName = null;
+		Field field;
+		try {
+			field = clazz.getDeclaredField(columnName);
+			sqlColumnName = getSqlTableColumnName(field);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+
+			if (parentClazz != null) {
+				try {
+					field = parentClazz.getDeclaredField(columnName);
+					sqlColumnName = getSqlTableColumnName(field);
+				} catch (NoSuchFieldException e1) {
+					e1.printStackTrace();
+				} catch (SecurityException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+
+		return sqlColumnName;
+	}
+
+	public String constructSqlSelectWithoutWhere() {
+		String sqlResultList = "";
+
+		Class<T> clazz = getEntityClass();
+		Class<T> parentClazz = (Class<T>) clazz.getSuperclass();
+
+//		Table tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
+//		if (tableAnnotation == null) {
+//			clazz = (Class<T>) clazz.getSuperclass();
+//			if (clazz == null) {
+//				logger.error("Annontation for Table class is null, and there is no parent class either");
+//				return null;
+//			}
+//			tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
+//			if (tableAnnotation == null) {
+//				logger.error("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
+//			}
+//		}
+
+		String rootTableName = SqlUtil.getTableName(clazz);
+		if (rootTableName == null) {
+			logger.error("Failed to get SQL tablename");
+			return null;
+		}
+
+		// main table that will be joined to
+		String sqlFromTableList = rootTableName + " " + rootTableName;
+
+		Field[] fields = null;
+		Field[] fields_ = clazz.getDeclaredFields();
+		if (parentClazz != null) {
+			Field[] parentFields = parentClazz.getDeclaredFields();
+			// combine with fields.
+			int pFSize = parentFields.length;
+			if (pFSize > 0) {
+				int fSize = fields_.length;
+				fields = new Field[pFSize + fSize];
+				System.arraycopy(fields_, 0, fields, 0, fSize);
+				System.arraycopy(parentFields, 0, fields, fSize, pFSize);
+			}
+
+		}
+
+		if (fields == null) {
+			fields = fields_;
+		}
+
+		for (Field field : fields) {
+			String tableName = SqlUtil.getTableName(field.getDeclaringClass());
+			String variableName = field.getName();
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+
+			if (columnAnnotation != null) {
+				if (sqlResultList != "") {
+					sqlResultList = sqlResultList.concat(", ");
+				}
+				sqlResultList = sqlResultList.concat(
+						tableName + "." + columnAnnotation.name() + " as " + tableName + "_" + columnAnnotation.name());
+			}
+
+			if (joinColumnAnnotation != null) {
+				String[] tables = joinColumnAnnotation.table().split(",");
+				for (String table : tables) {
+					// We will need to add columns of this foreign tables to result list.
+					Class<?> foreignTableClazz = field.getType();
+					Class<?> foreignTableParentClazz = foreignTableClazz.getSuperclass();
+
+					String referenceTableName;
+					String referenceTableAlias;
+					String[] tableInfo = table.split(":");
+					if (tableInfo.length == 1) {
+						if (table.equalsIgnoreCase("")) {
+							// JoinColumn does not have table specified. In this case,
+							// we need to get the table from field class.
+							referenceTableName = SqlUtil.getTableName(foreignTableClazz);
+							if (referenceTableName == null) {
+								continue;
+							}
+						} else {
+							referenceTableName = table;
+						}
+						referenceTableAlias = variableName;
+					} else {
+						referenceTableName = tableInfo[0];
+						referenceTableAlias = tableInfo[1];
+					}
+
+					if (referenceTableName.equalsIgnoreCase(rootTableName)) {
+						continue;
+					}
+
+					String keyTableName = SqlUtil.getTableName(field.getDeclaringClass());
+					if (keyTableName == null)
+						keyTableName = tableName;
+
+					String joinColumnName;
+					if (joinColumnAnnotation.referencedColumnName().equalsIgnoreCase("")) {
+						joinColumnName = joinColumnAnnotation.name();
+					} else {
+						joinColumnName = joinColumnAnnotation.referencedColumnName();
+					}
+
+					String inner_statement = " left join " + referenceTableName + " " + referenceTableAlias + " on "
+							+ keyTableName + "." + joinColumnAnnotation.name() + "=" + referenceTableAlias + "."
+							+ joinColumnName;
+
+					if (sqlFromTableList.contains(inner_statement) == false) {
+						sqlFromTableList = sqlFromTableList.concat(inner_statement);
+					} else {
+						continue;
+					}
+
+					Table fTableAnnotation = foreignTableClazz.getDeclaredAnnotation(Table.class);
+					if (fTableAnnotation == null && foreignTableParentClazz != null)
+						fTableAnnotation = foreignTableParentClazz.getDeclaredAnnotation(Table.class);
+
+					if (fTableAnnotation != null && referenceTableName.equalsIgnoreCase(fTableAnnotation.name())) {
+						Field[] foreignFields = foreignTableClazz.getDeclaredFields();
+						for (Field foreignField : foreignFields) {
+							Column foreignFieldColumnAnnotation = foreignField.getDeclaredAnnotation(Column.class);
+							if (foreignFieldColumnAnnotation != null) {
+								String add2List = referenceTableAlias + "." + foreignFieldColumnAnnotation.name()
+										+ " as " + referenceTableAlias + "_" + foreignFieldColumnAnnotation.name();
+								if (sqlResultList.contains(add2List) == false) {
+									sqlResultList = sqlResultList.concat(", " + add2List);
+								}
+							}
+
+							JoinColumn foreignFieldJoinColumnAnnotation = foreignField
+									.getDeclaredAnnotation(JoinColumn.class);
+							if (foreignFieldJoinColumnAnnotation != null) {
+								String foreignFieldJoinColumnName = foreignFieldJoinColumnAnnotation.name();
+								String add2List = referenceTableAlias + "." + foreignFieldJoinColumnName + " as "
+										+ referenceTableAlias + "_" + foreignFieldJoinColumnName;
+								if (sqlResultList.contains(add2List) == false) {
+									sqlResultList = sqlResultList.concat(", " + add2List);
+								}
+							}
+						}
+					} else {
+						String add2List = tableName + "." + joinColumnName + " as " + tableName + "_" + joinColumnName
+								+ ", " + referenceTableAlias + "." + joinColumnName + " as " + referenceTableAlias + "_"
+								+ joinColumnName;
+						if (sqlResultList.contains(add2List) == false) {
+							if (sqlResultList != null && !sqlResultList.isEmpty()) {
+								sqlResultList = sqlResultList.concat(", ");
+							}
+							sqlResultList = sqlResultList.concat(add2List);
+						}
+					}
+				}
+			}
+		}
+
+		return "select " + sqlResultList + " from " + sqlFromTableList;
+	}
+
+	public String getSqlResultTableStatement(List<String> parameterList, List<String> valueList) {
+		// Get all columns from this table.
+		String ret = "";
+		Field[] fields = getEntityClass().getDeclaredFields();
+		for (Field field : fields) {
+			ret += ret != null && !ret.isEmpty() ? ", " : "";
+			ret += "myTable." + getSqlTableColumnName(field);
+		}
+
+		return ret;
+	}
+
 	public Long getSize() {
-		String queryString = "select count(*) as count from " + getEntity().getTableName() + ";";
+		String queryString = "select count(*) as count from " + getSqlTableName() + ";";
 		try {
 			ResultSet rs = getQueryEntityDao().runQuery(queryString);
 			if (rs.next()) {
@@ -113,15 +360,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String queryString = getEntity().getSqlTableStatement(parameterList, valueList);
+		String sql = constructSqlSelectWithoutWhere();
 		try {
 			String joinTablesWhere = ParameterWrapper.constructClause(getEntityClass(), paramList, parameterList,
 					valueList);
 			if (joinTablesWhere != null && !joinTablesWhere.isEmpty()) {
-				queryString = queryString + joinTablesWhere;
+				sql = sql + joinTablesWhere;
 			}
 
-			ResultSet rs = getQueryEntityDao().runQuery(queryString);
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
 			if (rs.next()) {
 				return (long) rs.getInt("count");
 			}
@@ -136,15 +383,176 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return 0L;
 	}
 
+	public Long getNextId() {
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+
+		String sql = "select max(@id) from @table";
+		String primaryId = getSqlTableColumnName("id");
+		parameterList.add("id");
+		valueList.add(primaryId);
+
+		parameterList.add("table");
+		valueList.add(getSqlTableName());
+
+		sql = renderedSql(sql, parameterList, valueList);
+
+		System.out.println(sql);
+		logger.debug("SqlRender:" + sql);
+
+		try {
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+			if (rs.next()) {
+				return rs.getLong(primaryId) + 1;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	private T insertEntity(Class<T> clazz, T entity) {
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+
+		String sql = "insert into @table ";
+		parameterList.add("table");
+		valueList.add(getSqlTableName());
+
+		String columns = "";
+		String values = "";
+		Field[] fields = clazz.getDeclaredFields();
+		int i = 1;
+		for (Field field : fields) {
+			// All the fieldw are private. Set accessible true.
+			field.setAccessible(true);
+
+			// See if this field is primary key. If so, then we need to put id.
+			Id idAnnotation = field.getDeclaredAnnotation(Id.class);
+			if (idAnnotation != null) {
+				try {
+					if (field.getType() == Long.class) {
+						// Vocabulary table has Id. But, it's string. So, we only care Long ID
+						Long nextId = (Long) field.get(entity);
+						if (nextId == null || nextId == 0L) {
+							nextId = getNextId();
+							if (nextId != null) {
+								field.setLong(entity, getNextId());
+							} else {
+								logger.error("Error: Failed to get next Id for table = " + getEntity().getTableName());
+								return null;
+							}
+						}
+					}
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException | IllegalArgumentException e) {
+					// If setId failed, then we have a problem.
+					e.printStackTrace();
+					return null;
+				}
+			}
+
+			Object fieldValue;
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+
+			try {
+				fieldValue = field.get(entity);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				return null;
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				return null;
+			} catch (NullPointerException e) {
+				if (columnAnnotation != null) {
+					if (columnAnnotation.nullable() == false) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+
+				if (joinColumnAnnotation != null) {
+					if (joinColumnAnnotation.nullable() == false) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+				continue;
+			}
+
+			if (i > 1) {
+				columns += ", ";
+				values += ", ";
+			}
+
+			columns.concat("@col" + i);
+			parameterList.add("col" + i);
+
+			// Column name
+			String columnVar = field.getName();
+			String columnName = getSqlTableColumnName(columnVar);
+			valueList.add(columnName);
+
+			// Value
+			values.concat("@val" + i);
+			parameterList.add("val" + i);
+			if (field.getType() == String.class) {
+				valueList.add("'" + (String) fieldValue + "'");
+			} else {
+				valueList.add(fieldValue.toString());
+			}
+
+		}
+
+		sql += "(" + columns + ") values (" + values + ")";
+		sql = renderedSql(sql, parameterList, valueList);
+
+		System.out.println(sql);
+		logger.debug("SqlRender:" + sql);
+
+		try {
+			getQueryEntityDao().updateQuery(sql);
+			return entity;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public T create(T entity) {
+		@SuppressWarnings("unchecked")
+		Class<T> clazz = (Class<T>) entity.getClass();
+
+		@SuppressWarnings("unchecked")
+		Class<T> parentClazz = (Class<T>) clazz.getSuperclass();
+
+		if (parentClazz != null) {
+			T retEntity = insertEntity(parentClazz, entity);
+			if (retEntity == null) {
+				logger.error("Failed to create parent table: " + entity.getTableName());
+				return null;
+			} else {
+				entity = retEntity;
+			}
+		}
+
+		return insertEntity(clazz, entity);
+	}
+
 	public T findById(Long id) {
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String sql = getEntity().getSqlTableStatement(parameterList, valueList);
+		String sql = constructSqlSelectWithoutWhere();
 		sql = sql + " where @cname=@value";
 		parameterList.add("cname");
 		parameterList.add("value");
-		valueList.add(getEntity().getColumnName("id"));
+		valueList.add(getSqlTableColumnName("id"));
 		valueList.add(id.toString());
 
 		sql = renderedSql(sql, parameterList, valueList);
@@ -156,12 +564,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 			if (rs.next()) {
-				T entity = construct(rs);
+				T entity = construct(rs, null, getSqlTableName());
 				if (entity != null) {
 					return entity;
 				}
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -177,8 +588,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		parameterList.add("parameter");
 		parameterList.add("value");
 
-		valueList.add(getEntity().getTableName());
-		valueList.add(getEntity().getColumnName("id"));
+		valueList.add(getSqlTableName());
+		valueList.add(getSqlTableColumnName("id"));
 		valueList.add(id.toString());
 
 		sql = renderedSql(sql, parameterList, valueList);
@@ -199,25 +610,25 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String queryString = getEntity().getSqlTableStatement(parameterList, valueList);
-		queryString = queryString + " where @column='@value'";
+		String sql = constructSqlSelectWithoutWhere();
+		sql = " where @column='@value'";
 
 		parameterList.add("column");
 		parameterList.add("value");
 
-		valueList.add(getEntity().getColumnName(column));
+		valueList.add(getSqlTableColumnName(column));
 		valueList.add(value);
 
-		queryString = renderedSql(queryString, parameterList, valueList);
+		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(queryString);
-		logger.debug("SqlRender:" + queryString);
+		System.out.println(sql);
+		logger.debug("SqlRender:" + sql);
 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(queryString);
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 			while (rs.next()) {
-				T entity = construct(rs);
+				T entity = construct(rs, null, getSqlTableName());
 				if (entity != null) {
 					entities.add(entity);
 				}
@@ -236,8 +647,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String queryString = getEntity().getSqlTableStatement(parameterList, valueList);
-		queryString = queryString + " where @column=@value";
+		String sql = constructSqlSelectWithoutWhere();
+		sql = sql + " where @column=@value";
 
 		parameterList.add("column");
 		parameterList.add("value");
@@ -245,16 +656,16 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		valueList.add(getEntity().getColumnName(column));
 		valueList.add(value.toString());
 
-		queryString = renderedSql(queryString, parameterList, valueList);
+		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(queryString);
-		logger.debug("SqlRender:" + queryString);
+		System.out.println(sql);
+		logger.debug("SqlRender:" + sql);
 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(queryString);
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 			while (rs.next()) {
-				T entity = construct(rs);
+				T entity = construct(rs, null, getSqlTableName());
 				if (entity != null) {
 					entities.add(entity);
 				}
@@ -275,7 +686,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
-		String sql = getEntity().getSqlTableStatement(parameterList, valueList) + " @sort @limit";
+		String sql = constructSqlSelectWithoutWhere() + " @sort @limit";
 		parameterList.add("sort");
 		parameterList.add("limit");
 
@@ -291,14 +702,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			valueList.add("");
 		}
 
-//		String[] parameters = new String[parameterList.size()];
-//		parameters = parameterList.toArray(parameters);
-//
-//		String[] values = new String[valueList.size()];
-//		values = valueList.toArray(values);
-//
-//		sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
-//		
 		sql = renderedSql(sql, parameterList, valueList);
 
 		System.out.println(sql);
@@ -308,7 +711,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 			while (rs.next()) {
-				T entity = construct(rs);
+				T entity = construct(rs, null, getSqlTableName());
 				if (entity != null) {
 					entities.add(entity);
 				}
@@ -334,8 +737,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			String joinTablesWhere = ParameterWrapper.constructClause(getEntityClass(), paramList, parameterList,
 					valueList);
 			if (joinTablesWhere != null && !joinTablesWhere.isEmpty()) {
-				sql = getEntity().getSqlTableStatement(parameterList, valueList);
-				sql = sql + joinTablesWhere;
+				sql = constructSqlSelectWithoutWhere() + joinTablesWhere;
 			}
 		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
@@ -377,7 +779,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 				while (rs.next()) {
-					T entity = construct(rs);
+					T entity = construct(rs, null, getSqlTableName());
 					if (entity != null) {
 						entities.add(entity);
 					}

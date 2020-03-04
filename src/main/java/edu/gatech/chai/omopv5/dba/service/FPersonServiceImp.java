@@ -28,12 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import edu.gatech.chai.omopv5.model.entity.CareSite;
-import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Location;
 import edu.gatech.chai.omopv5.model.entity.Person;
-import edu.gatech.chai.omopv5.model.entity.Provider;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -93,14 +90,15 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 
 		queryString += " " + where_clause;
 		logger.debug("Query for FPerson" + queryString);
-		logger.debug(FPerson._getColumnName("familyName") + ":" + familyName + " " + FPerson._getColumnName("givenName1")
-				+ ":" + given1Name + " " + FPerson._getColumnName("givenName2") + ":" + given2Name);
+		logger.debug(
+				FPerson._getColumnName("familyName") + ":" + familyName + " " + FPerson._getColumnName("givenName1")
+						+ ":" + given1Name + " " + FPerson._getColumnName("givenName2") + ":" + given2Name);
 
 		try {
 			ResultSet rs = getQueryEntityDao().runQuery(queryString);
 
 			while (rs.next()) {
-				FPerson fp = construct(rs);
+				FPerson fp = construct(rs, null, "t");
 				if (fp != null)
 					return fp;
 			}
@@ -112,9 +110,9 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 	}
 
 	@Override
-	public Long removeById (Long id) {
+	public Long removeById(Long id) {
 		Long retVal = 0L;
-		
+
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
@@ -122,11 +120,11 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 		parameterList.add("table");
 		parameterList.add("parameter");
 		parameterList.add("value");
-		
+
 		valueList.add(getEntity().getTableName());
 		valueList.add(getEntity().getColumnName("id"));
 		valueList.add(id.toString());
-		
+
 		String[] parameters = new String[parameterList.size()];
 		parameters = parameterList.toArray(parameters);
 
@@ -140,14 +138,14 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (fTableExists) {
 			// We just deleted f_person. Now, delete person table.
 			sql = "delete from @table where @parameter=@value;";
 
 			valueList.set(0, Person._getTableName());
 			sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
-			
+
 			try {
 				int ret = getQueryEntityDao().updateQuery(sql);
 				retVal = Long.valueOf(ret);
@@ -155,15 +153,20 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 				e.printStackTrace();
 			}
 		}
-		
+
 		return retVal;
 	}
 
-	@Override
-	public FPerson create(FPerson entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public FPerson create(FPerson entity) {
+//		Class<FPerson> clazz = getEntityClass();
+//		
+//		Field[] fields = clazz.getDeclaredFields();
+//		for (Field field : fields) {
+//			entity.get
+//		}
+//		return null;
+//	}
 
 	@Override
 	public FPerson update(FPerson entity) {
@@ -172,57 +175,15 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 	}
 
 	@Override
-	public FPerson construct(ResultSet rs) {
-		FPerson fPerson = new FPerson();
-		try {
-			// Required Person table entries
-			fPerson.setId(rs.getLong("person_id"));
-			Concept genderConcept = new Concept(rs.getLong("gender_concept_id"));
-			fPerson.setGenderConcept(genderConcept);
-			fPerson.setYearOfBirth(rs.getInt("year_of_birth"));
-			fPerson.setMonthOfBirth(rs.getInt("month_of_birth"));
-			fPerson.setDayOfBirth(rs.getInt("day_of_birth"));
-			fPerson.setTimeOfBirth(rs.getString("time_of_birth"));
-			Concept raceConcept = new Concept(rs.getLong("race_concept_id"));
-			fPerson.setRaceConcept(raceConcept);
-			Concept ethnicityConcept = new Concept(rs.getLong("ethnicity_concept_id"));
-			fPerson.setEthnicityConcept(ethnicityConcept);
-			Location location = new Location(rs.getLong("location_id"));
-			fPerson.setLocation(location);
-			Provider provider = new Provider(rs.getLong("provider_id"));
-			fPerson.setProvider(provider);
-			CareSite careSite = new CareSite(rs.getLong("care_site_id"));
-			fPerson.setCareSite(careSite);
-			fPerson.setPersonSourceValue(rs.getString("person_source_value"));
-			fPerson.setGenderSourceValue(rs.getString("gender_source_value"));
-			Concept genderSourceConcept = new Concept(rs.getLong("gender_source_concept_id"));
-			fPerson.setGenderSourceConcept(genderSourceConcept);
-			fPerson.setRaceSourceValue(rs.getString("race_source_value"));
-			Concept raceSourceConcept = new Concept(rs.getLong("race_source_concept_id"));
-			fPerson.setRaceSourceConcept(raceSourceConcept);
-			fPerson.setEthnicitySourceValue(rs.getString("ethnicity_source_value"));
-			Concept ethnicitySourceConcept = new Concept(rs.getLong("ethnicity_source_concept_id"));
-			fPerson.setEthnicitySourceConcept(ethnicitySourceConcept);
-
-			// f_person table if f_table exits.
-			if (fTableExists) {
-				fPerson.setFamilyName(rs.getString("family_name"));
-				fPerson.setGivenName1(rs.getString("given1_name"));
-				fPerson.setGivenName2(rs.getString("given2_name"));
-				fPerson.setPrefixName(rs.getString("prefix_name"));
-				fPerson.setSuffixName(rs.getString("suffix_name"));
-				fPerson.setPreferredLanguage(rs.getString("preferred_language"));
-				fPerson.setSsn(rs.getString("ssn"));
-				fPerson.setMaritalStatus(rs.getString("maritalstatus"));
-				fPerson.setActive(rs.getShort("active"));
-				fPerson.setContactPoint1(rs.getString("contact_point1"));
-				fPerson.setContactPoint2(rs.getString("contact_point2"));
-				fPerson.setContactPoint3(rs.getString("contact_point3"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return fPerson;
+	public FPerson construct(ResultSet rs, FPerson entity, String alias) {
+		return FPersonService._construct(rs, entity, alias);
 	}
+
+//	@Override
+//	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
+//		String sql = "select * from person mytablealias inner join f_person myftablealias ON mytablealias.person_id=myftablealias.person_id ";
+//
+//		return sql;
+//	}
+
 }

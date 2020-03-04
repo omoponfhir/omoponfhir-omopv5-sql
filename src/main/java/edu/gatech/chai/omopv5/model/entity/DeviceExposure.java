@@ -16,21 +16,52 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "device_exposure")
 public class DeviceExposure extends BaseEntity {
+	@Id
+	@Column(name="device_exposure_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@JoinColumn(name="device_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept deviceConcept;
+	
+	@Column(name="device_exposure_start_date", nullable=false)
 	private Date deviceExposureStartDate;
+	
+	@Column(name="device_exposure_end_date")
 	private Date deviceExposureEndDate;
+	
+	@Column(name="unique_device_id")
 	private String uniqueDeviceId;
+	
+	@JoinColumn(name="device_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept deviceTypeConcept;
+	
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id")
 	private Concept deviceSourceConcept;
+	
+	@Column(name="device_source_value")
 	private String deviceSourceValue;
+	
+	@Column(name="quantity")
 	private Integer quantity;
 	
 	public Long getId() {
@@ -140,43 +171,62 @@ public class DeviceExposure extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "device_exposure.device_exposure_id";
-
-		if ("fPerson".equals(columnVariable)) 
-			return "device_exposure.person_id";
-
-		if ("deviceConcept".equals(columnVariable)) 
-			return "device_exposure.device_concept_id";
-
-		if ("deviceExposureStartDate".equals(columnVariable)) 
-			return "device_exposure.device_exposure_start_date";
-
-		if ("deviceExposureEndDate".equals(columnVariable)) 
-			return "device_exposure.device_exposure_end_date";
-
-		if ("uniqueDeviceId".equals(columnVariable)) 
-			return "device_exposure.unique_device_id";
-
-		if ("deviceTypeConcept".equals(columnVariable)) 
-			return "device_exposure.device_type_concept_id";
-
-		if ("provider".equals(columnVariable)) 
-			return "device_exposure.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable)) 
-			return "device_exposure.visit_occurrence_id";
-
-		if ("deviceSourceConcept".equals(columnVariable)) 
-			return "device_exposure.device_source_concept_id";
-
-		if ("deviceSourceValue".equals(columnVariable)) 
-			return "device_exposure.device_source_value";
-
-		if ("quantity".equals(columnVariable)) 
-			return "device_exposure.quantity";
+		try {
+			Field field = DeviceExposure.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return DeviceExposure._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "device_exposure.device_exposure_id";
+//
+//		if ("fPerson".equals(columnVariable)) 
+//			return "device_exposure.person_id";
+//
+//		if ("deviceConcept".equals(columnVariable)) 
+//			return "device_exposure.device_concept_id";
+//
+//		if ("deviceExposureStartDate".equals(columnVariable)) 
+//			return "device_exposure.device_exposure_start_date";
+//
+//		if ("deviceExposureEndDate".equals(columnVariable)) 
+//			return "device_exposure.device_exposure_end_date";
+//
+//		if ("uniqueDeviceId".equals(columnVariable)) 
+//			return "device_exposure.unique_device_id";
+//
+//		if ("deviceTypeConcept".equals(columnVariable)) 
+//			return "device_exposure.device_type_concept_id";
+//
+//		if ("provider".equals(columnVariable)) 
+//			return "device_exposure.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable)) 
+//			return "device_exposure.visit_occurrence_id";
+//
+//		if ("deviceSourceConcept".equals(columnVariable)) 
+//			return "device_exposure.device_source_concept_id";
+//
+//		if ("deviceSourceValue".equals(columnVariable)) 
+//			return "device_exposure.device_source_value";
+//
+//		if ("quantity".equals(columnVariable)) 
+//			return "device_exposure.quantity";
+//
+//		return null;
 	}
 
 	@Override
@@ -185,6 +235,10 @@ public class DeviceExposure extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = DeviceExposure.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "device_exposure";
 	}
 
@@ -211,7 +265,7 @@ public class DeviceExposure extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return DeviceExposure._getSqlTableStatement(parameterList, valueList);
 	}
 

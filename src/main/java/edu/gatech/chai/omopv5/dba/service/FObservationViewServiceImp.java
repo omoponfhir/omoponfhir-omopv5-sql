@@ -107,8 +107,8 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	}
 
 	@Override
-	public FObservationView construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public FObservationView construct(ResultSet rs, FObservationView entity, String alias) {
+		return FObservationViewService._construct(rs, entity, alias);
 	}
+
 }

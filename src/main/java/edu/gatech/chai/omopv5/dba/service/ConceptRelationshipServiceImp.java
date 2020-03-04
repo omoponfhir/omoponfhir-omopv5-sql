@@ -100,9 +100,8 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 	}
 
 	@Override
-	public ConceptRelationship construct(ResultSet rs) {
-		// TODO Auto-generated method stub
-		return null;
+	public ConceptRelationship construct(ResultSet rs, ConceptRelationship entity, String alias) {
+		return ConceptRelationshipService._construct(rs, entity, alias);
 	}
-	
+
 }

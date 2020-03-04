@@ -16,22 +16,53 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.model.entity;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
+import edu.gatech.chai.omopv5.model.entity.custom.Table;
+
+@Table(name = "procedure_occurrence")
 public class ProcedureOccurrence extends BaseEntity {
 
+	@Id
+	@Column(name="procedure_occurrence_id", nullable=false)
 	private Long id;
+	
+	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
+	
+	@JoinColumn(name="procedure_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept procedureConcept;
+	
+	@Column(name="procedure_date", nullable=false)
 	private Date procedureDate;
+	
+	@JoinColumn(name="procedure_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept procedureTypeConcept;
+	
+	@JoinColumn(name="modifier_concept_id", referencedColumnName="concept_id")
 	private Concept modifierConcept;
+	
+	@Column(name="quantity")
 	private Long quantity;
+	
+	@JoinColumn(name="provider_id")
 	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@Column(name="procedure_source_value")
 	private String procedureSourceValue;
+	
+	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id")
 	private Concept procedureSourceConcept;
+	
+	@Column(name="qualifier_source_value")
 	private String qualifierSourceValue;
 
 	public ProcedureOccurrence() {
@@ -150,43 +181,62 @@ public class ProcedureOccurrence extends BaseEntity {
 	}
 	
 	public static String _getColumnName(String columnVariable) {
-		if ("id".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_occurrence_id";
-
-		if ("fPerson".equals(columnVariable)) 
-			return "procedure_occurrence.person_id";
-
-		if ("procedureConcept".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_concept_id";
-
-		if ("procedureDate".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_date";
-
-		if ("procedureTypeConcept".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_type_concept_id";
-
-		if ("modifierConcept".equals(columnVariable)) 
-			return "procedure_occurrence.modifier_concept_id";
-
-		if ("quantity".equals(columnVariable)) 
-			return "procedure_occurrence.quantity";
-
-		if ("provider".equals(columnVariable)) 
-			return "procedure_occurrence.provider_id";
-
-		if ("visitOccurrence".equals(columnVariable)) 
-			return "procedure_occurrence.visit_occurrence_id";
-
-		if ("procedureSourceValue".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_source_value";
-
-		if ("procedureSourceConcept".equals(columnVariable)) 
-			return "procedure_occurrence.procedure_source_concept_id";
-
-		if ("qualifierSourceValue".equals(columnVariable)) 
-			return "procedure_occurrence.qualifier_source_value";
+		try {
+			Field field = ProcedureOccurrence.class.getDeclaredField(columnVariable);
+			if (field != null) {
+				Column annotation = field.getDeclaredAnnotation(Column.class);
+				if (annotation != null) {
+					return ProcedureOccurrence._getTableName() + "." + annotation.name();
+				} else {
+					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					return null;
+				}
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 
 		return null;
+
+//		if ("id".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_occurrence_id";
+//
+//		if ("fPerson".equals(columnVariable)) 
+//			return "procedure_occurrence.person_id";
+//
+//		if ("procedureConcept".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_concept_id";
+//
+//		if ("procedureDate".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_date";
+//
+//		if ("procedureTypeConcept".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_type_concept_id";
+//
+//		if ("modifierConcept".equals(columnVariable)) 
+//			return "procedure_occurrence.modifier_concept_id";
+//
+//		if ("quantity".equals(columnVariable)) 
+//			return "procedure_occurrence.quantity";
+//
+//		if ("provider".equals(columnVariable)) 
+//			return "procedure_occurrence.provider_id";
+//
+//		if ("visitOccurrence".equals(columnVariable)) 
+//			return "procedure_occurrence.visit_occurrence_id";
+//
+//		if ("procedureSourceValue".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_source_value";
+//
+//		if ("procedureSourceConcept".equals(columnVariable)) 
+//			return "procedure_occurrence.procedure_source_concept_id";
+//
+//		if ("qualifierSourceValue".equals(columnVariable)) 
+//			return "procedure_occurrence.qualifier_source_value";
+//
+//		return null;
 	}
 
 	@Override
@@ -195,6 +245,10 @@ public class ProcedureOccurrence extends BaseEntity {
 	}
 	
 	public static String _getTableName() {
+		Table annotation = ProcedureOccurrence.class.getDeclaredAnnotation(Table.class);
+		if (annotation != null) {
+			return annotation.name();
+		}
 		return "procedure_occurrence";
 	}
 
@@ -221,7 +275,7 @@ public class ProcedureOccurrence extends BaseEntity {
 	}
 
 	@Override
-	public String getSqlTableStatement(List<String> parameterList, List<String> valueList) {
+	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
 		return ProcedureOccurrence._getSqlTableStatement(parameterList, valueList);
 	}
 

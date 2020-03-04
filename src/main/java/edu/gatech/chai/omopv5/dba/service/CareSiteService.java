@@ -16,7 +16,12 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 import edu.gatech.chai.omopv5.model.entity.CareSite;
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
 // TODO: Auto-generated Javadoc
@@ -41,4 +46,53 @@ public interface CareSiteService extends IService<CareSite> {
 	 * @return the care site
 	 */
 	public CareSite searchByNameAndLocation(String careSiteName, Location location);
+	
+	public static CareSite _construct(ResultSet rs, CareSite careSite, String alias) {
+		if (careSite == null) careSite = new CareSite();
+		
+		if (alias == null || alias.isEmpty())
+			alias = CareSite._getTableName();
+
+		try {
+			ResultSetMetaData metaData = rs.getMetaData();
+			int totalColumnSize = metaData.getColumnCount();
+			for (int i = 1; i <= totalColumnSize; i++) {
+				String columnInfo = metaData.getColumnName(i);
+
+				if (columnInfo.equalsIgnoreCase(alias + "_care_site_id")) {
+					careSite.setId(rs.getLong(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase("location_location_id")) {
+					Location location = LocationService._construct(rs, null, "location");
+					careSite.setLocation(location);
+				}
+
+				if (columnInfo.equalsIgnoreCase("placeOfServiceConcept_concept_id")) {
+					Concept placeOfServiceConcept = ConceptService._construct(rs, null, "placeOfServiceConcept");
+					careSite.setPlaceOfServiceConcept(placeOfServiceConcept);
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_care_site_name")) {
+					careSite.setCareSiteName(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_care_site_source_value")) {
+					careSite.setCareSiteSourceValue(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_place_of_service_source_value")) {
+					careSite.setPlaceOfServiceSourceValue(rs.getString(columnInfo));
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return careSite;
+	}
+
+	
 }

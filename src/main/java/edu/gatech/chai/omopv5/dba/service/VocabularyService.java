@@ -16,6 +16,8 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+
 import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 
 // TODO: Auto-generated Javadoc
@@ -39,4 +41,15 @@ public interface VocabularyService extends IService<Vocabulary> {
 	 * @return the string
 	 */
 	public String removeById(String id);
+	
+	public static Vocabulary _construct(ResultSet rs, Vocabulary vocabulary, String alias) {
+		if (vocabulary == null) vocabulary = new Vocabulary();
+		
+		if (alias == null || alias.isEmpty())
+			alias = Vocabulary._getTableName();
+
+		
+		return vocabulary;
+	}
+
 }

@@ -16,6 +16,9 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.Concept;
@@ -25,7 +28,7 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
  * The Interface ConceptService.
  */
 public interface ConceptService extends IService<Concept> {
-	
+
 	/**
 	 * Gets the ingredient.
 	 *
@@ -33,11 +36,78 @@ public interface ConceptService extends IService<Concept> {
 	 * @return the ingredient
 	 */
 	public List<Concept> getIngredient(Concept concept);
-	
+
 	/**
 	 * Gets the largest id.
 	 *
 	 * @return the largest id
 	 */
 	public Long getLargestId();
+
+	public static Concept _construct(ResultSet rs, Concept concept, String alias) {
+		if (concept == null)
+			concept = new Concept();
+
+		if (alias == null || alias.isEmpty())
+			alias = Concept._getTableName();
+
+		try {
+			ResultSetMetaData metaData = rs.getMetaData();
+			int totalColumnSize = metaData.getColumnCount();
+			for (int i = 1; i <= totalColumnSize; i++) {
+				String columnInfo = metaData.getColumnName(i);
+
+				if (columnInfo.equalsIgnoreCase(alias + "_concept_id")) {
+					concept.setId(rs.getLong(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_concept_name")) {
+					concept.setName(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_domain_id")) {
+					concept.setDomain(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_concept_class_id")) {
+					concept.setConceptClass(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_standard_concept")) {
+					String res = rs.getString(columnInfo);
+					if (res != null) {
+						concept.setStandardConcept(res.charAt(0));
+					} else {
+						concept.setStandardConcept(null);
+					}
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
+					concept.setVocabulary(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_concept_code")) {
+					concept.setConceptCode(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
+					concept.setValidStartDate(rs.getDate(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "valid_end_date")) {
+					concept.setValidEndDate(rs.getDate(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "invalid_reason")) {
+					concept.setInvalidReason(rs.getString(columnInfo));
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return concept;
+	}
 }

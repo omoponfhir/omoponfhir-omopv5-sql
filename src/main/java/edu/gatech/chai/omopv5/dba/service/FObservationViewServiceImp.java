@@ -45,12 +45,6 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	}
 
 	@Override
-	public FObservationView create(FObservationView entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FObservationView update(FObservationView entity) {
 		// TODO Auto-generated method stub
 		return null;

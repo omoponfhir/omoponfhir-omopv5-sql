@@ -66,12 +66,6 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	}
 
 	@Override
-	public Relationship create(Relationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Relationship update(Relationship entity) {
 		// TODO Auto-generated method stub
 		return null;

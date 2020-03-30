@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
+import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
@@ -28,6 +30,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 @Table(name = "drug_exposure")
 public class DrugExposure extends BaseEntity {
 	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="drug_exposure_id_seq")
 	@Column(name="drug_exposure_id", nullable=false)
 	private Long id;
 	

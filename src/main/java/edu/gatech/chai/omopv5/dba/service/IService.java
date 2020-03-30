@@ -118,7 +118,7 @@ public interface IService<v extends BaseEntity> {
 	 */
 	Long getSize(List<ParameterWrapper> paramList);
 	
-	Long getNextId();
+//	Long getNextId();
 	
 	v construct (ResultSet rs, v entity, String alias);
 }

@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
+import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
@@ -28,6 +30,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 public class Person extends BaseEntity {
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="person_id_seq")
 	@JoinColumn(name = "person_id", table="f_person:f_person", nullable = false)
 	private Long id;
 

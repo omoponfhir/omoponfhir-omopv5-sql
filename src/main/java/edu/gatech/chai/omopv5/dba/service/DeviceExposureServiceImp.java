@@ -39,18 +39,6 @@ public class DeviceExposureServiceImp extends BaseEntityServiceImp<DeviceExposur
 	}
 
 	@Override
-	public DeviceExposure create(DeviceExposure entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DeviceExposure update(DeviceExposure entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public DeviceExposure construct(ResultSet rs, DeviceExposure entity, String alias) {
 		return DeviceExposureService._construct(rs, entity, alias);
 	}

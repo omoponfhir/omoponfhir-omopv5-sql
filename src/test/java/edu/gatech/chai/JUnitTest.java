@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.postgresql.ds.PGPoolingDataSource;
@@ -59,7 +57,7 @@ public class JUnitTest {
 	@Test
 	public void personTableTest() {
 		ds = new PGPoolingDataSource();
-		ds.setDataSourceName("Test Person without Param");
+		ds.setDataSourceName("Test SqlRendered SQL");
 		ds.setServerName("localhost");
 		ds.setPortNumber(5432);
 		ds.setDatabaseName("postgres");
@@ -85,39 +83,33 @@ public class JUnitTest {
 
 		assert(outFperson.size() > 0);
 		assert(outFObs.size() > 0);
-    }
-
-	@Test
-	public void personTableWithParamTest() {
-		ds = new PGPoolingDataSource();
-		ds.setDataSourceName("Test Person with Param");
-		ds.setServerName("localhost");
-		ds.setPortNumber(5432);
-		ds.setDatabaseName("postgres");
-		ds.setCurrentSchema("omop_v5");
-		ds.setUser("omop_v5");
-		ds.setPassword("i3lworks");
-		ds.setMaxConnections(10);		
-		databaseConfiguration.setDataSource(ds);
-		databaseConfiguration.setSqlRenderTargetDialect("postgresql");		
-
+		
 		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
 		ParameterWrapper paramWrapper = new ParameterWrapper();
 		paramWrapper.setParameterType("String");
 		paramWrapper
 				.setParameters(Arrays.asList("familyName", "givenName1", "givenName2", "prefixName", "suffixName"));
 		paramWrapper.setOperators(Arrays.asList("like", "like", "like", "like", "like"));
-		paramWrapper.setValues(Arrays.asList("Kirk"));
+		paramWrapper.setValues(Arrays.asList("Hello"));
 		paramWrapper.setRelationship("or");
 
 		params.add(paramWrapper);
 		List<FPerson> out = fPersonService.searchWithParams(0, 10, params, null);
 		
 		logger.debug("Total Returned FPerson: "+out.size());
+		
+		FPerson newPerson = null;
 		for (FPerson fperson : out) {
+			newPerson = fperson;
 			System.out.println(fperson.toString());
 		}
-		
+
 		assert(out.size() > 0);
+
+		newPerson.setFamilyName("Hello");
+		newPerson.setGivenName1("Update");
+//		newPerson.setId(null);
+		FPerson returnedPerson = fPersonService.update(newPerson);
+		System.out.println(returnedPerson.toString());
     }
 }

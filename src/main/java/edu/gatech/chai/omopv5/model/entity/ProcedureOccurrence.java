@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
+import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
@@ -29,6 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 public class ProcedureOccurrence extends BaseEntity {
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="procedure_occurrence_id_seq")
 	@Column(name="procedure_occurrence_id", nullable=false)
 	private Long id;
 	

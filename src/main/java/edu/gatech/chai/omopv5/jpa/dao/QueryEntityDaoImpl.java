@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.jpa.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,10 +54,10 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 	}
 
 	@Override
-	public int updateQuery(String query) throws SQLException {
+	public Long updateQuery(String query) throws SQLException {
 		DataSource ds = databaseConfig.getDataSource();
 		Connection connection = ds.getConnection();
-		Statement stmt = connection.createStatement();
+		PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
@@ -64,7 +65,19 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		logger.debug("Query after SqlRender translate to "+databaseConfig.getSqlRenderTargetDialect()+": "+query);
 		System.out.println("Query after SqlRender translate to "+databaseConfig.getSqlRenderTargetDialect()+": "+query);
 		
-		return stmt.executeUpdate(query);
+		int affectedRows = stmt.executeUpdate();
+		if (affectedRows == 0) {
+			logger.debug("INSERT failed with "+query);
+			return 0L;
+		}
+		
+		ResultSet generatedKeys = stmt.getGeneratedKeys();
+		if (generatedKeys.next()) {
+            return generatedKeys.getLong(1);
+        }
+        else {
+            throw new SQLException("INSERT failed, no ID generated, with "+query);
+        }
 	}
 
 }

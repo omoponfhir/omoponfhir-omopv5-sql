@@ -87,12 +87,6 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 	}
 
 	@Override
-	public FactRelationship create(FactRelationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public FactRelationship update(FactRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;

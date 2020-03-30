@@ -133,8 +133,7 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 
 		sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 		try {
-			int ret = getQueryEntityDao().updateQuery(sql);
-			retVal = Long.valueOf(ret);
+			retVal = getQueryEntityDao().updateQuery(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -147,8 +146,7 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 			sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 
 			try {
-				int ret = getQueryEntityDao().updateQuery(sql);
-				retVal = Long.valueOf(ret);
+				retVal = getQueryEntityDao().updateQuery(sql);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -157,33 +155,9 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 		return retVal;
 	}
 
-//	@Override
-//	public FPerson create(FPerson entity) {
-//		Class<FPerson> clazz = getEntityClass();
-//		
-//		Field[] fields = clazz.getDeclaredFields();
-//		for (Field field : fields) {
-//			entity.get
-//		}
-//		return null;
-//	}
-
-	@Override
-	public FPerson update(FPerson entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public FPerson construct(ResultSet rs, FPerson entity, String alias) {
 		return FPersonService._construct(rs, entity, alias);
 	}
-
-//	@Override
-//	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList) {
-//		String sql = "select * from person mytablealias inner join f_person myftablealias ON mytablealias.person_id=myftablealias.person_id ";
-//
-//		return sql;
-//	}
 
 }

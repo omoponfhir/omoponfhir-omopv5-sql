@@ -38,18 +38,6 @@ public class VisitOccurrenceServiceImp extends BaseEntityServiceImp<VisitOccurre
 	}
 
 	@Override
-	public VisitOccurrence create(VisitOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public VisitOccurrence update(VisitOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public VisitOccurrence construct(ResultSet rs, VisitOccurrence entity, String alias) {
 		return VisitOccurrenceService._construct(rs, entity, alias);
 	}

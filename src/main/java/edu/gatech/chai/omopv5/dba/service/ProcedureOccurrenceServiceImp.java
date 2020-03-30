@@ -39,18 +39,6 @@ public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<Procedur
 	}
 
 	@Override
-	public ProcedureOccurrence create(ProcedureOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ProcedureOccurrence update(ProcedureOccurrence entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ProcedureOccurrence construct(ResultSet rs, ProcedureOccurrence entity, String alias) {
 		return ProcedureOccurrenceService._construct(rs, entity, alias);
 	}

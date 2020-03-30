@@ -132,7 +132,7 @@ public interface FPersonService extends IService<FPerson> {
 				}
 
 				if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
-					Concept raceConcept = ConceptService._construct(rs, null, "genderConcept");
+					Concept raceConcept = ConceptService._construct(rs, null, "raceConcept");
 					fPerson.setRaceConcept(raceConcept);
 				}
 

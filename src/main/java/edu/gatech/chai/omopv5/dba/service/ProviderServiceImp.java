@@ -38,18 +38,6 @@ public class ProviderServiceImp extends BaseEntityServiceImp<Provider> implement
 	}
 
 	@Override
-	public Provider create(Provider entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Provider update(Provider entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Provider construct(ResultSet rs, Provider entity, String alias) {
 		return ProviderService._construct(rs, entity, alias);
 	}

@@ -28,8 +28,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hibernate_version>5.3.1.Final</hibernate_version>
-		<spring_version>5.0.8.RELEASE</spring_version>
+		<spring_version>5.2.4.RELEASE</spring_version>
 	</properties>
 
 	<repositories>
@@ -121,7 +120,7 @@
 		<dependency>
 			<groupId>org.ohdsi.sql</groupId>
 			<artifactId>SqlRender</artifactId>
-			<version>1.6.3-SNAPSHOT</version>
+			<version>1.6.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
 		<dependency>

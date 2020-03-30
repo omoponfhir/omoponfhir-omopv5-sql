@@ -38,18 +38,6 @@ public class ObservationServiceImp extends BaseEntityServiceImp<Observation> imp
 	}
 
 	@Override
-	public Observation create(Observation entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Observation update(Observation entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Observation construct(ResultSet rs, Observation entity, String alias) {
 		return ObservationService._construct(rs, entity, alias);
 	}

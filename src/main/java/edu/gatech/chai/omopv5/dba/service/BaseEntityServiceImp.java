@@ -29,13 +29,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.api.client.util.DateTime;
+import com.google.cloud.Date;
+
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
+import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
+import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
+import jdk.internal.jline.internal.Log;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -104,7 +111,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	protected String getSqlTableName() {
-		Table annotation = getEntityClass().getDeclaredAnnotation(Table.class);
+		return getSqlTableName(getEntityClass());
+	}
+
+	protected String getSqlTableName(Class<T> clazz) {
+		Table annotation = clazz.getDeclaredAnnotation(Table.class);
 		if (annotation != null) {
 			return annotation.name();
 		} else {
@@ -147,6 +158,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	public String getSqlTableColumnName(String columnName) {
 		Class<T> clazz = getEntityClass();
+
+		return getSqlTableColumnName(clazz, columnName);
+	}
+
+	public String getSqlTableColumnName(Class<T> clazz, String columnName) {
 		Class<? super T> parentClazz = clazz.getSuperclass();
 		String sqlColumnName = null;
 		Field field;
@@ -383,49 +399,29 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return 0L;
 	}
 
-	public Long getNextId() {
-		List<String> parameterList = new ArrayList<String>();
-		List<String> valueList = new ArrayList<String>();
+//	private String getNextId(Class<T> clazz, List<String> parameterList, List<String> valueList) {
+//		String primaryId = getSqlTableColumnName("id");
+//
+//		String sql = "coalesce(max("+primaryId+"), 0)+1";
+//
+//		return sql;
+//	}
 
-		String sql = "select max(@id) from @table";
-		String primaryId = getSqlTableColumnName("id");
-		parameterList.add("id");
-		valueList.add(primaryId);
-
-		parameterList.add("table");
-		valueList.add(getSqlTableName());
-
-		sql = renderedSql(sql, parameterList, valueList);
-
-		System.out.println(sql);
-		logger.debug("SqlRender:" + sql);
-
-		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-			if (rs.next()) {
-				return rs.getLong(primaryId) + 1;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	private T insertEntity(Class<T> clazz, T entity) {
+	private Long insertEntity(Class<T> clazz, T entity) {
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
 		String sql = "insert into @table ";
 		parameterList.add("table");
-		valueList.add(getSqlTableName());
+		valueList.add(getSqlTableName(clazz));
 
 		String columns = "";
 		String values = "";
 		Field[] fields = clazz.getDeclaredFields();
 		int i = 1;
 		for (Field field : fields) {
+			String nextIdString = null;
+
 			// All the fieldw are private. Set accessible true.
 			field.setAccessible(true);
 
@@ -437,12 +433,24 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 						// Vocabulary table has Id. But, it's string. So, we only care Long ID
 						Long nextId = (Long) field.get(entity);
 						if (nextId == null || nextId == 0L) {
-							nextId = getNextId();
-							if (nextId != null) {
-								field.setLong(entity, getNextId());
-							} else {
-								logger.error("Error: Failed to get next Id for table = " + getEntity().getTableName());
-								return null;
+							String primaryId = getSqlTableColumnName("id");
+							nextIdString = "coalesce(max(" + primaryId + "), 0)+1";
+//
+//							nextIdString = getNextId(clazz, parameterList, valueList);
+//								if (nextId != null) {
+//									field.setLong(entity, getNextId());
+//								} else {
+//									logger.error(
+//											"Error: Failed to get next Id for table = " + getEntity().getTableName());
+//									return null;
+//								}
+							GeneratedValue sequenceGenertorAnnotation = field
+									.getDeclaredAnnotation(GeneratedValue.class);
+							if (sequenceGenertorAnnotation != null
+									&& sequenceGenertorAnnotation.strategy() == GenerationType.SEQUENCE) {
+								String sequenceTable = sequenceGenertorAnnotation.generator();
+//								String sqlUpdateSequenceTable = "";
+//								nextIdString = sequenceTable + ".nextval";
 							}
 						}
 					}
@@ -455,12 +463,50 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				}
 			}
 
-			Object fieldValue;
+			String fieldValue = null;
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
 			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 
+			// Column name
+			String columnVar = field.getName();
+			String columnName = getSqlTableColumnName(clazz, columnVar);
+
 			try {
-				fieldValue = field.get(entity);
+				Object fieldObject = field.get(entity);
+				if (fieldObject != null) {
+					if (field.getType() == String.class) {
+						fieldValue = "'" + (String) fieldObject + "'";
+					} else if (field.getType() == Double.class || field.getType() == Integer.class
+							|| field.getType() == Date.class || field.getType() == Short.class
+							|| field.getType() == DateTime.class || field.getType() == Long.class) {
+						fieldValue = fieldObject.toString();
+					} else {
+						Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
+						Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
+						if (idObject instanceof String) {
+							fieldValue = "'" + (String) idObject + "'";
+						} else {
+							fieldValue = idObject.toString();
+						}
+					}
+				} else if (nextIdString == null) {
+					// if value is null and not required, we skip this.
+					if (columnAnnotation != null) {
+						if (columnAnnotation.nullable() == true) {
+							continue;
+						}
+					}
+
+					if (joinColumnAnnotation != null) {
+						if (joinColumnAnnotation.nullable() == true) {
+							continue;
+						}
+					}
+
+					logger.error(columnName + " cannot be null");
+					return null;
+				}
+
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 				return null;
@@ -482,6 +528,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 				continue;
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+				return null;
+			} catch (SecurityException e) {
+				e.printStackTrace();
+				return null;
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				return null;
 			}
 
 			if (i > 1) {
@@ -489,59 +544,249 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				values += ", ";
 			}
 
-			columns.concat("@col" + i);
+			columns = columns.concat("@col" + i);
 			parameterList.add("col" + i);
 
-			// Column name
-			String columnVar = field.getName();
-			String columnName = getSqlTableColumnName(columnVar);
 			valueList.add(columnName);
 
 			// Value
-			values.concat("@val" + i);
+			values = values.concat("@val" + i);
 			parameterList.add("val" + i);
-			if (field.getType() == String.class) {
-				valueList.add("'" + (String) fieldValue + "'");
+
+			if (nextIdString != null) {
+				valueList.add(nextIdString);
 			} else {
-				valueList.add(fieldValue.toString());
+				valueList.add(fieldValue);
 			}
+
+			i++;
 
 		}
 
-		sql += "(" + columns + ") values (" + values + ")";
-		sql = renderedSql(sql, parameterList, valueList);
+		if (!columns.isEmpty() && !values.isEmpty() && !"".equals(columns) && !"".equals(values)) {
+			sql += "(" + columns + ") select " + values + " from @table";
+			sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(sql);
-		logger.debug("SqlRender:" + sql);
+			System.out.println(sql);
+			logger.debug("SqlRender:" + sql);
 
-		try {
-			getQueryEntityDao().updateQuery(sql);
-			return entity;
-		} catch (SQLException e) {
-			e.printStackTrace();
+			try {
+				Long id = getQueryEntityDao().updateQuery(sql);
+				return id;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
 	}
 
 	public T create(T entity) {
-		@SuppressWarnings("unchecked")
 		Class<T> clazz = (Class<T>) entity.getClass();
-
-		@SuppressWarnings("unchecked")
 		Class<T> parentClazz = (Class<T>) clazz.getSuperclass();
 
+		Long newId = null;
 		if (parentClazz != null) {
-			T retEntity = insertEntity(parentClazz, entity);
-			if (retEntity == null) {
-				logger.error("Failed to create parent table: " + entity.getTableName());
+			newId = insertEntity(parentClazz, entity);
+			if (newId == null) {
+				logger.error("Failed to create parent table: " + getSqlTableName(parentClazz));
 				return null;
-			} else {
-				entity = retEntity;
+			}
+			Method setMethod;
+			try {
+				setMethod = clazz.getMethod("setId", Long.class);
+				setMethod.invoke(entity, newId);
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
 			}
 		}
 
-		return insertEntity(clazz, entity);
+		Long id = insertEntity(clazz, entity);
+		if (newId == null) {
+			Method setMethod;
+			try {
+				setMethod = clazz.getMethod("setId", Long.class);
+				setMethod.invoke(entity, id);
+			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return entity;
+	}
+
+	private Long idEqualTo(Class<T> clazz, T entity) throws NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Object idObject = null;
+		Method setMethod;
+		setMethod = clazz.getMethod("getId");
+		idObject = setMethod.invoke(entity);
+
+		if (idObject == null || ((Long) idObject) == 0L) {
+			return null;
+		} else {
+			return (Long) idObject;
+		}
+	}
+
+	private T updateEntity(Long id, Class<T> clazz, T entity) {
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+
+		String sql = "update @table set ";
+		String where = "@whereId = @whereIdVal";
+
+		parameterList.add("table");
+		valueList.add(getSqlTableName(clazz));
+
+		parameterList.add("whereIdVal");
+		valueList.add(Long.toString(id));
+
+		String assignments = "";
+		Field[] fields = clazz.getDeclaredFields();
+		int i = 1;
+		for (Field field : fields) {
+			// All the fieldw are private. Set accessible true.
+			field.setAccessible(true);
+
+			// Column name
+			String columnVar = field.getName();
+			String columnName = getSqlTableColumnName(clazz, columnVar);
+
+			// See if this field is primary key. If so, then we need to put id.
+			Id idAnnotation = field.getDeclaredAnnotation(Id.class);
+			if (idAnnotation != null) {
+				parameterList.add("whereId");
+				valueList.add(columnName);
+
+				// This is ID field. We do not update ID. so skip.
+				continue;
+			}
+
+			String fieldValue = null;
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+
+			try {
+				Object fieldObject = field.get(entity);
+				if (fieldObject != null) {
+					if (field.getType() == String.class) {
+						fieldValue = "'" + (String) fieldObject + "'";
+					} else if (field.getType() == Double.class || field.getType() == Integer.class
+							|| field.getType() == Date.class || field.getType() == Short.class
+							|| field.getType() == DateTime.class || field.getType() == Long.class) {
+						fieldValue = fieldObject.toString();
+					} else {
+						Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
+						Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
+						if (idObject instanceof String) {
+							fieldValue = "'" + (String) idObject + "'";
+						} else {
+							fieldValue = idObject.toString();
+						}
+					}
+				} else {
+					continue; // value is null. So we skip this.
+				}
+
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				return null;
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				return null;
+			} catch (NullPointerException e) {
+				if (columnAnnotation != null) {
+					if (columnAnnotation.nullable() == false) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+
+				if (joinColumnAnnotation != null) {
+					if (joinColumnAnnotation.nullable() == false) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+				continue;
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+				return null;
+			} catch (SecurityException e) {
+				e.printStackTrace();
+				return null;
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			if (i > 1) {
+				assignments += ", ";
+			}
+
+			assignments = assignments.concat("@assignment" + i + "=@assignmentValue" + i);
+			parameterList.add("assignment" + i);
+
+			valueList.add(columnName);
+
+			parameterList.add("assignmentValue" + i);
+			valueList.add(fieldValue);
+			
+			i++;
+
+		}
+
+		if (!assignments.isEmpty() && !"".equals(assignments)) {
+			sql += assignments + " where " + where;
+			sql = renderedSql(sql, parameterList, valueList);
+
+			System.out.println(sql);
+			logger.debug("SqlRender:" + sql);
+
+			try {
+				getQueryEntityDao().updateQuery(sql);
+				return entity;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
+	}
+
+	public T update(T entity) {
+		Class<T> clazz = (Class<T>) entity.getClass();
+		Class<T> parentClazz = (Class<T>) clazz.getSuperclass();
+
+		Long id = null;
+		try {
+			id = idEqualTo(clazz, entity);
+			if (id == null || id == 0L) {
+				logger.error("Update needs id != null for table: " + getSqlTableName(clazz));
+				return null;
+			}
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		if (parentClazz != null) {
+			if (updateEntity(id, parentClazz, entity) == null) {
+				logger.error("Failed to update parent table: " + getSqlTableName(parentClazz));
+				return null;
+			}
+		}
+
+		if (updateEntity(id, clazz, entity) == null) {
+			logger.error("Failed to update table: " + getSqlTableName(parentClazz));
+			return null;
+		}
+
+		return entity;
 	}
 
 	public T findById(Long id) {
@@ -572,7 +817,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -594,8 +838,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 		try {
-			int ret = getQueryEntityDao().updateQuery(sql);
-			return Long.valueOf(ret);
+			Long ret = getQueryEntityDao().updateQuery(sql);
+			return ret;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

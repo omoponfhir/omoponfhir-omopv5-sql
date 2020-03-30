@@ -51,12 +51,6 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 	}
 
 	@Override
-	public ConceptRelationshipPK create(ConceptRelationship entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ConceptRelationshipPK update(ConceptRelationship entity) {
 		// TODO Auto-generated method stub
 		return null;

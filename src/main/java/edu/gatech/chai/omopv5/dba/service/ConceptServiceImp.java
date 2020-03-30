@@ -119,12 +119,6 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 	}
 
 	@Override
-	public Concept create(Concept entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Concept update(Concept entity) {
 		// TODO Auto-generated method stub
 		return null;

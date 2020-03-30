@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
+import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
@@ -30,6 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
  */
 @Table(name = "f_person")
 public class FPerson extends Person {
+	@Id
 	@JoinColumn(name="person_id", table="person:person", nullable=false)
 	private Long id;
 	

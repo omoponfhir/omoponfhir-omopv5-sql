@@ -64,18 +64,6 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 	}
 
 	@Override
-	public Vocabulary create(Vocabulary entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Vocabulary update(Vocabulary entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Vocabulary construct(ResultSet rs, Vocabulary entity, String alias) {
 		return VocabularyService._construct(rs, entity, alias);
 	}

@@ -38,18 +38,6 @@ public class MeasurementServiceImp extends BaseEntityServiceImp<Measurement> imp
 	}
 
 	@Override
-	public Measurement create(Measurement entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Measurement update(Measurement entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Measurement construct(ResultSet rs, Measurement entity, String alias) {
 		return MeasurementService._construct(rs, entity, alias);
 	}

@@ -39,18 +39,6 @@ public class DrugExposureServiceImp extends BaseEntityServiceImp<DrugExposure>
 	}
 
 	@Override
-	public DrugExposure create(DrugExposure entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DrugExposure update(DrugExposure entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public DrugExposure construct(ResultSet rs, DrugExposure entity, String alias) {
 		return DrugExposureService._construct(rs, entity, alias);
 	}

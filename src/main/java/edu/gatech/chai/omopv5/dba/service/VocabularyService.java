@@ -62,7 +62,7 @@ public interface VocabularyService extends IService<Vocabulary> {
 				}
 				
 				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {
-					vocabulary.setName(rs.getString(columnInfo));
+					vocabulary.setVocabularyName(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_reference")) {

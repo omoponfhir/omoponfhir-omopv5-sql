@@ -15,5 +15,8 @@
  *******************************************************************************/
 package edu.gatech.chai.omopv5.jpa.dao;
 
+import java.sql.SQLException;
+
 public interface QueryEntityDao extends IDao {
+	public void closeConnection() throws SQLException;
 }

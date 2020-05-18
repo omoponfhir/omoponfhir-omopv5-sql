@@ -57,19 +57,19 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
-					visitOccurrence.setStartDate(rs.getDate(columnInfo));
+					visitOccurrence.setVisitStartDate(rs.getDate(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_start_time")) {
-					visitOccurrence.setStartTime(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
+					visitOccurrence.setVisitStartDateTime(rs.getDate(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
-					visitOccurrence.setEndDate(rs.getDate(columnInfo));
+					visitOccurrence.setVisitEndDate(rs.getDate(columnInfo));
 				}
 				
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_end_time")) {
-					visitOccurrence.setEndTime(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
+					visitOccurrence.setVisitEndDateTime(rs.getDate(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
@@ -94,6 +94,29 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 				if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
 					Concept visitSourceConcept = ConceptService._construct(rs, null, "visitSourceConcept");
 					visitOccurrence.setVisitSourceConcept(visitSourceConcept);
+				}
+
+				if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
+					Concept admittingSourceConcept = ConceptService._construct(rs, null, "admittingSourceConcept");
+					visitOccurrence.setAdmittingSourceConcept(admittingSourceConcept);
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
+					visitOccurrence.setAdmittingSourceValue(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
+					Concept dischargeToConcept = ConceptService._construct(rs, null, "dischargeToConcept");
+					visitOccurrence.setDischargeToConcept(dischargeToConcept);
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
+					visitOccurrence.setDischargeToSourceValue(rs.getString(columnInfo));
+				}
+				
+				if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
+					VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null, "precedingVisitOccurrence");
+					visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);
 				}
 
 			}

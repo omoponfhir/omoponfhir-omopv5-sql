@@ -34,44 +34,8 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="drug_exposure_id", nullable=false)
 	private Long id;
 	
-	@Column(name="days_supply")
-	private Integer daysSupply;
-	
-	@Column(name="sig")
-	private String sig;
-	
-	@JoinColumn(name="route_concept_id", referencedColumnName="concept_id")
-	private Concept routeConcept;
-	
-	@Column(name="effective_drug_dose")
-	private Double effectiveDrugDose;
-	
-	@JoinColumn(name="dose_unit_concept_id", referencedColumnName="concept_id")
-	private Concept doseUnitConcept;
-	
-	@Column(name="lot_number")
-	private String lotNumber;
-	
-	@JoinColumn(name="provider_id")
-	private Provider provider;
-	
-	@JoinColumn(name="visit_occurrence_id")
-	private VisitOccurrence visitOccurrence;
-	
-	@Column(name="drug_source_value")
-	private String drugSourceValue;
-	
-	@JoinColumn(name="drug_source_concept_id", referencedColumnName="concept_id")
-	private Concept drugSourceConcept;
-	
 	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
-	
-	@Column(name="route_source_value")
-	private String routeSourceValue;
-	
-	@Column(name="dose_unit_source_value")
-	private String doseUnitSourceValue;
 	
 	@JoinColumn(name="drug_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept drugConcept;
@@ -79,9 +43,18 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="drug_exposure_start_date", nullable=false)
 	private Date drugExposureStartDate;
 	
-	@Column(name="drug_exposure_end_date")
+	@Column(name="drug_exposure_start_datetime")
+	private Date drugExposureStartDateTime;
+
+	@Column(name="drug_exposure_end_date", nullable=false)
 	private Date drugExposureEndDate;
 	
+	@Column(name="drug_exposure_end_datetime")
+	private Date drugExposureEndDateTime;
+
+	@Column(name="verbatim_end_date")
+	private Date verbatimEndDate;
+
 	@JoinColumn(name="drug_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept drugTypeConcept;
 	
@@ -94,6 +67,39 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="quantity")
 	private Double quantity;
 
+	@Column(name="days_supply")
+	private Integer daysSupply;
+	
+	@Column(name="sig")
+	private String sig;
+	
+	@JoinColumn(name="route_concept_id", referencedColumnName="concept_id")
+	private Concept routeConcept;
+	
+	@Column(name="lot_number")
+	private String lotNumber;
+	
+	@JoinColumn(name="provider_id")
+	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
+	private VisitOccurrence visitOccurrence;
+	
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
+	
+	@Column(name="drug_source_value")
+	private String drugSourceValue;
+	
+	@JoinColumn(name="drug_source_concept_id", referencedColumnName="concept_id")
+	private Concept drugSourceConcept;
+	
+	@Column(name="route_source_value")
+	private String routeSourceValue;
+	
+	@Column(name="dose_unit_source_value")
+	private String doseUnitSourceValue;
+	
 	public DrugExposure() {
 	}
 
@@ -109,108 +115,12 @@ public class DrugExposure extends BaseEntity {
 		this.id = id;
 	}
 
-	public Integer getDaysSupply() {
-		return this.daysSupply;
-	}
-
-	public void setDaysSupply(Integer daysSupply) {
-		this.daysSupply = daysSupply;
-	}
-
-	public String getSig() {
-		return this.sig;
-	}
-
-	public void setSig(String sig) {
-		this.sig = sig;
-	}
-
-	public Concept getRouteConcept() {
-		return this.routeConcept;
-	}
-
-	public void setRouteConcept(Concept routeConcept) {
-		this.routeConcept = routeConcept;
-	}
-
-	public Double getEffectiveDrugDose() {
-		return effectiveDrugDose;
-	}
-
-	public void setEffectiveDrugDose(Double effectiveDrugDose) {
-		this.effectiveDrugDose = effectiveDrugDose;
-	}
-
-	public Concept getDoseUnitConcept() {
-		return doseUnitConcept;
-	}
-
-	public void setDoseUnitConcept(Concept doseUnitConcept) {
-		this.doseUnitConcept = doseUnitConcept;
-	}
-
-	public String getLotNumber() {
-		return this.lotNumber;
-	}
-
-	public void setLotNumber(String lotNumber) {
-		this.lotNumber = lotNumber;
-	}
-
-	public Provider getProvider() {
-		return this.provider;
-	}
-
-	public void setProvider(Provider provider) {
-		this.provider = provider;
-	}
-
-	public VisitOccurrence getVisitOccurrence() {
-		return this.visitOccurrence;
-	}
-
-	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
-		this.visitOccurrence = visitOccurrence;
-	}
-
-	public String getDrugSourceValue() {
-		return drugSourceValue;
-	}
-
-	public void setDrugSourceValue(String drugSourceValue) {
-		this.drugSourceValue = drugSourceValue;
-	}
-
-	public Concept getDrugSourceConcept() {
-		return this.drugSourceConcept;
-	}
-
-	public void setDrugSourceConcpet(Concept drugSourceConcept) {
-		this.drugSourceConcept = drugSourceConcept;
-	}
-
 	public FPerson getFPerson() {
 		return this.fPerson;
 	}
 
 	public void setFPerson(FPerson fPerson) {
 		this.fPerson = fPerson;
-	}
-
-	public String getRouteSourceValue() {
-		return this.routeSourceValue;
-	}
-
-	public void setRouteSourceValue(String routeSourceValue) {
-		this.routeSourceValue = routeSourceValue;
-	}
-
-	public String getDoseUnitSourceValue() {
-		return doseUnitSourceValue;
-	}
-
-	public void setDoseUnitSourceValue(String doseUnitSourceValue) {
-		this.doseUnitSourceValue = doseUnitSourceValue;
 	}
 
 	public Concept getDrugConcept() {
@@ -229,12 +139,36 @@ public class DrugExposure extends BaseEntity {
 		this.drugExposureStartDate = drugExposureStartDate;
 	}
 
+	public Date getDrugExposureStartDateTime() {
+		return this.drugExposureStartDateTime;
+	}
+
+	public void setDrugExposureStartDateTime(Date drugExposureStartDateTime) {
+		this.drugExposureStartDateTime = drugExposureStartDateTime;
+	}
+
 	public Date getDrugExposureEndDate() {
 		return this.drugExposureEndDate;
 	}
 
 	public void setDrugExposureEndDate(Date drugExposureEndDate) {
 		this.drugExposureEndDate = drugExposureEndDate;
+	}
+
+	public Date getDrugExposureEndDateTime() {
+		return this.drugExposureEndDateTime;
+	}
+
+	public void setDrugExposureEndDateTime(Date drugExposureEndDateTime) {
+		this.drugExposureEndDateTime = drugExposureEndDateTime;
+	}
+
+	public Date getVerbatimEndDate() {
+		return this.verbatimEndDate;
+	}
+
+	public void setVerbatimEndDate(Date verbatimEndDate) {
+		this.verbatimEndDate = verbatimEndDate;
 	}
 
 	public Concept getDrugTypeConcept() {
@@ -267,6 +201,94 @@ public class DrugExposure extends BaseEntity {
 
 	public void setQuantity(Double quantity) {
 		this.quantity = quantity;
+	}
+
+	public Integer getDaysSupply() {
+		return this.daysSupply;
+	}
+
+	public void setDaysSupply(Integer daysSupply) {
+		this.daysSupply = daysSupply;
+	}
+
+	public String getSig() {
+		return this.sig;
+	}
+
+	public void setSig(String sig) {
+		this.sig = sig;
+	}
+
+	public Concept getRouteConcept() {
+		return this.routeConcept;
+	}
+
+	public void setRouteConcept(Concept routeConcept) {
+		this.routeConcept = routeConcept;
+	}
+
+	public String getLotNumber() {
+		return this.lotNumber;
+	}
+
+	public void setLotNumber(String lotNumber) {
+		this.lotNumber = lotNumber;
+	}
+
+	public Provider getProvider() {
+		return this.provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
+	}
+
+	public VisitOccurrence getVisitOccurrence() {
+		return this.visitOccurrence;
+	}
+
+	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
+		this.visitOccurrence = visitOccurrence;
+	}
+
+	public VisitDetail getVisitDetail() {
+		return this.visitDetail;
+	}
+
+	public void setVisitDetail(VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
+
+	public String getDrugSourceValue() {
+		return drugSourceValue;
+	}
+
+	public void setDrugSourceValue(String drugSourceValue) {
+		this.drugSourceValue = drugSourceValue;
+	}
+
+	public Concept getDrugSourceConcept() {
+		return this.drugSourceConcept;
+	}
+
+	public void setDrugSourceConcpet(Concept drugSourceConcept) {
+		this.drugSourceConcept = drugSourceConcept;
+	}
+
+	public String getRouteSourceValue() {
+		return this.routeSourceValue;
+	}
+
+	public void setRouteSourceValue(String routeSourceValue) {
+		this.routeSourceValue = routeSourceValue;
+	}
+
+	public String getDoseUnitSourceValue() {
+		return doseUnitSourceValue;
+	}
+
+	public void setDoseUnitSourceValue(String doseUnitSourceValue) {
+		this.doseUnitSourceValue = doseUnitSourceValue;
 	}
 
 	@Override
@@ -384,8 +406,9 @@ public class DrugExposure extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("routeConcept".equals(foreignVariable) || "doseUnitConcept".equals(foreignVariable)
-				|| "drugSourceConcept".equals(foreignVariable) || "drugTypeConcept".equals(foreignVariable)
+		if ("routeConcept".equals(foreignVariable)
+				|| "drugSourceConcept".equals(foreignVariable) 
+				|| "drugTypeConcept".equals(foreignVariable)
 				|| "drugConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
@@ -397,6 +420,9 @@ public class DrugExposure extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

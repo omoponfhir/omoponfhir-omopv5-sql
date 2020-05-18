@@ -17,7 +17,6 @@
 package edu.gatech.chai.omopv5.model.entity;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;

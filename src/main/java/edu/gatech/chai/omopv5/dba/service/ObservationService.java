@@ -24,6 +24,7 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Observation;
 import edu.gatech.chai.omopv5.model.entity.Provider;
+import edu.gatech.chai.omopv5.model.entity.VisitDetail;
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
 /**
@@ -57,19 +58,24 @@ public interface ObservationService extends IService<Observation> {
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
-					observation.setDate(rs.getDate(columnInfo));
+					observation.setObservationDate(rs.getDate(columnInfo));
 				}
 				
-				if (columnInfo.equalsIgnoreCase(alias + "_observation_time")) {
-					observation.setTime(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
+					observation.setObservationDateTime(rs.getDate(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
-					observation.setValueAsString(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
+					Concept observationTypeConcept = ConceptService._construct(rs, null, "observationTypeConcept");
+					observation.setObservationTypeConcept(observationTypeConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
 					observation.setValueAsNumber(rs.getDouble(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
+					observation.setValueAsString(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
@@ -77,9 +83,14 @@ public interface ObservationService extends IService<Observation> {
 					observation.setValueAsConcept(valueAsConcept);
 				}
 
-				if (columnInfo.equalsIgnoreCase("typeConcept_concept_id")) {
-					Concept typeConcept = ConceptService._construct(rs, null, "typeConcept");
-					observation.setTypeConcept(typeConcept);
+				if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
+					Concept qualifierConcept = ConceptService._construct(rs, null, "qualifierConcept");
+					observation.setQualifierConcept(qualifierConcept);
+				}
+				
+				if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
+					observation.setUnitConcept(unitConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
@@ -92,32 +103,28 @@ public interface ObservationService extends IService<Observation> {
 					observation.setVisitOccurrence(visitOccurrence);
 				}
 
-				if (columnInfo.equalsIgnoreCase(alias + "_source_value")) {
-					observation.setSourceValue(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase("visitDetail_visit_detail_id")) {
+					VisitDetail visitDetail = VisitDetailService._construct(rs, null, "visitDetail");
+					observation.setVisitDetail(visitDetail);
 				}
 
-				if (columnInfo.equalsIgnoreCase("sourceConcept_concept_id")) {
-					Concept sourceConcept = ConceptService._construct(rs, null, "sourceConcept");
-					observation.setSourceConcept(sourceConcept);
+				if (columnInfo.equalsIgnoreCase(alias + "_observation_source_value")) {
+					observation.setObservationSourceValue(rs.getString(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
-					Concept qualifierConcept = ConceptService._construct(rs, null, "qualifierConcept");
-					observation.setQualifierConcept(qualifierConcept);
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
-					observation.setQualifierSourceValue(rs.getString(columnInfo));
-				}				
-
-				if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
-					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
-					observation.setUnitConcept(unitConcept);
+				if (columnInfo.equalsIgnoreCase("observationSourceConcept_concept_id")) {
+					Concept observationSourceConcept = ConceptService._construct(rs, null, "observationSourceConcept");
+					observation.setObservationSourceConcept(observationSourceConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
 					observation.setUnitSourceValue(rs.getString(columnInfo));
 				}				
+
+				if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
+					observation.setQualifierSourceValue(rs.getString(columnInfo));
+				}				
+
 
 			}
 		} catch (SQLException e) {

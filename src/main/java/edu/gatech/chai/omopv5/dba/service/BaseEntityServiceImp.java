@@ -190,6 +190,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public String constructSqlSelectWithoutWhere() {
+		return constructSqlSelectWithoutWhere(null);
+	}
+	
+	public String constructSqlSelectWithoutWhere(String rootTableName) {
 		String sqlResultList = "";
 
 		Class<T> clazz = getEntityClass();
@@ -208,7 +212,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 //			}
 //		}
 
-		String rootTableName = SqlUtil.getTableName(clazz);
+		if (rootTableName == null) {
+			rootTableName = SqlUtil.getTableName(clazz);
+		}
+		
+		// We should have a rootTableName now.
 		if (rootTableName == null) {
 			logger.error("Failed to get SQL tablename");
 			return null;
@@ -360,19 +368,26 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public Long getSize() {
+		Long retVal = 0L;
+		
 		String queryString = "select count(*) as count from " + getSqlTableName() + ";";
 		try {
 			ResultSet rs = getQueryEntityDao().runQuery(queryString);
 			if (rs.next()) {
-				return (long) rs.getInt("count");
+				retVal =  (long) rs.getInt("count");
 			}
+			
+			getQueryEntityDao().closeConnection();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+
+		return retVal;
 	}
 
 	public Long getSize(List<ParameterWrapper> paramList) {
+		Long retVal = 0L;
+		
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
@@ -386,17 +401,16 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			ResultSet rs = getQueryEntityDao().runQuery(sql);
 			if (rs.next()) {
-				return (long) rs.getInt("count");
+				retVal = (long) rs.getInt("count");
 			}
 
+			getQueryEntityDao().closeConnection();
 		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | SQLException e) {
 			e.printStackTrace();
-
-			return 0L;
 		}
 
-		return 0L;
+		return retVal;
 	}
 
 //	private String getNextId(Class<T> clazz, List<String> parameterList, List<String> valueList) {
@@ -424,6 +438,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			// All the fieldw are private. Set accessible true.
 			field.setAccessible(true);
+			
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+			if (columnAnnotation == null && joinColumnAnnotation == null) {
+				continue;
+			}
 
 			// See if this field is primary key. If so, then we need to put id.
 			Id idAnnotation = field.getDeclaredAnnotation(Id.class);
@@ -464,8 +484,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			String fieldValue = null;
-			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
-			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 
 			// Column name
 			String columnVar = field.getName();
@@ -588,17 +606,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		Long newId = null;
 		if (parentClazz != null) {
 			newId = insertEntity(parentClazz, entity);
-			if (newId == null) {
-				logger.error("Failed to create parent table: " + getSqlTableName(parentClazz));
-				return null;
-			}
-			Method setMethod;
-			try {
-				setMethod = clazz.getMethod("setId", Long.class);
-				setMethod.invoke(entity, newId);
-			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				e.printStackTrace();
+			if (newId != null) {
+				Method setMethod;
+				try {
+					setMethod = clazz.getMethod("setId", Long.class);
+					setMethod.invoke(entity, newId);
+				} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -651,6 +667,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			// All the fieldw are private. Set accessible true.
 			field.setAccessible(true);
 
+			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
+			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+			if (columnAnnotation == null && joinColumnAnnotation == null) {
+				continue;
+			}
+
 			// Column name
 			String columnVar = field.getName();
 			String columnName = getSqlTableColumnName(clazz, columnVar);
@@ -666,8 +688,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			String fieldValue = null;
-			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
-			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 
 			try {
 				Object fieldObject = field.get(entity);
@@ -734,7 +754,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			parameterList.add("assignmentValue" + i);
 			valueList.add(fieldValue);
-			
+
 			i++;
 
 		}
@@ -793,11 +813,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String sql = constructSqlSelectWithoutWhere();
+		String rootTableName = SqlUtil.getTableName(getEntityClass());
+		String sql = constructSqlSelectWithoutWhere(rootTableName);
 		sql = sql + " where @cname=@value";
 		parameterList.add("cname");
 		parameterList.add("value");
-		valueList.add(getSqlTableColumnName("id"));
+		valueList.add(rootTableName+"."+getSqlTableColumnName("id"));
 		valueList.add(id.toString());
 
 		sql = renderedSql(sql, parameterList, valueList);
@@ -855,7 +876,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> valueList = new ArrayList<String>();
 
 		String sql = constructSqlSelectWithoutWhere();
-		sql = " where @column='@value'";
+		sql = sql+" where @column='@value'";
 
 		parameterList.add("column");
 		parameterList.add("value");

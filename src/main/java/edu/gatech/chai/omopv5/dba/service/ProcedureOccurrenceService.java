@@ -24,6 +24,7 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.ProcedureOccurrence;
 import edu.gatech.chai.omopv5.model.entity.Provider;
+import edu.gatech.chai.omopv5.model.entity.VisitDetail;
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
 /**
@@ -61,6 +62,10 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 					procedureOccurrence.setProcedureDate(rs.getDate(columnInfo));
 				}
 
+				if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
+					procedureOccurrence.setProcedureDateTime(rs.getDate(columnInfo));
+				}
+
 				if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
 					Concept procedureTypeConcept = ConceptService._construct(rs, null, "procedureTypeConcept");
 					procedureOccurrence.setProcedureTypeConcept(procedureTypeConcept);
@@ -85,6 +90,11 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 					procedureOccurrence.setVisitOccurrence(visitOccurrence);
 				}
 
+				if (columnInfo.equalsIgnoreCase("visitDetail_visit_detail_id")) {
+					VisitDetail visitDetail = VisitDetailService._construct(rs, null, "visitDetail");
+					procedureOccurrence.setVisitDetail(visitDetail);
+				}
+
 				if (columnInfo.equalsIgnoreCase(alias + "_procedure_source_value")) {
 					procedureOccurrence.setProcedureSourceValue(rs.getString(columnInfo));
 				}
@@ -94,8 +104,8 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 					procedureOccurrence.setProcedureSourceConcept(procedureSourceConcept);
 				}
 
-				if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
-					procedureOccurrence.setQualifierSourceValue(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase(alias + "_modifier_source_value")) {
+					procedureOccurrence.setModifierSourceValue(rs.getString(columnInfo));
 				}
 
 			}

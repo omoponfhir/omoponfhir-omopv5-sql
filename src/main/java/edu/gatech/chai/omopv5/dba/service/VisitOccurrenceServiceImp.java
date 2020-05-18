@@ -17,7 +17,6 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 

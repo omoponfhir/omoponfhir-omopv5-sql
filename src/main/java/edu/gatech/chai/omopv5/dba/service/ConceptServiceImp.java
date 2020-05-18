@@ -48,7 +48,7 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		
 		List<Concept> concepts = new ArrayList<Concept>();
 		
-		if ("Ingredient".equals(concept.getConceptClass())) {
+		if ("Ingredient".equals(concept.getConceptClassId())) {
 			// This is ingredient. Just return empty list
 			return concepts;
 		}
@@ -57,7 +57,7 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		List<String> valueList = new ArrayList<String>();
 		
 		String sql = null;
-		if ("NDC".equals(concept.getVocabulary())) {
+		if ("NDC".equals(concept.getVocabularyId())) {
 			// Use JPQL
 			sql = "select c "
 					+ "FROM Concept src "
@@ -74,7 +74,7 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 			        + "AND c.vocabulary = 'RxNorm' "
 			        + "AND c.conceptClass = 'Ingredient' "
 			        + "AND src.invalidReason is null";
-		} else if ("RxNorm".equals(concept.getVocabulary())) {
+		} else if ("RxNorm".equals(concept.getVocabularyId())) {
 			// when RxNorm.
 			sql = "select c "
 					+ "FROM Concept src " 

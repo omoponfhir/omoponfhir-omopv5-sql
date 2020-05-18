@@ -43,14 +43,23 @@ public class DeviceExposure extends BaseEntity {
 	@Column(name="device_exposure_start_date", nullable=false)
 	private Date deviceExposureStartDate;
 	
+	@Column(name="device_exposure_start_datetime")
+	private Date deviceExposureStartDateTime;
+
 	@Column(name="device_exposure_end_date")
 	private Date deviceExposureEndDate;
+	
+	@Column(name="device_exposure_end_datetime")
+	private Date deviceExposureEndDateTime;
+	
+	@JoinColumn(name="device_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept deviceTypeConcept;
 	
 	@Column(name="unique_device_id")
 	private String uniqueDeviceId;
 	
-	@JoinColumn(name="device_type_concept_id", referencedColumnName="concept_id", nullable=false)
-	private Concept deviceTypeConcept;
+	@Column(name="quantity")
+	private Integer quantity;
 	
 	@JoinColumn(name="provider_id")
 	private Provider provider;
@@ -58,14 +67,14 @@ public class DeviceExposure extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id")
-	private Concept deviceSourceConcept;
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
 	
 	@Column(name="device_source_value")
 	private String deviceSourceValue;
 	
-	@Column(name="quantity")
-	private Integer quantity;
+	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id")
+	private Concept deviceSourceConcept;
 	
 	public Long getId() {
 		return id;
@@ -99,12 +108,28 @@ public class DeviceExposure extends BaseEntity {
 		this.deviceExposureStartDate = deviceExposureStartDate;
 	}
 	
+	public Date getDeviceExposureStartDateTime () {
+		return deviceExposureStartDateTime;
+	}
+	
+	public void setDeviceExposureStartDateTime (Date deviceExposureStartDateTime) {
+		this.deviceExposureStartDateTime = deviceExposureStartDateTime;
+	}
+	
 	public Date getDeviceExposureEndDate () {
 		return deviceExposureEndDate;
 	}
 	
 	public void setDeviceExposureEndDate (Date deviceExposureEndDate) {
 		this.deviceExposureEndDate = deviceExposureEndDate;
+	}
+	
+	public Date getDeviceExposureEndDateTime () {
+		return deviceExposureEndDateTime;
+	}
+	
+	public void setDeviceExposureEndDateTime (Date deviceExposureEndDateTime) {
+		this.deviceExposureEndDateTime = deviceExposureEndDateTime;
 	}
 	
 	public String getUniqueDeviceId () {
@@ -123,6 +148,14 @@ public class DeviceExposure extends BaseEntity {
 		this.deviceTypeConcept = deviceTypeConcept;
 	}
 	
+	public Integer getQuantity() {
+		return this.quantity;
+	}
+	
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+	
 	public Provider getProvider () {
 		return provider;
 	}
@@ -139,6 +172,14 @@ public class DeviceExposure extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
+	public VisitDetail getVisitDetail () {
+		return visitDetail;
+	}
+	
+	public void setVisitDetail (VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
+	
 	public Concept getDeviceSourceConcept () {
 		return this.deviceSourceConcept;
 	}
@@ -153,14 +194,6 @@ public class DeviceExposure extends BaseEntity {
 	
 	public void setDeviceSourceValue (String deviceSourceValue) {
 		this.deviceSourceValue = deviceSourceValue;
-	}
-	
-	public Integer getQuantity() {
-		return this.quantity;
-	}
-	
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
 	}
 	
 	@Override
@@ -251,7 +284,8 @@ public class DeviceExposure extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("deviceConcept".equals(foreignVariable) || "deviceTypeConcept".equals(foreignVariable)
+		if ("deviceConcept".equals(foreignVariable) 
+				|| "deviceTypeConcept".equals(foreignVariable)
 				|| "deviceSourceConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
@@ -263,6 +297,9 @@ public class DeviceExposure extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

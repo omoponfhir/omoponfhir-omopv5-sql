@@ -41,16 +41,16 @@ public class VisitOccurrence extends BaseEntity {
 	private Concept visitConcept;
 	
 	@Column(name="visit_start_date", nullable=false)
-	private Date startDate;
+	private Date visitStartDate;
 	
-	@Column(name="visit_start_time")
-	private String startTime;
+	@Column(name="visit_start_datetime")
+	private Date visitStartDateTime;
 	
 	@Column(name="visit_end_date", nullable=false)
-	private Date endDate;
+	private Date visitEndDate;
 
-	@Column(name="visit_end_time")
-	private String endTime;
+	@Column(name="visit_end_datetime")
+	private Date visitEndDateTime;
 	
 	@JoinColumn(name="visit_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept visitTypeConcept;
@@ -67,6 +67,20 @@ public class VisitOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_source_concept_id", referencedColumnName="concept_id")
 	private Concept visitSourceConcept;
 	
+	@JoinColumn(name="admitting_source_concept_id", referencedColumnName="concept_id")
+	private Concept admittingSourceConcept;
+	
+	@Column(name="admitting_source_value")
+	private String admittingSourceValue;
+	
+	@JoinColumn(name="discharge_to_concept_id", referencedColumnName="concept_id")
+	private Concept dischargeToConcept;
+	
+	@Column(name="discharge_to_source_value")
+	private String dischargeToSourceValue;
+	
+	@JoinColumn(name="preceding_visit_occurrence_id", referencedColumnName="visit_occurrence_id")
+	private VisitOccurrence precedingVisitOccurrence;
 
 	public VisitOccurrence() {
 	}
@@ -99,36 +113,36 @@ public class VisitOccurrence extends BaseEntity {
 		this.visitConcept = visitConcept;
 	}
 	
-	public Date getStartDate() {
-		return startDate;
+	public Date getVisitStartDate() {
+		return visitStartDate;
 	}
 	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setVisitStartDate(Date visitStartDate) {
+		this.visitStartDate = visitStartDate;
 	}
 	
-	public String getStartTime() {
-		return startTime;
+	public Date getVisitStartDateTime() {
+		return visitStartDateTime;
 	}
 	
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
+	public void setVisitStartDateTime(Date visitStartDateTime) {
+		this.visitStartDateTime = visitStartDateTime;
 	}
 	
-	public Date getEndDate() {
-		return endDate;
+	public Date getVisitEndDate() {
+		return visitEndDate;
 	}
 	
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setVisitEndDate(Date visitEndDate) {
+		this.visitEndDate = visitEndDate;
 	}
 	
-	public String getEndTime() {
-		return endTime;
+	public Date getVisitEndDateTime() {
+		return visitEndDateTime;
 	}
 	
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
+	public void setVisitEndDateTime(Date visitEndDateTime) {
+		this.visitEndDateTime = visitEndDateTime;
 	}
 	
 	public Concept getVisitTypeConcept() {
@@ -169,6 +183,46 @@ public class VisitOccurrence extends BaseEntity {
 	
 	public void setVisitSourceConcept(Concept visitSourceConcept) {
 		this.visitSourceConcept = visitSourceConcept;
+	}
+
+	public Concept getAdmittingSourceConcept() {
+		return admittingSourceConcept;
+	}
+	
+	public void setAdmittingSourceConcept(Concept admittingSourceConcept) {
+		this.admittingSourceConcept = admittingSourceConcept;
+	}
+	
+	public String getAdmittingSourceValue() {
+		return admittingSourceValue;
+	}
+	
+	public void setAdmittingSourceValue(String admittingSourceValue) {
+		this.admittingSourceValue = admittingSourceValue;
+	}
+	
+	public Concept getDischargeToConcept() {
+		return dischargeToConcept;
+	}
+	
+	public void setDischargeToConcept(Concept dischargeToConcept) {
+		this.dischargeToConcept = dischargeToConcept;
+	}
+	
+	public String getDischargeToSourceValue() {
+		return dischargeToSourceValue;
+	}
+	
+	public void setDischargeToSourceValue(String dischargeToSourceValue) {
+		this.dischargeToSourceValue = dischargeToSourceValue;
+	}
+	
+	public VisitOccurrence getPrecedingVisitOccurrence() {
+		return precedingVisitOccurrence;
+	}
+
+	public void setPrecedingVisitOccurrence(VisitOccurrence precedingVisitOccurrence) {
+		this.precedingVisitOccurrence = precedingVisitOccurrence;
 	}
 
 	@Override
@@ -259,8 +313,11 @@ public class VisitOccurrence extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("visitConcept".equals(foreignVariable) || "visitTypeConcept".equals(foreignVariable)
-				|| "visitSourceConcept".equals(foreignVariable))
+		if ("visitConcept".equals(foreignVariable) 
+				|| "visitTypeConcept".equals(foreignVariable)
+				|| "visitSourceConcept".equals(foreignVariable)
+				|| "admittingSourceConcept".equals(foreignVariable)
+				|| "dischargeToConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))
@@ -271,6 +328,9 @@ public class VisitOccurrence extends BaseEntity {
 
 		if ("careSite".equals(foreignVariable))
 			return CareSite._getTableName();
+
+		if ("precedingVisitOccurrence".equals(foreignVariable))
+			return VisitOccurrence._getTableName();
 
 		return null;
 	}

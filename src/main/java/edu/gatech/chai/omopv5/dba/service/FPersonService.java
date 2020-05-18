@@ -127,8 +127,8 @@ public interface FPersonService extends IService<FPerson> {
 					fPerson.setDayOfBirth(rs.getInt(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase("person_time_of_birth")) {
-					fPerson.setTimeOfBirth(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
+					fPerson.setBirthDateTime(rs.getDate(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {

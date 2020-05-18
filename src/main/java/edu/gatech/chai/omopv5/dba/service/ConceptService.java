@@ -62,15 +62,15 @@ public interface ConceptService extends IService<Concept> {
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_name")) {
-					concept.setName(rs.getString(columnInfo));
+					concept.setConceptName(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_domain_id")) {
-					concept.setDomain(rs.getString(columnInfo));
+					concept.setDomainId(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_class_id")) {
-					concept.setConceptClass(rs.getString(columnInfo));
+					concept.setConceptClassId(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_standard_concept")) {
@@ -83,7 +83,7 @@ public interface ConceptService extends IService<Concept> {
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
-					concept.setVocabulary(rs.getString(columnInfo));
+					concept.setVocabularyId(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_code")) {

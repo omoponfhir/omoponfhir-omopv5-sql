@@ -51,9 +51,9 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 					conditionOccurrence.setFPerson(fPerson);
 				}
 
-				if (columnInfo.equalsIgnoreCase("conceptId_concept_id")) {
-					Concept conceptId = ConceptService._construct(rs, null, "conceptId");
-					conditionOccurrence.setConceptId(conceptId);
+				if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
+					Concept conditionConcept = ConceptService._construct(rs, null, "conditionConcept");
+					conditionOccurrence.setConditionConcept(conditionConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
@@ -64,9 +64,9 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 					conditionOccurrence.setEndDate(rs.getDate(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase("typeConceptId_concept_id")) {
-					Concept typeConceptId = ConceptService._construct(rs, null, "typeConceptId");
-					conditionOccurrence.setTypeConceptId(typeConceptId);
+				if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
+					Concept conditionTypeConcept = ConceptService._construct(rs, null, "conditionTypeConcept");
+					conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
@@ -87,9 +87,9 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 					conditionOccurrence.setConditionSourceValue(rs.getString(columnInfo));
 				}
 
-				if (columnInfo.equalsIgnoreCase("sourceConceptId_concept_id")) {
-					Concept sourceConceptId = ConceptService._construct(rs, null, "sourceConceptId");
-					conditionOccurrence.setSourceConceptId(sourceConceptId);
+				if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
+					Concept conditionSourceConcept = ConceptService._construct(rs, null, "conditionSourceConcept");
+					conditionOccurrence.setConditionSourceConcept(conditionSourceConcept);
 				}
 			}
 		} catch (SQLException e) {

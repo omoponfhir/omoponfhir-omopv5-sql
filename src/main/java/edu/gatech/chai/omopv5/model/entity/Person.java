@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.model.entity;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
@@ -46,8 +47,8 @@ public class Person extends BaseEntity {
 	@Column(name = "day_of_birth")
 	private Integer dayOfBirth;
 
-	@Column(name = "time_of_birth")
-	private String timeOfBirth;
+	@Column(name = "birth_datetime")
+	private Date birthDateTime;
 
 	@JoinColumn(name = "race_concept_id", referencedColumnName="concept_id", nullable = false)
 	private Concept raceConcept;
@@ -97,7 +98,7 @@ public class Person extends BaseEntity {
 	}
 
 	public Person(Long id, Concept genderConcept, Integer yearOfBirth, Integer monthOfBirth, Integer dayOfBirth,
-			String timeOfBirth, Concept raceConcept, Concept ethnicityConcept, Location location, Provider provider,
+			Date birthDateTime, Concept raceConcept, Concept ethnicityConcept, Location location, Provider provider,
 			CareSite careSite, String personSourceValue, String genderSourceValue, Concept genderSourceConcept,
 			String raceSourceValue, Concept raceSourceConcept, String ethnicitySourceValue,
 			Concept ethnicitySourceConcept) {
@@ -107,7 +108,7 @@ public class Person extends BaseEntity {
 		this.yearOfBirth = yearOfBirth;
 		this.monthOfBirth = monthOfBirth;
 		this.dayOfBirth = dayOfBirth;
-		this.timeOfBirth = timeOfBirth;
+		this.birthDateTime = birthDateTime;
 		this.raceConcept = raceConcept;
 		this.ethnicityConcept = ethnicityConcept;
 		this.location = location;
@@ -162,12 +163,12 @@ public class Person extends BaseEntity {
 		this.dayOfBirth = dayOfBirth;
 	}
 
-	public String getTimeOfBirth() {
-		return timeOfBirth;
+	public Date getBirthDateTime() {
+		return birthDateTime;
 	}
 
-	public void setTimeOfBirth(String timeOfBirth) {
-		this.timeOfBirth = timeOfBirth;
+	public void setBirthDateTime(Date birthDateTime) {
+		this.birthDateTime = birthDateTime;
 	}
 
 	public Concept getRaceConcept() {
@@ -326,16 +327,19 @@ public class Person extends BaseEntity {
 	@Override
 	public String toString() {
 		String out = "" + "person_id: " + this.getId() + "\n" + "gender_concept_id: "
-				+ (this.getGenderConcept() == null ? "\n" : this.getGenderConcept().getName() + "\n");
+				+ (this.getGenderConcept() == null ? "\n" : this.getGenderConcept().getConceptName() + "\n");
 
 		return out;
 	}
 
 	@Override
 	public String getForeignTableName(String foreignVariable) {
-		if ("genderConcept".equals(foreignVariable) || "raceConcept".equals(foreignVariable)
-				|| "ethnicityConcept".equals(foreignVariable) || "genderSourceConcept".equals(foreignVariable)
-				|| "raceSourceConcept".equals(foreignVariable) || "ethnicitySourceConcept".equals(foreignVariable))
+		if ("genderConcept".equals(foreignVariable) 
+				|| "raceConcept".equals(foreignVariable)
+				|| "ethnicityConcept".equals(foreignVariable) 
+				|| "genderSourceConcept".equals(foreignVariable)
+				|| "raceSourceConcept".equals(foreignVariable) 
+				|| "ethnicitySourceConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("location".equals(foreignVariable))

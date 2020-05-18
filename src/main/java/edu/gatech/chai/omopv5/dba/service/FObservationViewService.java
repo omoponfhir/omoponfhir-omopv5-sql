@@ -27,6 +27,7 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Provider;
+import edu.gatech.chai.omopv5.model.entity.VisitDetail;
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
 // TODO: Auto-generated Javadoc
@@ -74,11 +75,15 @@ public interface FObservationViewService extends IService<FObservationView> {
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
-					fObservationView.setDate(rs.getDate(columnInfo));
+					fObservationView.setObservationDate(rs.getDate(columnInfo));
 				}
 				
+				if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
+					fObservationView.setObservationDateTime(rs.getDate(columnInfo));
+				}
+
 				if (columnInfo.equalsIgnoreCase(alias + "_observation_time")) {
-					fObservationView.setTime(rs.getString(columnInfo));
+					fObservationView.setObservationTime(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
@@ -94,9 +99,9 @@ public interface FObservationViewService extends IService<FObservationView> {
 					fObservationView.setValueAsConcept(valueAsConcept);
 				}
 
-				if (columnInfo.equalsIgnoreCase("typeConcept_concept_id")) {
-					Concept typeConcept = ConceptService._construct(rs, null, "typeConcept");
-					fObservationView.setTypeConcept(typeConcept);
+				if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
+					Concept observationTypeConcept = ConceptService._construct(rs, null, "observationTypeConcept");
+					fObservationView.setObservationTypeConcept(observationTypeConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
@@ -109,13 +114,18 @@ public interface FObservationViewService extends IService<FObservationView> {
 					fObservationView.setVisitOccurrence(visitOccurrence);
 				}
 
-				if (columnInfo.equalsIgnoreCase(alias + "_source_value")) {
-					fObservationView.setSourceValue(rs.getString(columnInfo));
+				if (columnInfo.equalsIgnoreCase("visitDetail_visit_detail_id")) {
+					VisitDetail visitDetail = VisitDetailService._construct(rs, null, "visitDetail");
+					fObservationView.setVisitDetail(visitDetail);
 				}
 
-				if (columnInfo.equalsIgnoreCase("sourceConcept_concept_id")) {
-					Concept sourceConcept = ConceptService._construct(rs, null, "sourceConcept");
-					fObservationView.setSourceConcept(sourceConcept);
+				if (columnInfo.equalsIgnoreCase(alias + "_observation_source_value")) {
+					fObservationView.setObservationSourceValue(rs.getString(columnInfo));
+				}
+
+				if (columnInfo.equalsIgnoreCase("observationSourceConcept_concept_id")) {
+					Concept observationSourceConcept = ConceptService._construct(rs, null, "observationSourceConcept");
+					fObservationView.setObservationSourceConcept(observationSourceConcept);
 				}
 
 				if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
@@ -148,9 +158,9 @@ public interface FObservationViewService extends IService<FObservationView> {
 					fObservationView.setValueSourceValue(rs.getString(columnInfo));
 				}				
 
-				if (columnInfo.equalsIgnoreCase("operatorConcept_concept_id")) {
-					Concept operatorConcept = ConceptService._construct(rs, null, "operatorConcept");
-					fObservationView.setOperatorConcept(operatorConcept);
+				if (columnInfo.equalsIgnoreCase("observationOperatorConcept_concept_id")) {
+					Concept observationOperatorConcept = ConceptService._construct(rs, null, "observationOperatorConcept");
+					fObservationView.setObservationOperatorConcept(observationOperatorConcept);
 				}
 
 			}

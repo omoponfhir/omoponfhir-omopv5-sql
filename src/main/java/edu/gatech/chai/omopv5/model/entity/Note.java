@@ -38,22 +38,37 @@ public class Note extends BaseEntity {
 	private FPerson fPerson;
 	
 	@Column(name="note_date", nullable=false)
-	private Date date;
+	private Date noteDate;
 	
-	@Column(name="note_time")
-	private String time;
+	@Column(name="note_datetime")
+	private Date noteDateTime;
 	
 	@JoinColumn(name="note_type_concept_id", referencedColumnName="concept_id", nullable=false)
-	private Concept typeConcept;
+	private Concept noteTypeConcept;
 	
-	@Column(name="note_text", nullable=false)
+	@JoinColumn(name="note_class_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept noteClassConcept;
+
+	@Column(name="note_title")
+	private String noteTitle;
+
+	@Column(name="note_text")
 	private String noteText;
+
+	@JoinColumn(name="encoding_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept encodingConcept;
+
+	@JoinColumn(name="language_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept languageConcept;
 
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
+	
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
 	
 	@Column(name="note_source_value")
 	private String noteSourceValue;
@@ -83,28 +98,44 @@ public class Note extends BaseEntity {
 		this.fPerson = fPerson;
 	}
 	
-	public Date getDate() {
-		return date;
+	public Date getNoteDate() {
+		return noteDate;
 	}
 	
-	public void setDate(Date date) {
-		this.date = date;
+	public void setNoteDate(Date noteDate) {
+		this.noteDate = noteDate;
 	}
 
-	public String getTime() {
-		return time;
+	public Date getNoteDateTime() {
+		return noteDateTime;
 	}
 	
-	public void setTime(String time) {
-		this.time = time;
+	public void setNoteDateTime(Date noteDateTime) {
+		this.noteDateTime = noteDateTime;
 	}
 	
-	public Concept getType() {
-		return typeConcept;
+	public Concept getNoteTypeConcept() {
+		return noteTypeConcept;
 	}
 	
-	public void setType(Concept typeConcept) {
-		this.typeConcept = typeConcept;
+	public void setNoteTypeConcept(Concept noteTypeConcept) {
+		this.noteTypeConcept = noteTypeConcept;
+	}
+	
+	public Concept getNoteClassConcept() {
+		return noteClassConcept;
+	}
+	
+	public void setNoteClassConcept(Concept noteClassConcept) {
+		this.noteClassConcept = noteClassConcept;
+	}
+	
+	public String getNoteTitle() {
+		return noteTitle;
+	}
+	
+	public void setNoteTitle(String noteTitle) {
+		this.noteTitle = noteTitle;
 	}
 	
 	public String getNoteText() {
@@ -113,6 +144,22 @@ public class Note extends BaseEntity {
 	
 	public void setNoteText(String noteText) {
 		this.noteText = noteText;
+	}
+	
+	public Concept getEncodingConcept() {
+		return encodingConcept;
+	}
+	
+	public void setEncodingConcept(Concept encodingConcept) {
+		this.encodingConcept = encodingConcept;
+	}
+	
+	public Concept getLanguageConcept() {
+		return languageConcept;
+	}
+	
+	public void setLanguageConcept(Concept languageConcept) {
+		this.languageConcept = languageConcept;
 	}
 	
 	public Provider getProvider() {
@@ -129,6 +176,14 @@ public class Note extends BaseEntity {
 	
 	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
 		this.visitOccurrence = visitOccurrence;
+	}
+	
+	public VisitDetail getVisitDetail() {
+		return visitDetail;
+	}
+	
+	public void setVisitDetail(VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
 	}
 	
 	public String getNoteSourceValue() {
@@ -218,7 +273,10 @@ public class Note extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("typeConcept".equals(foreignVariable))
+		if ("noteTypeConcept".equals(foreignVariable)
+				|| "noteClassConcept".equals(foreignVariable)
+				|| "encodingConcept".equals(foreignVariable)
+				|| "languageConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))
@@ -229,6 +287,9 @@ public class Note extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

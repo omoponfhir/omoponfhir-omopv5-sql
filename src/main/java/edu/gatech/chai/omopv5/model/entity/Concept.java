@@ -32,19 +32,19 @@ public class Concept extends BaseEntity {
 	private Long id;
 
 	@Column(name="concept_name", nullable=false)
-	private String name;
+	private String conceptName;
 	
 	@Column(name="domain_id", nullable=false)
-	private String domain;
+	private String domainId;
 	
 	@Column(name="concept_class_id", nullable=false)
-	private String conceptClass;
+	private String conceptClassId;
 	
 	@Column(name="standard_concept")
 	private Character standardConcept;
 	
 	@Column(name="vocabulary_id", nullable=false)
-	private String vocabulary;
+	private String vocabularyId;
 
 	@Column(name="concept_code", nullable=false)
 	private String conceptCode;
@@ -67,21 +67,21 @@ public class Concept extends BaseEntity {
 		this.id = id;
 	}
 
-	public Concept(Long id, String name) {
+	public Concept(Long id, String conceptName) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.conceptName = conceptName;
 	}
 
-	public Concept(Long id, String name, String domain, String conceptClass, Character standardConcept,
-			String vocabulary, String conceptCode, Date validStartDate, Date validEndDate, String invalidReason) {
+	public Concept(Long id, String conceptName, String domainId, String conceptClassId, Character standardConcept,
+			String vocabularyId, String conceptCode, Date validStartDate, Date validEndDate, String invalidReason) {
 		super();
 		this.id = id;
-		this.name = name;
-		this.domain = domain;
-		this.conceptClass = conceptClass;
+		this.conceptName = conceptName;
+		this.domainId = domainId;
+		this.conceptClassId = conceptClassId;
 		this.standardConcept = standardConcept;
-		this.vocabulary = vocabulary;
+		this.vocabularyId = vocabularyId;
 		this.conceptCode = conceptCode;
 		this.validStartDate = validStartDate;
 		this.validEndDate = validEndDate;
@@ -96,28 +96,28 @@ public class Concept extends BaseEntity {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getConceptName() {
+		return conceptName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setConceptName(String conceptName) {
+		this.conceptName = conceptName;
 	}
 
-	public String getDomain() {
-		return domain;
+	public String getDomainId() {
+		return domainId;
 	}
 
-	public void setDomain(String domain) {
-		this.domain = domain;
+	public void setDomainId(String domainId) {
+		this.domainId = domainId;
 	}
 
-	public String getConceptClass() {
-		return conceptClass;
+	public String getConceptClassId() {
+		return conceptClassId;
 	}
 
-	public void setConceptClass(String conceptClass) {
-		this.conceptClass = conceptClass;
+	public void setConceptClassId(String conceptClassId) {
+		this.conceptClassId = conceptClassId;
 	}
 
 	public Character getStandardConcept() {
@@ -128,12 +128,12 @@ public class Concept extends BaseEntity {
 		this.standardConcept = standardConcept;
 	}
 
-	public String getVocabulary() {
-		return vocabulary;
+	public String getVocabularyId() {
+		return vocabularyId;
 	}
 
-	public void setVocabulary(String vocabulary) {
-		this.vocabulary = vocabulary;
+	public void setVocabularyId(String vocabularyId) {
+		this.vocabularyId = vocabularyId;
 	}
 
 	public String getConceptCode() {
@@ -172,8 +172,8 @@ public class Concept extends BaseEntity {
 	public String toString() {
 		// Since this is an omop v.4 based model, all the information below is expected
 		// to be not null.
-		return this.getId() + ", " + this.getName() + ", " + this.getDomain() + ", " + this.getConceptClass() + ", "
-				+ this.getStandardConcept() + ", " + this.getVocabulary() + ", " + this.getConceptCode() + ", "
+		return this.getId() + ", " + this.getConceptName() + ", " + this.getDomainId() + ", " + this.getConceptClassId() + ", "
+				+ this.getStandardConcept() + ", " + this.getVocabularyId() + ", " + this.getConceptCode() + ", "
 				+ this.getValidStartDate() + ", " + this.getValidEndDate();
 	}
 

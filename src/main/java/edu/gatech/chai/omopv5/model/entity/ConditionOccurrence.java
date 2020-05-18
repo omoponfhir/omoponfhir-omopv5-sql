@@ -38,17 +38,23 @@ public class ConditionOccurrence extends BaseEntity {
 	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="condition_concept_id", referencedColumnName="concept_id", table="concept")
-	private Concept conceptId;
+	@JoinColumn(name="condition_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	private Concept conditionConcept;
 	
-	@Column(name="condition_start_date")
-	private Date startDate;
+	@Column(name="condition_start_date", nullable=false)
+	private Date conditionStartDate;
 	
+	@Column(name="condition_start_datetime")
+	private Date conditionStartDateTime;
+
 	@Column(name="condition_end_date")
-	private Date endDate;
+	private Date conditionEndDate;
 	
-	@JoinColumn(name="condition_type_concept_id")
-	private Concept typeConceptId;
+	@Column(name="condition_end_datetime")
+	private Date conditionEndDateTime;
+
+	@JoinColumn(name="condition_type_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	private Concept conditionTypeConcept;
 	
 	@Column(name="stop_reason")
 	private String stopReason;
@@ -59,11 +65,20 @@ public class ConditionOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id", table="visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 
+	@JoinColumn(name="visit_detail_id", table="visit_detail")
+	private VisitDetail visitDetail;
+
 	@Column(name="condition_source_value")
 	private String conditionSourceValue;
 
 	@JoinColumn(name="condition_source_concept_id", referencedColumnName="concept_id", table="concept")
-	private Concept sourceConceptId;
+	private Concept conditionSourceConcept;
+
+	@Column(name="condition_status_source_value")
+	private String conditionStatusSourceValue;
+	
+	@JoinColumn(name="condition_status_concept_id", referencedColumnName="concept_id", table="concept")
+	private Concept conditionStatusConcept;
 
 	public Long getId() {
 		return id;
@@ -81,36 +96,52 @@ public class ConditionOccurrence extends BaseEntity {
 		this.fPerson = fPerson;
 	}
 
-	public Concept getConceptId() {
-		return conceptId;
+	public Concept getConditionConcept() {
+		return conditionConcept;
 	}
 
-	public void setConceptId(Concept conceptId) {
-		this.conceptId = conceptId;
+	public void setConditionConcept(Concept conditionConcept) {
+		this.conditionConcept = conditionConcept;
 	}
 
 	public Date getStartDate() {
-		return startDate;
+		return conditionStartDate;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setStartDate(Date conditionStartDate) {
+		this.conditionStartDate = conditionStartDate;
+	}
+
+	public Date getStartDateTime() {
+		return conditionStartDateTime;
+	}
+	
+	public void setStartDateTime(Date conditionStartDateTime) {
+		this.conditionStartDateTime = conditionStartDateTime;
 	}
 
 	public Date getEndDate() {
-		return endDate;
+		return conditionEndDate;
 	}
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setEndDate(Date conditionEndDate) {
+		this.conditionEndDate = conditionEndDate;
 	}
 
-	public Concept getTypeConceptId() {
-		return typeConceptId;
+	public Date getEndDateTime() {
+		return conditionEndDateTime;
+	}
+	
+	public void setEndDateTime(Date conditionEndDateTime) {
+		this.conditionEndDateTime = conditionEndDateTime;
+	}
+	
+	public Concept getConditionTypeConcept() {
+		return conditionTypeConcept;
 	}
 
-	public void setTypeConceptId(Concept typeConceptId) {
-		this.typeConceptId = typeConceptId;
+	public void setConditionTypeConcept(Concept conditionTypeConcept) {
+		this.conditionTypeConcept = conditionTypeConcept;
 	}
 
 	public String getStopReason() {
@@ -136,6 +167,14 @@ public class ConditionOccurrence extends BaseEntity {
 	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
 		this.visitOccurrence = visitOccurrence;
 	}
+	
+	public VisitDetail getVisitDetail() {
+		return visitDetail;
+	}
+	
+	public void setVisitDetail(VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
 
 	public String getConditionSourceValue() {
 		return conditionSourceValue;
@@ -145,14 +184,30 @@ public class ConditionOccurrence extends BaseEntity {
 		this.conditionSourceValue = conditionSourceValue;
 	}
 
-	public Concept getSourceConceptId() {
-		return sourceConceptId;
+	public Concept getConditionSourceConcept() {
+		return conditionSourceConcept;
 	}
 
-	public void setSourceConceptId(Concept sourceConceptId) {
-		this.sourceConceptId = sourceConceptId;
+	public void setConditionSourceConcept(Concept conditionSourceConcept) {
+		this.conditionSourceConcept = conditionSourceConcept;
 	}
 
+	public String getConditionStatusSourceValue() {
+		return conditionStatusSourceValue;
+	}
+	
+	public void setConditionStatusSourceValue(String conditionStatusSourceValue) {
+		this.conditionStatusSourceValue = conditionStatusSourceValue;
+	}
+	
+	public Concept getStatusConcept() {
+		return conditionStatusConcept;
+	}
+	
+	public void setStatusConcept(Concept conditionStatusConcept) {
+		this.conditionStatusConcept = conditionStatusConcept;
+	}
+	
 	@Override
 	public Long getIdAsLong() {
 		return getId();
@@ -242,11 +297,19 @@ public class ConditionOccurrence extends BaseEntity {
 		if ("fPerson".equals(foreignVariable))
 			return FPerson._getTableName();
 		
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
+		
+		if ("provider".equals(foreignVariable))
+			return Provider._getTableName();
+		
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
 		
-		if ("conceptId".equals(foreignVariable) || "typeConceptId".equals(foreignVariable)
-				|| "sourceConceptId".equals(foreignVariable))
+		if ("conditionConcept".equals(foreignVariable) 
+				|| "conditionTypeConcept".equals(foreignVariable)
+				|| "conditionSourceConcept".equals(foreignVariable)
+				|| "conditionStatusConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		return null;

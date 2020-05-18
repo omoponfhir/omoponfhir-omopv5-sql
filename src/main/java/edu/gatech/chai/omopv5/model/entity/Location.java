@@ -48,6 +48,9 @@ public class Location extends BaseEntity {
 	@Column(name="zip")
 	private String zipCode;
 	
+	@Column(name="county")
+	private String county;
+	
 	@Column(name="location_source_value")
 	private String locationSourceValue;
 
@@ -107,6 +110,14 @@ public class Location extends BaseEntity {
 
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
+	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public void setCounty(String county) {
+		this.county = county;
 	}
 
 	public String getLocationSourceValue() {

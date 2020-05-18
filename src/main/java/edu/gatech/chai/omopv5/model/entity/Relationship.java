@@ -15,7 +15,7 @@ public class Relationship extends BaseEntity {
 	private String id;
 	
 	@Column(name="relationship_name", nullable=false)
-	private String name;
+	private String relationshipName;
 	
 	@Column(name="is_hierarchical", nullable=false)
 	private Character isHierarchical;
@@ -41,12 +41,12 @@ public class Relationship extends BaseEntity {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getRelationshipName() {
+		return relationshipName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setRelationshipName(String relationshipName) {
+		this.relationshipName = relationshipName;
 	}
 
 	public Character getIsHierarchical() {

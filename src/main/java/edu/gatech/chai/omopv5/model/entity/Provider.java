@@ -292,8 +292,10 @@ public class Provider extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("specialtyConcept".equals(foreignVariable) || "genderConcept".equals(foreignVariable)
-				|| "specialtySourceConcept".equals(foreignVariable) || "genderSourceConcept".equals(foreignVariable))
+		if ("specialtyConcept".equals(foreignVariable) 
+				|| "genderConcept".equals(foreignVariable)
+				|| "specialtySourceConcept".equals(foreignVariable) 
+				|| "genderSourceConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("careSite".equals(foreignVariable))

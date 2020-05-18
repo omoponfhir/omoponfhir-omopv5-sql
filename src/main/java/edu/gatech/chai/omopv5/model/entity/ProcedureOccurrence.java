@@ -44,6 +44,9 @@ public class ProcedureOccurrence extends BaseEntity {
 	@Column(name="procedure_date", nullable=false)
 	private Date procedureDate;
 	
+	@Column(name="procedure_datetime")
+	private Date procedureDateTime;
+	
 	@JoinColumn(name="procedure_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept procedureTypeConcept;
 	
@@ -59,14 +62,17 @@ public class ProcedureOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
+	
 	@Column(name="procedure_source_value")
 	private String procedureSourceValue;
 	
 	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id")
 	private Concept procedureSourceConcept;
 	
-	@Column(name="qualifier_source_value")
-	private String qualifierSourceValue;
+	@Column(name="modifier_source_value")
+	private String modifierSourceValue;
 
 	public ProcedureOccurrence() {
 		super();
@@ -109,6 +115,14 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.procedureDate = procedureDate;
 	}
 
+	public Date getProcedureDateTime() {
+		return procedureDateTime;
+	}
+
+	public void setProcedureDateTime(Date procedureDateTime) {
+		this.procedureDateTime = procedureDateTime;
+	}
+
 	public Concept getProcedureTypeConcept() {
 		return procedureTypeConcept;
 	}
@@ -149,6 +163,14 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 
+	public VisitDetail getVisitDetail() {
+		return visitDetail;
+	}
+
+	public void setVisitDetail(VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
+
 	public String getProcedureSourceValue() {
 		return procedureSourceValue;
 	}
@@ -165,12 +187,12 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.procedureSourceConcept = procedureSourceConcept;
 	}
 
-	public String getQualifierSourceValue() {
-		return qualifierSourceValue;
+	public String getModifierSourceValue() {
+		return modifierSourceValue;
 	}
 	
-	public void setQualifierSourceValue(String qualifierSourceValue) {
-		this.qualifierSourceValue = qualifierSourceValue;
+	public void setModifierSourceValue(String modifierSourceValue) {
+		this.modifierSourceValue = modifierSourceValue;
 	}
 
 	@Override
@@ -261,8 +283,10 @@ public class ProcedureOccurrence extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("procedureConcept".equals(foreignVariable) || "procedureTypeConcept".equals(foreignVariable)
-				|| "modifierConcept".equals(foreignVariable) || "procedureSourceConcept".equals(foreignVariable))
+		if ("procedureConcept".equals(foreignVariable) 
+				|| "procedureTypeConcept".equals(foreignVariable)
+				|| "modifierConcept".equals(foreignVariable) 
+				|| "procedureSourceConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))
@@ -273,6 +297,9 @@ public class ProcedureOccurrence extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

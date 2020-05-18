@@ -37,14 +37,23 @@ public class Measurement extends BaseEntity {
 	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@Column(name="measurement_source_value")
-	private String sourceValue;
-	
-	@JoinColumn(name="measurement_source_concept_id", referencedColumnName="concept_id")
-	private Concept sourceValueConcept;
-	
 	@JoinColumn(name="measurement_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept measurementConcept;
+	
+	@Column(name="measurement_date", nullable=false)
+	private Date measurementDate;
+	
+	@Column(name="measurement_datetime")
+	private Date measurementDateTime;
+	
+	@Column(name="measurement_time")
+	private String measurementTime;
+	
+	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept measurementTypeConcept;
+
+	@JoinColumn(name="operator_concept_id", referencedColumnName="concept_id")
+	private Concept operatorConcept;
 	
 	@Column(name="value_as_number")
 	private Double valueAsNumber;
@@ -52,17 +61,8 @@ public class Measurement extends BaseEntity {
 	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
 	private Concept valueAsConcept;
 	
-	@Column(name="value_source_value")
-	private String valueSourceValue;
-	
-	@JoinColumn(name="operator_concept_id", referencedColumnName="concept_id")
-	private Concept operatorConcept;
-	
 	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
 	private Concept unitConcept;
-	
-	@Column(name="unit_source_value")
-	private String unitSourceValue;
 	
 	@Column(name="range_low")
 	private Double rangeLow;
@@ -73,18 +73,24 @@ public class Measurement extends BaseEntity {
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
-	@Column(name="measurement_date", nullable=false)
-	private Date date;
-	
-	@Column(name="measurement_time")
-	private String time;
-	
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
-	private Concept type;
-
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
+	
+	@Column(name="measurement_source_value")
+	private String measurementSourceValue;
+	
+	@JoinColumn(name="measurement_source_concept_id", referencedColumnName="concept_id")
+	private Concept measurementSourceConcept;
+	
+	@Column(name="unit_source_value")
+	private String unitSourceValue;
+	
+	@Column(name="value_source_value")
+	private String valueSourceValue;
+	
 	public Long getId() {
 		return id;
 	}
@@ -101,20 +107,44 @@ public class Measurement extends BaseEntity {
 		this.fPerson = fPerson;
 	}
 	
-	public String getSourceValue() {
-		return sourceValue;
+	public Concept getMeasurementConcept() {
+		return measurementConcept;
 	}
 	
-	public void setSourceValue(String sourceValue) {
-		this.sourceValue = sourceValue;
-	}
-
-	public Concept getSourceValueConcept() {
-		return sourceValueConcept;
+	public void setMeasurementConcept(Concept measurementConcept) {
+		this.measurementConcept = measurementConcept;
 	}
 	
-	public void setSourceValueConcept(Concept sourceValueConcept) {
-		this.sourceValueConcept = sourceValueConcept;
+	public Date getMeasurementDate() {
+		return measurementDate;
+	}
+	
+	public void setMeasurementDate(Date measurementDate) {
+		this.measurementDate = measurementDate;
+	}
+	
+	public Date getMeasurementDateTime() {
+		return measurementDateTime;
+	}
+	
+	public void setMeasurementDateTime(Date measurementDateTime) {
+		this.measurementDateTime = measurementDateTime;
+	}
+	
+	public String getMeasurementTime() {
+		return measurementTime;
+	}
+	
+	public void setMeasurementTime(String measurementTime) {
+		this.measurementTime = measurementTime;
+	}
+	
+	public Concept getMeasurementTypeConcept() {
+		return measurementTypeConcept;
+	}
+	
+	public void setMeasurementTypeConcept(Concept measurementTypeConcept) {
+		this.measurementTypeConcept = measurementTypeConcept;
 	}
 
 	public Concept getOperatorConcept() {
@@ -125,14 +155,6 @@ public class Measurement extends BaseEntity {
 		this.operatorConcept = operatorConcept;
 	}
 
-	public Concept getMeasurementConcept() {
-		return measurementConcept;
-	}
-	
-	public void setMeasurementConcept(Concept measurementConcept) {
-		this.measurementConcept = measurementConcept;
-	}
-	
 	public Double getValueAsNumber() {
 		return valueAsNumber;
 	}
@@ -149,14 +171,6 @@ public class Measurement extends BaseEntity {
 		this.valueAsConcept = valueAsConcept;
 	}
 	
-	public String getValueSourceValue() {
-		return valueSourceValue;
-	}
-	
-	public void setValueSourceValue(String valueSourceValue) {
-		this.valueSourceValue = valueSourceValue;
-	}
-	
 	public Concept getUnitConcept() {
 		return unitConcept;
 	}
@@ -165,14 +179,6 @@ public class Measurement extends BaseEntity {
 		this.unitConcept = unitConcept;
 	}
 	
-	public String getUnitSourceValue() {
-		return unitSourceValue;
-	}
-	
-	public void setUnitSourceValue(String unitSourceValue) {
-		this.unitSourceValue = unitSourceValue;
-	}
-
 	public Double getRangeLow() {
 		return rangeLow;
 	}
@@ -197,22 +203,6 @@ public class Measurement extends BaseEntity {
 		this.provider = provider;
 	}
 
-	public Date getDate() {
-		return date;
-	}
-	
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
-	public String getTime() {
-		return time;
-	}
-	
-	public void setTime(String time) {
-		this.time = time;
-	}
-	
 	public VisitOccurrence getVisitOccurrence() {
 		return visitOccurrence;
 	}
@@ -221,14 +211,46 @@ public class Measurement extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
-	public Concept getType() {
-		return type;
+	public VisitDetail getVisitDetail() {
+		return visitDetail;
 	}
 	
-	public void setType(Concept type) {
-		this.type = type;
+	public void setVisitDetail (VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
+	
+	public String getMeasurementSourceValue() {
+		return measurementSourceValue;
+	}
+	
+	public void setMeasurementSourceValue(String measurementSourceValue) {
+		this.measurementSourceValue = measurementSourceValue;
 	}
 
+	public Concept getMeasurementSourceConcept() {
+		return measurementSourceConcept;
+	}
+	
+	public void setMeasurementSourceConcept(Concept measurementSourceConcept) {
+		this.measurementSourceConcept = measurementSourceConcept;
+	}
+
+	public String getUnitSourceValue() {
+		return unitSourceValue;
+	}
+	
+	public void setUnitSourceValue(String unitSourceValue) {
+		this.unitSourceValue = unitSourceValue;
+	}
+
+	public String getValueSourceValue() {
+		return valueSourceValue;
+	}
+	
+	public void setValueSourceValue(String valueSourceValue) {
+		this.valueSourceValue = valueSourceValue;
+	}
+	
 	@Override
 	public Long getIdAsLong() {
 		return getId();
@@ -340,9 +362,12 @@ public class Measurement extends BaseEntity {
 	}
 
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("sourceValueConcept".equals(foreignVariable) || "measurementConcept".equals(foreignVariable)
-				|| "valueAsConcept".equals(foreignVariable) || "operatorConcept".equals(foreignVariable)
-				|| "unitConcept".equals(foreignVariable) || "type".equals(foreignVariable))
+		if ("measurementSourceConcept".equals(foreignVariable) 
+				|| "measurementConcept".equals(foreignVariable)
+				|| "valueAsConcept".equals(foreignVariable) 
+				|| "operatorConcept".equals(foreignVariable)
+				|| "unitConcept".equals(foreignVariable) 
+				|| "measurementTypeConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))
@@ -353,6 +378,9 @@ public class Measurement extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

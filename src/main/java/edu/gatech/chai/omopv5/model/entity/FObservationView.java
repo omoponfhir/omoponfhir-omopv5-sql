@@ -40,46 +40,34 @@ public class FObservationView extends BaseEntity {
 	private Concept observationConcept;
 	
 	@Column(name="observation_date", nullable=false)
-	private Date date;
+	private Date observationDate;
+	
+	@Column(name="observation_datetime")
+	private Date observationDateTime;
 	
 	@Column(name="observation_time")
-	private String time;
+	private String observationTime;
+	
+	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept observationTypeConcept;
+	
+	@JoinColumn(name="observation_operator_concept_id", referencedColumnName="concept_id")
+	private Concept observationOperatorConcept;
+
+	@Column(name="value_as_number")
+	private Double valueAsNumber;
 	
 	@Column(name="value_as_string")
 	private String valueAsString;
 	
-	@Column(name="value_as_number")
-	private Double valueAsNumber;
-	
 	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
 	private Concept valueAsConcept;
-	
-	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
-	private Concept typeConcept;
-	
-	@JoinColumn(name="provider_id")
-	private Provider provider;
-	
-	@JoinColumn(name="visit_occurrence_id")
-	private VisitOccurrence visitOccurrence;
-	
-	@Column(name="source_value")
-	private String sourceValue;
-	
-	@JoinColumn(name="source_concept_id", referencedColumnName="concept_id")
-	private Concept sourceConcept;
 	
 	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id")
 	private Concept qualifierConcept;
 	
-	@Column(name="qualifier_source_value")
-	private String qualifierSourceValue;
-	
 	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
 	private Concept unitConcept;
-	
-	@Column(name="unit_source_value")
-	private String unitSourceValue;
 	
 	@Column(name="range_low")
 	private BigDecimal rangeLow;
@@ -87,26 +75,36 @@ public class FObservationView extends BaseEntity {
 	@Column(name="range_high")
 	private BigDecimal rangeHigh;
 	
+	@JoinColumn(name="provider_id")
+	private Provider provider;
+	
+	@JoinColumn(name="visit_occurrence_id")
+	private VisitOccurrence visitOccurrence;
+	
+	@JoinColumn(name="visit_detail_id")
+	private VisitDetail visitDetail;
+	
+	@Column(name="observation_source_value")
+	private String observationSourceValue;
+	
+	@JoinColumn(name="observation_source_concept_id", referencedColumnName="concept_id")
+	private Concept observationSourceConcept;
+	
+	@Column(name="unit_source_value")
+	private String unitSourceValue;
+	
 	@Column(name="value_source_value")
 	private String valueSourceValue;
 	
-	@JoinColumn(name="observation_operator_concept_id", referencedColumnName="concept_id")
-	private Concept operatorConcept;
-
+	@Column(name="qualifier_source_value")
+	private String qualifierSourceValue;
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
 	}
 
 	public FPerson getFPerson() {
@@ -125,20 +123,44 @@ public class FObservationView extends BaseEntity {
 		this.observationConcept = observationConcept;
 	}
 
-	public Date getDate() {
-		return date;
+	public Date getObservationDate() {
+		return observationDate;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setObservationDate(Date observationDate) {
+		this.observationDate = observationDate;
 	}
 
-	public String getValueAsString() {
-		return valueAsString;
+	public Date getObservationDateTime() {
+		return observationDateTime;
 	}
 
-	public void setValueAsString(String valueAsString) {
-		this.valueAsString = valueAsString;
+	public void setObservationDateTime(Date observationDateTime) {
+		this.observationDateTime = observationDateTime;
+	}
+
+	public String getObservationTime() {
+		return observationTime;
+	}
+
+	public void setObservationTime(String observationTime) {
+		this.observationTime = observationTime;
+	}
+
+	public Concept getObservationTypeConcept() {
+		return observationTypeConcept;
+	}
+
+	public void setObservationTypeConcept(Concept observationTypeConcept) {
+		this.observationTypeConcept = observationTypeConcept;
+	}
+
+	public Concept getObservationOperatorConcept() {
+		return observationOperatorConcept;
+	}
+
+	public void setObservationOperatorConcept(Concept observationOperatorConcept) {
+		this.observationOperatorConcept = observationOperatorConcept;
 	}
 
 	public Double getValueAsNumber() {
@@ -149,36 +171,20 @@ public class FObservationView extends BaseEntity {
 		this.valueAsNumber = valueAsNumber;
 	}
 
+	public String getValueAsString() {
+		return valueAsString;
+	}
+
+	public void setValueAsString(String valueAsString) {
+		this.valueAsString = valueAsString;
+	}
+
 	public Concept getValueAsConcept() {
 		return valueAsConcept;
 	}
 
 	public void setValueAsConcept(Concept valueAsConcept) {
 		this.valueAsConcept = valueAsConcept;
-	}
-
-	public Concept getTypeConcept() {
-		return typeConcept;
-	}
-
-	public void setTypeConcept(Concept typeConcept) {
-		this.typeConcept = typeConcept;
-	}
-
-	public Provider getProvider() {
-		return provider;
-	}
-
-	public void setProvider(Provider provider) {
-		this.provider = provider;
-	}
-
-	public VisitOccurrence getVisitOccurrence() {
-		return visitOccurrence;
-	}
-
-	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
-		this.visitOccurrence = visitOccurrence;
 	}
 
 	public Concept getQualifierConcept() {
@@ -189,44 +195,12 @@ public class FObservationView extends BaseEntity {
 		this.qualifierConcept = qualifierConcept;
 	}
 
-	public String getQualifierSourceValue() {
-		return qualifierSourceValue;
-	}
-
-	public void setQualifierSourceValue(String qualifierSourceValue) {
-		this.qualifierSourceValue = qualifierSourceValue;
-	}
-
-	public String getSourceValue() {
-		return sourceValue;
-	}
-
-	public void setSourceValue(String sourceValue) {
-		this.sourceValue = sourceValue;
-	}
-
-	public Concept getSourceConcept() {
-		return sourceConcept;
-	}
-
-	public void setSourceConcept(Concept sourceConcept) {
-		this.sourceConcept = sourceConcept;
-	}
-
 	public Concept getUnitConcept() {
 		return unitConcept;
 	}
 
 	public void setUnitConcept(Concept unitConcept) {
 		this.unitConcept = unitConcept;
-	}
-
-	public String getUnitSourceValue() {
-		return unitSourceValue;
-	}
-
-	public void setUnitSourceValue(String unitSourceValue) {
-		this.unitSourceValue = unitSourceValue;
 	}
 
 	public BigDecimal getRangeLow() {
@@ -245,6 +219,54 @@ public class FObservationView extends BaseEntity {
 		this.rangeHigh = rangeHigh;
 	}
 
+	public Provider getProvider() {
+		return provider;
+	}
+
+	public void setProvider(Provider provider) {
+		this.provider = provider;
+	}
+
+	public VisitOccurrence getVisitOccurrence() {
+		return visitOccurrence;
+	}
+
+	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
+		this.visitOccurrence = visitOccurrence;
+	}
+
+	public VisitDetail getVisitDetail() {
+		return visitDetail;
+	}
+
+	public void setVisitDetail(VisitDetail visitDetail) {
+		this.visitDetail = visitDetail;
+	}
+
+	public String getObservationSourceValue() {
+		return observationSourceValue;
+	}
+
+	public void setObservationSourceValue(String observationSourceValue) {
+		this.observationSourceValue = observationSourceValue;
+	}
+
+	public Concept getObservationSourceConcept() {
+		return observationSourceConcept;
+	}
+
+	public void setObservationSourceConcept(Concept observationSourceConcept) {
+		this.observationSourceConcept = observationSourceConcept;
+	}
+
+	public String getUnitSourceValue() {
+		return unitSourceValue;
+	}
+
+	public void setUnitSourceValue(String unitSourceValue) {
+		this.unitSourceValue = unitSourceValue;
+	}
+
 	public String getValueSourceValue() {
 		return valueSourceValue;
 	}
@@ -253,12 +275,12 @@ public class FObservationView extends BaseEntity {
 		this.valueSourceValue = valueSourceValue;
 	}
 
-	public Concept getOperatorConcept() {
-		return operatorConcept;
+	public String getQualifierSourceValue() {
+		return qualifierSourceValue;
 	}
 
-	public void setOperatorConcept(Concept operatorConcept) {
-		this.operatorConcept = operatorConcept;
+	public void setQualifierSourceValue(String qualifierSourceValue) {
+		this.qualifierSourceValue = qualifierSourceValue;
 	}
 
 	@Override
@@ -376,10 +398,13 @@ public class FObservationView extends BaseEntity {
 	}
 
 	public static String _getForeignTableName(String foreignVariable) {
-		if ("observationConcept".equals(foreignVariable) || "valueAsConcept".equals(foreignVariable)
-				|| "typeConcept".equals(foreignVariable) || "sourceConcept".equals(foreignVariable)
-				|| "qualifierConcept".equals(foreignVariable) || "unitConcept".equals(foreignVariable)
-				|| "operatorConcept".equals(foreignVariable))
+		if ("observationConcept".equals(foreignVariable) 
+				|| "observationTypeConcept".equals(foreignVariable) 
+				|| "observationOperatorConcept".equals(foreignVariable)
+				|| "valueAsConcept".equals(foreignVariable)
+				|| "qualifierConcept".equals(foreignVariable) 
+				|| "unitConcept".equals(foreignVariable)
+				|| "observationSourceConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))
@@ -390,6 +415,9 @@ public class FObservationView extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
+
+		if ("visitDetail".equals(foreignVariable))
+			return VisitDetail._getTableName();
 
 		return null;
 	}

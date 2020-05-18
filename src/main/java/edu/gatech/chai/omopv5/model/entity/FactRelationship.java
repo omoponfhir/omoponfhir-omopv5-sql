@@ -10,13 +10,13 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 @Table(name = "fact_relationship")
 public class FactRelationship extends BaseEntity {
 	@Column(name="domain_concept_id_1", nullable=false)
-	private Long domainConcept1;
+	private Long domainConceptId1;
 	
 	@Column(name="fact_id_1", nullable=false)
 	private Long factId1;
 	
 	@Column(name="domain_concept_id_2", nullable=false)
-	private Long domainConcept2;
+	private Long domainConceptId2;
 	
 	@Column(name="fact_id_2", nullable=false)
 	private Long factId2;
@@ -25,11 +25,11 @@ public class FactRelationship extends BaseEntity {
 	private Concept relationshipConcept;
 	
 	public Long getDomainConcept1() {
-		return this.domainConcept1;
+		return this.domainConceptId1;
 	}
 	
-	public void setDomainConcept1(Long domainConcept1) {
-		this.domainConcept1 = domainConcept1;
+	public void setDomainConcept1(Long domainConceptId1) {
+		this.domainConceptId1 = domainConceptId1;
 	}
 	
 	public Long getFactId1() {
@@ -41,11 +41,11 @@ public class FactRelationship extends BaseEntity {
 	}
 	
 	public Long getDomainConcept2() {
-		return this.domainConcept2;
+		return this.domainConceptId2;
 	}
 	
-	public void setDomainConcept2(Long domainConcept2) {
-		this.domainConcept2 = domainConcept2;
+	public void setDomainConcept2(Long domainConceptId2) {
+		this.domainConceptId2 = domainConceptId2;
 	}
 	
 	public Long getFactId2() {
@@ -66,7 +66,7 @@ public class FactRelationship extends BaseEntity {
 	
 	@Override
 	public Long getIdAsLong() {
-		return this.domainConcept1;
+		return this.domainConceptId1;
 	}
 
 	@Override

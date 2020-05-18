@@ -62,7 +62,7 @@ public interface RelationshipService extends IService<Relationship> {
 				}
 				
 				if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
-					relationship.setName(rs.getString(columnInfo));
+					relationship.setRelationshipName(rs.getString(columnInfo));
 				}
 
 				if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {

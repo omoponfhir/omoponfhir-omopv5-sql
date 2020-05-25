@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class ConditionOccurrenceServiceImp.
@@ -41,6 +43,12 @@ public class ConditionOccurrenceServiceImp extends BaseEntityServiceImp<Conditio
 	@Override
 	public ConditionOccurrence construct(ResultSet rs, ConditionOccurrence entity, String alias) {
 		return ConditionOccurrenceService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public ConditionOccurrence construct(FieldValueList rowResult, ConditionOccurrence entity, String alias,
+			List<String> columns) {
+		return ConditionOccurrenceService._construct(rowResult, entity, alias, columns);
 	}
 
 }

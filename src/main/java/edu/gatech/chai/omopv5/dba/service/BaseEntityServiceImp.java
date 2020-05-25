@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.ohdsi.sql.SqlRender;
@@ -30,19 +31,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.api.client.util.DateTime;
-import com.google.cloud.Date;
+import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
-import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
-import jdk.internal.jline.internal.Log;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -192,7 +192,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	public String constructSqlSelectWithoutWhere() {
 		return constructSqlSelectWithoutWhere(null);
 	}
-	
+
 	public String constructSqlSelectWithoutWhere(String rootTableName) {
 		String sqlResultList = "";
 
@@ -215,7 +215,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		if (rootTableName == null) {
 			rootTableName = SqlUtil.getTableName(clazz);
 		}
-		
+
 		// We should have a rootTableName now.
 		if (rootTableName == null) {
 			logger.error("Failed to get SQL tablename");
@@ -369,16 +369,27 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	public Long getSize() {
 		Long retVal = 0L;
-		
+
 		String queryString = "select count(*) as count from " + getSqlTableName() + ";";
+
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(queryString);
-			if (rs.next()) {
-				retVal =  (long) rs.getInt("count");
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+				for (FieldValueList row : result.iterateAll()) {
+					retVal = row.get("count").getLongValue();
+					if (retVal != null) {
+						break;
+					}
+				}
+			} else {
+				ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				if (rs.next()) {
+					retVal = (long) rs.getInt("count");
+				}
+
+				getQueryEntityDao().closeConnection();
 			}
-			
-			getQueryEntityDao().closeConnection();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -387,7 +398,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	public Long getSize(List<ParameterWrapper> paramList) {
 		Long retVal = 0L;
-		
+
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
@@ -399,14 +410,23 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				sql = sql + joinTablesWhere;
 			}
 
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-			if (rs.next()) {
-				retVal = (long) rs.getInt("count");
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(sql);
+				for (FieldValueList row : result.iterateAll()) {
+					retVal = row.get("count").getLongValue();
+					if (retVal != null) {
+						break;
+					}
+				}
+			} else {
+				ResultSet rs = getQueryEntityDao().runQuery(sql);
+				if (rs.next()) {
+					retVal = (long) rs.getInt("count");
+				}
+				getQueryEntityDao().closeConnection();
 			}
 
-			getQueryEntityDao().closeConnection();
-		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException | SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -438,7 +458,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			// All the fieldw are private. Set accessible true.
 			field.setAccessible(true);
-			
+
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
 			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 			if (columnAnnotation == null && joinColumnAnnotation == null) {
@@ -818,7 +838,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		sql = sql + " where @cname=@value";
 		parameterList.add("cname");
 		parameterList.add("value");
-		valueList.add(rootTableName+"."+getSqlTableColumnName("id"));
+		valueList.add(rootTableName + "." + getSqlTableColumnName("id"));
 		valueList.add(id.toString());
 
 		sql = renderedSql(sql, parameterList, valueList);
@@ -876,7 +896,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> valueList = new ArrayList<String>();
 
 		String sql = constructSqlSelectWithoutWhere();
-		sql = sql+" where @column='@value'";
+		sql = sql + " where @column='@value'";
 
 		parameterList.add("column");
 		parameterList.add("value");
@@ -973,15 +993,24 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		logger.debug("SqlRender:" + sql);
 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(sql);
+				for (FieldValueList row : result.iterateAll()) {
+					List<String> columns = new ArrayList<String>();
+					T entity = construct(row, null, getSqlTableName(), columns);
+				}
+			} else {
 
-			while (rs.next()) {
-				T entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					entities.add(entity);
+				ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+				while (rs.next()) {
+					T entity = construct(rs, null, getSqlTableName());
+					if (entity != null) {
+						entities.add(entity);
+					}
 				}
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

@@ -3,7 +3,12 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationship;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
 
@@ -43,25 +48,15 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
 					conceptRelationship.setConcept1(rs.getLong(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
 					conceptRelationship.setConcept2(rs.getLong(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 					conceptRelationship.setRelationshipId(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
 					conceptRelationship.setValidStartDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_valid_end_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_end_date")) {
 					conceptRelationship.setValidEndDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_invalid_reason")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_invalid_reason")) {
 					conceptRelationship.setInvalidReason(rs.getString(columnInfo));
 				}
 
@@ -70,7 +65,43 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return conceptRelationship;
 	}
+
+	public static ConceptRelationship _construct(FieldValueList rowResult, ConceptRelationship conceptRelationship,
+			String alias, List<String> columns) {
+		if (conceptRelationship == null)
+			conceptRelationship = new ConceptRelationship();
+
+		if (alias == null || alias.isEmpty())
+			alias = ConceptRelationship._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
+				conceptRelationship.setConcept1(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
+				conceptRelationship.setConcept2(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
+				conceptRelationship.setRelationshipId(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					conceptRelationship.setValidStartDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_end_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					conceptRelationship.setValidEndDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_invalid_reason")) {
+				conceptRelationship.setInvalidReason(rowResult.get(columnInfo).getStringValue());
+			}
+		}
+
+		return conceptRelationship;
+	}
+
 }

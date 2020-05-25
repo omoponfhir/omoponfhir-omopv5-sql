@@ -19,6 +19,9 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Concept;
@@ -28,10 +31,11 @@ import edu.gatech.chai.omopv5.model.entity.Provider;
  * The Interface ProviderService.
  */
 public interface ProviderService extends IService<Provider> {
-	
+
 	public static Provider _construct(ResultSet rs, Provider provider, String alias) {
-		if (provider == null) provider = new Provider();
-		
+		if (provider == null)
+			provider = new Provider();
+
 		if (alias == null || alias.isEmpty())
 			alias = Provider._getTableName();
 
@@ -43,57 +47,33 @@ public interface ProviderService extends IService<Provider> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_provider_id")) {
 					provider.setId(rs.getLong(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_provider_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_provider_name")) {
 					provider.setProviderName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_npi")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_npi")) {
 					provider.setNpi(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_dea")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_dea")) {
 					provider.setDea(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("specialtyConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("specialtyConcept_concept_id")) {
 					Concept specialtyConcept = ConceptService._construct(rs, null, "specialtyConcept");
 					provider.setSpecialtyConcept(specialtyConcept);
-				}
-				
-				if (columnInfo.equalsIgnoreCase("careSite_care_site_id")) {
+				} else if (columnInfo.equalsIgnoreCase("careSite_care_site_id")) {
 					CareSite careSite = CareSiteService._construct(rs, null, "careSite");
 					provider.setCareSite(careSite);
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_year_of_birth")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_year_of_birth")) {
 					provider.setYearOfBirth(rs.getInt(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
 					Concept genderConcept = ConceptService._construct(rs, null, "genderConcept");
 					provider.setGenderConcept(genderConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_provider_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_provider_source_value")) {
 					provider.setProviderSourceValue(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_specialty_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_specialty_source_value")) {
 					provider.setSpecialtySourceValue(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("specialtySourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("specialtySourceConcept_concept_id")) {
 					Concept specialtySourceConcept = ConceptService._construct(rs, null, "specialtySourceConcept");
 					provider.setSpecialtySourceConcept(specialtySourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_gender_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_gender_source_value")) {
 					provider.setGenderSourceValue(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
 					Concept genderSourceConcept = ConceptService._construct(rs, null, "genderSourceConcept");
 					provider.setGenderSourceConcept(genderSourceConcept);
 				}
@@ -103,7 +83,53 @@ public interface ProviderService extends IService<Provider> {
 			e.printStackTrace();
 			return null;
 		}
-		
+
+		return provider;
+	}
+
+	public static Provider _construct(FieldValueList rowResult, Provider provider, String alias, List<String> columns) {
+		if (provider == null)
+			provider = new Provider();
+
+		if (alias == null || alias.isEmpty())
+			alias = Provider._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_provider_id")) {
+				provider.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_provider_name")) {
+				provider.setProviderName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_npi")) {
+				provider.setNpi(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_dea")) {
+				provider.setDea(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("specialtyConcept_concept_id")) {
+				Concept specialtyConcept = ConceptService._construct(rowResult, null, "specialtyConcept", columns);
+				provider.setSpecialtyConcept(specialtyConcept);
+			} else if (columnInfo.equalsIgnoreCase("careSite_care_site_id")) {
+				CareSite careSite = CareSiteService._construct(rowResult, null, "careSite", columns);
+				provider.setCareSite(careSite);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_year_of_birth")) {
+				provider.setYearOfBirth((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
+				Concept genderConcept = ConceptService._construct(rowResult, null, "genderConcept", columns);
+				provider.setGenderConcept(genderConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_provider_source_value")) {
+				provider.setProviderSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_specialty_source_value")) {
+				provider.setSpecialtySourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("specialtySourceConcept_concept_id")) {
+				Concept specialtySourceConcept = ConceptService._construct(rowResult, null, "specialtySourceConcept", columns);
+				provider.setSpecialtySourceConcept(specialtySourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_gender_source_value")) {
+				provider.setGenderSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
+				Concept genderSourceConcept = ConceptService._construct(rowResult, null, "genderSourceConcept", columns);
+				provider.setGenderSourceConcept(genderSourceConcept);
+			}
+
+		}
+
 		return provider;
 	}
 

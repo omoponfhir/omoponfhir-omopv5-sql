@@ -18,8 +18,11 @@ package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 
@@ -53,6 +56,12 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	@Override
 	public FObservationView construct(ResultSet rs, FObservationView entity, String alias) {
 		return FObservationViewService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public FObservationView construct(FieldValueList rowResult, FObservationView entity, String alias,
+			List<String> columns) {
+		return FObservationViewService._construct(rowResult, entity, alias, columns);
 	}
 
 }

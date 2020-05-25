@@ -56,60 +56,63 @@ public class JUnitTest {
 
 	@Test
 	public void personTableTest() {
-		ds = new PGPoolingDataSource();
-		ds.setDataSourceName("Test SqlRendered SQL");
-		ds.setServerName("localhost");
-		ds.setPortNumber(5432);
-		ds.setDatabaseName("postgres");
-		ds.setCurrentSchema("omop_v5");
-		ds.setUser("omop_v5");
-		ds.setPassword("i3lworks");
-		ds.setMaxConnections(10);		
-		databaseConfiguration.setDataSource(ds);
-		databaseConfiguration.setSqlRenderTargetDialect("postgresql");		
+//		ds = new PGPoolingDataSource();
+//		ds.setDataSourceName("Test SqlRendered SQL");
+//		ds.setServerName("localhost");
+//		ds.setPortNumber(5432);
+//		ds.setDatabaseName("postgres");
+//		ds.setCurrentSchema("omop_v5");
+//		ds.setUser("omop_v5");
+//		ds.setPassword("i3lworks");
+//		ds.setMaxConnections(10);		
+//		databaseConfiguration.setDataSource(ds);
+//		databaseConfiguration.setSqlRenderTargetDialect("postgresql");		
+
+		databaseConfiguration.setSqlRenderTargetDialect("bigquery");
+		databaseConfiguration.setBigQueryDataset(System.getenv("BIGQUERYDATASET"));
 
 		List<FPerson> outFperson = fPersonService.searchWithoutParams(0, 10, null);
-		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
+//		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
 		
 		logger.debug("Total Returned FPerson: "+outFperson.size());
 		for (FPerson fperson : outFperson) {
 			System.out.println(fperson.toString());
 		}
 		
-		logger.debug("Total Returned FObservationView: "+outFObs.size());
-		for (FObservationView fObservationView : outFObs) {
-			System.out.println(fObservationView.toString());
-		}
+//		logger.debug("Total Returned FObservationView: "+outFObs.size());
+//		for (FObservationView fObservationView : outFObs) {
+//			System.out.println(fObservationView.toString());
+//		}
 
 		assert(outFperson.size() > 0);
-		assert(outFObs.size() > 0);
+//		assert(outFObs.size() > 0);
 		
-		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
-		ParameterWrapper paramWrapper = new ParameterWrapper();
-		paramWrapper.setParameterType("String");
-		paramWrapper
-				.setParameters(Arrays.asList("familyName", "givenName1", "givenName2", "prefixName", "suffixName"));
-		paramWrapper.setOperators(Arrays.asList("like", "like", "like", "like", "like"));
-		paramWrapper.setValues(Arrays.asList("Hello"));
-		paramWrapper.setRelationship("or");
-
-		params.add(paramWrapper);
-		List<FPerson> out = fPersonService.searchWithParams(0, 10, params, null);
-		
-		logger.debug("Total Returned FPerson: "+out.size());
-		
-		FPerson newPerson = null;
-		for (FPerson fperson : out) {
-			newPerson = fperson;
-			System.out.println(fperson.toString());
-		}
-
-		assert(out.size() > 0);
-
-		newPerson.setFamilyName("Hello");
-		newPerson.setGivenName1("Update");
-//		newPerson.setId(null);
-		FPerson returnedPerson = fPersonService.update(newPerson);
-		System.out.println(returnedPerson.toString());
+//		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
+//		ParameterWrapper paramWrapper = new ParameterWrapper();
+//		paramWrapper.setParameterType("String");
+//		paramWrapper
+//				.setParameters(Arrays.asList("familyName", "givenName1", "givenName2", "prefixName", "suffixName"));
+//		paramWrapper.setOperators(Arrays.asList("like", "like", "like", "like", "like"));
+//		paramWrapper.setValues(Arrays.asList("Hello"));
+//		paramWrapper.setRelationship("or");
+//
+//		params.add(paramWrapper);
+//		List<FPerson> out = fPersonService.searchWithParams(0, 10, params, null);
+//		
+//		logger.debug("Total Returned FPerson: "+out.size());
+//		
+//		FPerson newPerson = null;
+//		for (FPerson fperson : out) {
+//			newPerson = fperson;
+//			System.out.println(fperson.toString());
+//		}
+//
+//		assert(out.size() > 0);
+//
+//		newPerson.setFamilyName("Hello");
+//		newPerson.setGivenName1("Update");
+////		newPerson.setId(null);
+//		FPerson returnedPerson = fPersonService.update(newPerson);
+//		System.out.println(returnedPerson.toString());
     }
 }

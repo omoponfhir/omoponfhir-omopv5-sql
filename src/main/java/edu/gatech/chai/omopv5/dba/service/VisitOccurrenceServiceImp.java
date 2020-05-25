@@ -17,8 +17,11 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
@@ -39,6 +42,12 @@ public class VisitOccurrenceServiceImp extends BaseEntityServiceImp<VisitOccurre
 	@Override
 	public VisitOccurrence construct(ResultSet rs, VisitOccurrence entity, String alias) {
 		return VisitOccurrenceService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public VisitOccurrence construct(FieldValueList rowResult, VisitOccurrence entity, String alias,
+			List<String> columns) {
+		return VisitOccurrenceService._construct(rowResult, entity, alias, columns);
 	}
 
 }

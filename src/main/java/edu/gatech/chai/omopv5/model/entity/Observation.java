@@ -70,9 +70,6 @@ public class Observation extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id", referencedColumnName="concept_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="visit_detail_id", referencedColumnName="concept_id")
-	private VisitDetail visitDetail;
-	
 	@Column(name="observation_source_value")
 	private String observationSourceValue;
 	
@@ -187,14 +184,6 @@ public class Observation extends BaseEntity {
 
 	public void setVisitOccurrence(VisitOccurrence visitOccurrence) {
 		this.visitOccurrence = visitOccurrence;
-	}
-
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
 	}
 
 	public String getObservationSourceValue() {
@@ -348,9 +337,6 @@ public class Observation extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

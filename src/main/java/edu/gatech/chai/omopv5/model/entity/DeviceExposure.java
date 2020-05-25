@@ -67,9 +67,6 @@ public class DeviceExposure extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
-	
 	@Column(name="device_source_value")
 	private String deviceSourceValue;
 	
@@ -170,14 +167,6 @@ public class DeviceExposure extends BaseEntity {
 	
 	public void setVisitOccurrence (VisitOccurrence visitOccurrence) {
 		this.visitOccurrence = visitOccurrence;
-	}
-	
-	public VisitDetail getVisitDetail () {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail (VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
 	}
 	
 	public Concept getDeviceSourceConcept () {
@@ -297,9 +286,6 @@ public class DeviceExposure extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

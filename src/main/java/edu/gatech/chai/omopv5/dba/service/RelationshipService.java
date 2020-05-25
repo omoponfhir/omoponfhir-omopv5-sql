@@ -19,6 +19,9 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.Relationship;
@@ -28,7 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.Relationship;
  * The Interface RelationshipService.
  */
 public interface RelationshipService extends IService<Relationship> {
-	
+
 	/**
 	 * Find by id.
 	 *
@@ -36,7 +39,7 @@ public interface RelationshipService extends IService<Relationship> {
 	 * @return the relationship
 	 */
 	public Relationship findById(String id);
-	
+
 	/**
 	 * Removes the by id.
 	 *
@@ -46,8 +49,9 @@ public interface RelationshipService extends IService<Relationship> {
 	public String removeById(String id);
 
 	public static Relationship _construct(ResultSet rs, Relationship relationship, String alias) {
-		if (relationship == null) relationship = new Relationship();
-		
+		if (relationship == null)
+			relationship = new Relationship();
+
 		if (alias == null || alias.isEmpty())
 			alias = Relationship._getTableName();
 
@@ -59,43 +63,66 @@ public interface RelationshipService extends IService<Relationship> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 					relationship.setId(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
 					relationship.setRelationshipName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {
 					String value = rs.getString(columnInfo);
 					if (value != null) {
-						relationship.setIsHierarchical(value.charAt(0));						
+						relationship.setIsHierarchical(value.charAt(0));
 					}
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_defines_ancestry")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_defines_ancestry")) {
 					String value = rs.getString(columnInfo);
 					if (value != null) {
-						relationship.setDefinesAncestry(value.charAt(0));						
+						relationship.setDefinesAncestry(value.charAt(0));
 					}
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_reverse_relationship_id")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_reverse_relationship_id")) {
 					relationship.setReverseRelationshipId(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
 					Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
 					relationship.setRelationshipConcept(relationshipConcept);
 				}
-
 
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return relationship;
 	}
 
+	public static Relationship _construct(FieldValueList rowResult, Relationship relationship, String alias,
+			List<String> columns) {
+		if (relationship == null)
+			relationship = new Relationship();
+
+		if (alias == null || alias.isEmpty())
+			alias = Relationship._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
+				relationship.setId(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
+				relationship.setRelationshipName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {
+				String value = rowResult.get(columnInfo).getStringValue();
+				if (value != null) {
+					relationship.setIsHierarchical(value.charAt(0));
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_defines_ancestry")) {
+				String value = rowResult.get(columnInfo).getStringValue();
+				if (value != null) {
+					relationship.setDefinesAncestry(value.charAt(0));
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_reverse_relationship_id")) {
+				relationship.setReverseRelationshipId(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
+				Concept relationshipConcept = ConceptService._construct(rowResult, null, "relationshipConcept", columns);
+				relationship.setRelationshipConcept(relationshipConcept);
+			}
+
+		}
+
+		return relationship;
+	}
 }

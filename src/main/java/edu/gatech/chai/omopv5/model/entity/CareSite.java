@@ -17,8 +17,15 @@
 package edu.gatech.chai.omopv5.model.entity;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.List;
 
+import edu.gatech.chai.omopv5.dba.service.CareSiteService;
+import edu.gatech.chai.omopv5.dba.service.CareSiteServiceImp;
+import edu.gatech.chai.omopv5.dba.service.ConceptService;
+import edu.gatech.chai.omopv5.dba.service.LocationService;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
@@ -203,5 +210,6 @@ public class CareSite extends BaseEntity {
 	public static String _getSqlTableStatement(List<String> parameterList, List<String> valueList) {
 		return "select * from care_site ";
 	}
+	
 
 }

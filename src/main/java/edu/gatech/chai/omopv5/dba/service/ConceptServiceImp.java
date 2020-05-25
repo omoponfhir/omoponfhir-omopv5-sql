@@ -24,6 +24,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Concept;
 
 // TODO: Auto-generated Javadoc
@@ -127,6 +129,11 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 	@Override
 	public Concept construct(ResultSet rs, Concept entity, String alias) {
 		return ConceptService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Concept construct(FieldValueList rowResult, Concept entity, String alias, List<String> columns) {
+		return ConceptService._construct(rowResult, entity, alias, columns);
 	}
 
 }

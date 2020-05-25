@@ -9,6 +9,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
 
 	private String targetDialect;
 	private DataSource dataSource;
+	private String bigQueryDataset;
 
 	@Override
 	public String getSqlRenderTargetDialect() {
@@ -28,6 +29,17 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
 	@Override
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	@Override
+	public void setBigQueryDataset(String dataset) {
+		this.bigQueryDataset = dataset;
+		
+	}
+
+	@Override
+	public String getBigQueryDataset() {
+		return this.bigQueryDataset;
 	}
 
 }

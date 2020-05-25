@@ -19,7 +19,11 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
 // TODO: Auto-generated Javadoc
@@ -27,22 +31,23 @@ import edu.gatech.chai.omopv5.model.entity.Location;
  * The Interface LocationService.
  */
 public interface LocationService extends IService<Location> {
-	
+
 	/**
 	 * Search by address.
 	 *
-	 * @param line1 the line 1
-	 * @param line2 the line 2
-	 * @param city the city
-	 * @param state the state
+	 * @param line1   the line 1
+	 * @param line2   the line 2
+	 * @param city    the city
+	 * @param state   the state
 	 * @param zipCode the zip code
 	 * @return the location
 	 */
 	public Location searchByAddress(String line1, String line2, String city, String state, String zipCode);
-	
+
 	public static Location _construct(ResultSet rs, Location location, String alias) {
-		if (location == null) location = new Location();
-		
+		if (location == null)
+			location = new Location();
+
 		if (alias == null || alias.isEmpty())
 			alias = Location._getTableName();
 
@@ -55,29 +60,17 @@ public interface LocationService extends IService<Location> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_location_id")) {
 					location.setId(rs.getLong(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {
 					location.setAddress1(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_address_2")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_address_2")) {
 					location.setAddress2(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_city")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_city")) {
 					location.setCity(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_state")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_state")) {
 					location.setState(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
 					location.setZipCode(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
 					location.setLocationSourceValue(rs.getString(columnInfo));
 				}
 
@@ -86,7 +79,35 @@ public interface LocationService extends IService<Location> {
 			e.printStackTrace();
 			return null;
 		}
-		
+
+		return location;
+	}
+
+	public static Location _construct(FieldValueList rowResult, Location location, String alias, List<String> columns) {
+		if (location == null)
+			location = new Location();
+
+		if (alias == null || alias.isEmpty())
+			alias = Location._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_location_id")) {
+				location.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {
+				location.setAddress1(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_address_2")) {
+				location.setAddress2(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_city")) {
+				location.setCity(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_state")) {
+				location.setState(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
+				location.setZipCode(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
+				location.setLocationSourceValue(rowResult.get(columnInfo).getStringValue());
+			}
+
+		}
 		return location;
 	}
 

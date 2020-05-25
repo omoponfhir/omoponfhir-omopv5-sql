@@ -62,17 +62,14 @@ public class ProcedureOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
-	
 	@Column(name="procedure_source_value")
 	private String procedureSourceValue;
 	
 	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id")
 	private Concept procedureSourceConcept;
 	
-	@Column(name="modifier_source_value")
-	private String modifierSourceValue;
+	@Column(name="qualifier_source_value")
+	private String qualifierSourceValue;
 
 	public ProcedureOccurrence() {
 		super();
@@ -163,14 +160,6 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getProcedureSourceValue() {
 		return procedureSourceValue;
 	}
@@ -187,12 +176,12 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.procedureSourceConcept = procedureSourceConcept;
 	}
 
-	public String getModifierSourceValue() {
-		return modifierSourceValue;
+	public String getQualifierSourceValue() {
+		return qualifierSourceValue;
 	}
 	
-	public void setModifierSourceValue(String modifierSourceValue) {
-		this.modifierSourceValue = modifierSourceValue;
+	public void setQualifierSourceValue(String qualifierSourceValue) {
+		this.qualifierSourceValue = qualifierSourceValue;
 	}
 
 	@Override
@@ -297,9 +286,6 @@ public class ProcedureOccurrence extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

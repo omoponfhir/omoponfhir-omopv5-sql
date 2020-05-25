@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.ProcedureOccurrence;
 
 // TODO: Auto-generated Javadoc
@@ -41,6 +43,12 @@ public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<Procedur
 	@Override
 	public ProcedureOccurrence construct(ResultSet rs, ProcedureOccurrence entity, String alias) {
 		return ProcedureOccurrenceService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public ProcedureOccurrence construct(FieldValueList rowResult, ProcedureOccurrence entity, String alias,
+			List<String> columns) {
+		return ProcedureOccurrenceService._construct(rowResult, entity, alias, columns);
 	}
 
 }

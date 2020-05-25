@@ -46,9 +46,6 @@ public class Measurement extends BaseEntity {
 	@Column(name="measurement_datetime")
 	private Date measurementDateTime;
 	
-	@Column(name="measurement_time")
-	private String measurementTime;
-	
 	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept measurementTypeConcept;
 
@@ -75,9 +72,6 @@ public class Measurement extends BaseEntity {
 	
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
-	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
 	
 	@Column(name="measurement_source_value")
 	private String measurementSourceValue;
@@ -129,14 +123,6 @@ public class Measurement extends BaseEntity {
 	
 	public void setMeasurementDateTime(Date measurementDateTime) {
 		this.measurementDateTime = measurementDateTime;
-	}
-	
-	public String getMeasurementTime() {
-		return measurementTime;
-	}
-	
-	public void setMeasurementTime(String measurementTime) {
-		this.measurementTime = measurementTime;
 	}
 	
 	public Concept getMeasurementTypeConcept() {
@@ -209,14 +195,6 @@ public class Measurement extends BaseEntity {
 	
 	public void setVisitOccurrence (VisitOccurrence visitOccurrence) {
 		this.visitOccurrence = visitOccurrence;
-	}
-	
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail (VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
 	}
 	
 	public String getMeasurementSourceValue() {
@@ -378,9 +356,6 @@ public class Measurement extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

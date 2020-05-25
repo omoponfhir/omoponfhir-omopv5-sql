@@ -65,9 +65,6 @@ public class ConditionOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id", table="visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 
-	@JoinColumn(name="visit_detail_id", table="visit_detail")
-	private VisitDetail visitDetail;
-
 	@Column(name="condition_source_value")
 	private String conditionSourceValue;
 
@@ -168,14 +165,6 @@ public class ConditionOccurrence extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getConditionSourceValue() {
 		return conditionSourceValue;
 	}
@@ -296,9 +285,6 @@ public class ConditionOccurrence extends BaseEntity {
 	public static String _getForeignTableName(String foreignVariable) {
 		if ("fPerson".equals(foreignVariable))
 			return FPerson._getTableName();
-		
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 		
 		if ("provider".equals(foreignVariable))
 			return Provider._getTableName();

@@ -67,9 +67,6 @@ public class Note extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
-	
 	@Column(name="note_source_value")
 	private String noteSourceValue;
 
@@ -178,14 +175,6 @@ public class Note extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-	
 	public String getNoteSourceValue() {
 		return noteSourceValue;
 	}
@@ -287,9 +276,6 @@ public class Note extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

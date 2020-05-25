@@ -19,7 +19,12 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.ConditionOccurrence;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -29,10 +34,11 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 /**
  * The Interface ConditionOccurrenceService.
  */
-public interface ConditionOccurrenceService extends IService<ConditionOccurrence>{
+public interface ConditionOccurrenceService extends IService<ConditionOccurrence> {
 	public static ConditionOccurrence _construct(ResultSet rs, ConditionOccurrence conditionOccurrence, String alias) {
-		if (conditionOccurrence == null) conditionOccurrence = new ConditionOccurrence();
-		
+		if (conditionOccurrence == null)
+			conditionOccurrence = new ConditionOccurrence();
+
 		if (alias == null || alias.isEmpty())
 			alias = ConditionOccurrence._getTableName();
 
@@ -44,50 +50,30 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 
 				if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
 					conditionOccurrence.setId(rs.getLong(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					conditionOccurrence.setFPerson(fPerson);
-				}
-
-				if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
 					Concept conditionConcept = ConceptService._construct(rs, null, "conditionConcept");
 					conditionOccurrence.setConditionConcept(conditionConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
 					conditionOccurrence.setStartDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
 					conditionOccurrence.setEndDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
 					Concept conditionTypeConcept = ConceptService._construct(rs, null, "conditionTypeConcept");
 					conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
 					conditionOccurrence.setStopReason(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
 					Provider provider = ProviderService._construct(rs, null, "provider");
 					conditionOccurrence.setProvider(provider);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
 					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
 					conditionOccurrence.setVisitOccurrence(visitOccurrence);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_condition_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_source_value")) {
 					conditionOccurrence.setConditionSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
 					Concept conditionSourceConcept = ConceptService._construct(rs, null, "conditionSourceConcept");
 					conditionOccurrence.setConditionSourceConcept(conditionSourceConcept);
 				}
@@ -96,8 +82,58 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return conditionOccurrence;
 	}
 
+	public static ConditionOccurrence _construct(FieldValueList rowResult, ConditionOccurrence conditionOccurrence,
+			String alias, List<String> columns) {
+		if (conditionOccurrence == null)
+			conditionOccurrence = new ConditionOccurrence();
+
+		if (alias == null || alias.isEmpty())
+			alias = ConditionOccurrence._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
+				conditionOccurrence.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rowResult, null, "fPerson", columns);
+				conditionOccurrence.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
+				Concept conditionConcept = ConceptService._construct(rowResult, null, "conditionConcept", columns);
+				conditionOccurrence.setConditionConcept(conditionConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					conditionOccurrence.setStartDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					conditionOccurrence.setEndDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
+				Concept conditionTypeConcept = ConceptService._construct(rowResult, null, "conditionTypeConcept", columns);
+				conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
+				conditionOccurrence.setStopReason(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rowResult, null, "provider", columns);
+				conditionOccurrence.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rowResult, null, "visitOccurrence", columns);
+				conditionOccurrence.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_source_value")) {
+				conditionOccurrence.setConditionSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
+				Concept conditionSourceConcept = ConceptService._construct(rowResult, null, "conditionSourceConcept", columns);
+				conditionOccurrence.setConditionSourceConcept(conditionSourceConcept);
+			}
+		}
+
+		return conditionOccurrence;
+	}
 }

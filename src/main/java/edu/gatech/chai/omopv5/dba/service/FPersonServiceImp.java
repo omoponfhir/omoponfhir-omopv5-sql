@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Location;
 import edu.gatech.chai.omopv5.model.entity.Person;
@@ -158,6 +160,11 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 	@Override
 	public FPerson construct(ResultSet rs, FPerson entity, String alias) {
 		return FPersonService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public FPerson construct(FieldValueList rowResult, FPerson entity, String alias, List<String> columns) {
+		return FPersonService._construct(rowResult, entity, alias, columns);
 	}
 
 }

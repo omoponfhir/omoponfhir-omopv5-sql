@@ -19,12 +19,16 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.ProcedureOccurrence;
 import edu.gatech.chai.omopv5.model.entity.Provider;
-import edu.gatech.chai.omopv5.model.entity.VisitDetail;
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
 /**
@@ -46,66 +50,37 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 
 				if (columnInfo.equalsIgnoreCase(alias + "_procedure_occurrence_id")) {
 					procedureOccurrence.setId(rs.getLong(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					procedureOccurrence.setFPerson(fPerson);
-				}
-				
-				if (columnInfo.equalsIgnoreCase("procedureConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("procedureConcept_concept_id")) {
 					Concept procedureConcept = ConceptService._construct(rs, null, "procedureConcept");
 					procedureOccurrence.setProcedureConcept(procedureConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_procedure_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_date")) {
 					procedureOccurrence.setProcedureDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
 					procedureOccurrence.setProcedureDateTime(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
 					Concept procedureTypeConcept = ConceptService._construct(rs, null, "procedureTypeConcept");
 					procedureOccurrence.setProcedureTypeConcept(procedureTypeConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("modifierConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("modifierConcept_concept_id")) {
 					Concept modifierConcept = ConceptService._construct(rs, null, "modifierConcept");
 					procedureOccurrence.setModifierConcept(modifierConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
 					procedureOccurrence.setQuantity(rs.getLong(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
 					Provider provider = ProviderService._construct(rs, null, "provider");
 					procedureOccurrence.setProvider(provider);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
 					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
 					procedureOccurrence.setVisitOccurrence(visitOccurrence);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitDetail_visit_detail_id")) {
-					VisitDetail visitDetail = VisitDetailService._construct(rs, null, "visitDetail");
-					procedureOccurrence.setVisitDetail(visitDetail);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_procedure_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_source_value")) {
 					procedureOccurrence.setProcedureSourceValue(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("procedureSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("procedureSourceConcept_concept_id")) {
 					Concept procedureSourceConcept = ConceptService._construct(rs, null, "procedureSourceConcept");
 					procedureOccurrence.setProcedureSourceConcept(procedureSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_modifier_source_value")) {
-					procedureOccurrence.setModifierSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
+					procedureOccurrence.setQualifierSourceValue(rs.getString(columnInfo));
 				}
 
 			}
@@ -113,8 +88,64 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return procedureOccurrence;
 	}
 
+	public static ProcedureOccurrence _construct(FieldValueList rowResult, ProcedureOccurrence procedureOccurrence,
+			String alias, List<String> columns) {
+		if (procedureOccurrence == null)
+			procedureOccurrence = new ProcedureOccurrence();
+
+		if (alias == null || alias.isEmpty())
+			alias = ProcedureOccurrence._getTableName();
+
+		for (String columnInfo : columns) {
+			if (columnInfo.equalsIgnoreCase(alias + "_procedure_occurrence_id")) {
+				procedureOccurrence.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rowResult, null, "fPerson", columns);
+				procedureOccurrence.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("procedureConcept_concept_id")) {
+				Concept procedureConcept = ConceptService._construct(rowResult, null, "procedureConcept", columns);
+				procedureOccurrence.setProcedureConcept(procedureConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					procedureOccurrence.setProcedureDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					procedureOccurrence.setProcedureDateTime(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
+				Concept procedureTypeConcept = ConceptService._construct(rowResult, null, "procedureTypeConcept", columns);
+				procedureOccurrence.setProcedureTypeConcept(procedureTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase("modifierConcept_concept_id")) {
+				Concept modifierConcept = ConceptService._construct(rowResult, null, "modifierConcept", columns);
+				procedureOccurrence.setModifierConcept(modifierConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
+				procedureOccurrence.setQuantity(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rowResult, null, "provider", columns);
+				procedureOccurrence.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rowResult, null, "visitOccurrence", columns);
+				procedureOccurrence.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_source_value")) {
+				procedureOccurrence.setProcedureSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("procedureSourceConcept_concept_id")) {
+				Concept procedureSourceConcept = ConceptService._construct(rowResult, null, "procedureSourceConcept", columns);
+				procedureOccurrence.setProcedureSourceConcept(procedureSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
+				procedureOccurrence.setQualifierSourceValue(rowResult.get(columnInfo).getStringValue());
+			}
+
+		}
+
+		return procedureOccurrence;
+	}
 }

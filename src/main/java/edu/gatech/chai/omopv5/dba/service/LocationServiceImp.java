@@ -22,6 +22,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Location;
 
 // TODO: Auto-generated Javadoc
@@ -59,6 +61,11 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	@Override
 	public Location construct(ResultSet rs, Location entity, String alias) {
 		return LocationService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Location construct(FieldValueList rowResult, Location entity, String alias, List<String> columns) {
+		return LocationService._construct(rowResult, entity, alias, columns);
 	}
 
 }

@@ -22,6 +22,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
@@ -74,6 +76,11 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	@Override
 	public CareSite construct(ResultSet rs, CareSite entity, String alias) {
 		return CareSiteService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public CareSite construct(FieldValueList rowResult, CareSite entity, String alias, List<String> columns) {
+		return CareSiteService._construct(rowResult, entity, alias, columns);
 	}
 
 }

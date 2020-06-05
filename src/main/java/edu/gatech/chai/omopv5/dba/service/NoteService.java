@@ -99,6 +99,8 @@ public interface NoteService extends IService<Note> {
 			alias = Note._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_note_id")) {
 				note.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

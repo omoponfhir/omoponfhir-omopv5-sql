@@ -110,6 +110,8 @@ public interface ObservationService extends IService<Observation> {
 			alias = Observation._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_observation_id")) {
 				observation.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

@@ -104,6 +104,8 @@ public interface CareSiteService extends IService<CareSite> {
 			alias = CareSite._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_care_site_id")) {
 				careSite.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("location_location_id")) {

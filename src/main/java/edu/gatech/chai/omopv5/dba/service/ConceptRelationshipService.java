@@ -78,6 +78,8 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 			alias = ConceptRelationship._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
 				conceptRelationship.setConcept1(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {

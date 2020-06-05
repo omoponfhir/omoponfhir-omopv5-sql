@@ -105,6 +105,7 @@ public interface ConceptService extends IService<Concept> {
 			alias = Concept._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
 
 			if (columnInfo.equalsIgnoreCase(alias + "_concept_id")) {
 				concept.setId(rowResult.get(columnInfo).getLongValue());

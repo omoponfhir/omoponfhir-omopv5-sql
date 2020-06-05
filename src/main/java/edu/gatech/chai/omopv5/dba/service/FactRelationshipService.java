@@ -92,6 +92,8 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 			alias = FactRelationship._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
 				factRelationship.setDomainConcept1(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {

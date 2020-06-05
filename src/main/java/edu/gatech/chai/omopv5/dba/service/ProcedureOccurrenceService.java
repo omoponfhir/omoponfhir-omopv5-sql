@@ -101,6 +101,8 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 			alias = ProcedureOccurrence._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_procedure_occurrence_id")) {
 				procedureOccurrence.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

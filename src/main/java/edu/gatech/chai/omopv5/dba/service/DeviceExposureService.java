@@ -98,6 +98,8 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 			alias = DeviceExposure._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_device_exposure_id")) {
 				deviceExposure.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

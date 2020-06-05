@@ -96,11 +96,13 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		System.out.println(
 				"Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		DatasetId defaultDataset = DatasetId.of(databaseConfig.getBigQueryDataset());
+		DatasetId defaultDataset = DatasetId.of(databaseConfig.getBigQueryProject(), databaseConfig.getBigQueryDataset());
 		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(query).setDefaultDataset(defaultDataset).setUseLegacySql(false).build();
 		
-		JobId jobId = JobId.of(UUID.randomUUID().toString());
-	    Job queryJob = bigQuery.create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
+		JobId jobId = JobId.of(databaseConfig.getBigQueryProject(), UUID.randomUUID().toString());
+		
+		System.out.println("jobId:"+jobId.toString()+ ", queryConfig:"+queryConfig.toString());
+	    Job queryJob = getBigQuery().create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
 
 	    // Wait for the query to complete.
 	    queryJob = queryJob.waitFor();
@@ -110,8 +112,10 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 	      throw new RuntimeException("Job no longer exists");
 	    } else if (queryJob.getStatus().getError() != null) {
 	      throw new RuntimeException(queryJob.getStatus().getExecutionErrors().toString());
-	    }
+	    } 
 
+	    System.out.println("GENERATED ID: "+queryJob.getGeneratedId());
+	    System.out.println("QueryJOB: "+queryJob.getQueryResults().getValues());
 		return queryJob.getQueryResults();
 	}
 

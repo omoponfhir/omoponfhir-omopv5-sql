@@ -92,6 +92,8 @@ public interface VocabularyService extends IService<Vocabulary> {
 			alias = Vocabulary._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
 				vocabulary.setId(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {

@@ -63,6 +63,8 @@ public interface DeathService extends IService<Death> {
 			alias = Death._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 				FPerson fPerson = FPersonService._construct(rowResult, null, "fPerson", columns);
 				death.setFPerson(fPerson);

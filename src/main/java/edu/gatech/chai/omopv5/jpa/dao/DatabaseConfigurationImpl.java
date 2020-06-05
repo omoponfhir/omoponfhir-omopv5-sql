@@ -10,6 +10,7 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
 	private String targetDialect;
 	private DataSource dataSource;
 	private String bigQueryDataset;
+	private String bigQueryProject;
 
 	@Override
 	public String getSqlRenderTargetDialect() {
@@ -34,12 +35,21 @@ public class DatabaseConfigurationImpl implements DatabaseConfiguration {
 	@Override
 	public void setBigQueryDataset(String dataset) {
 		this.bigQueryDataset = dataset;
-		
 	}
 
 	@Override
 	public String getBigQueryDataset() {
 		return this.bigQueryDataset;
+	}
+
+	@Override
+	public void setBigQueryProject(String project) {
+		this.bigQueryProject = project;
+	}
+
+	@Override
+	public String getBigQueryProject() {
+		return this.bigQueryProject;
 	}
 
 }

@@ -9,4 +9,6 @@ public interface DatabaseConfiguration {
 	public void setDataSource(DataSource dataSource);
 	public void setBigQueryDataset(String dataset);
 	public String getBigQueryDataset();
+	public void setBigQueryProject(String project);
+	public String getBigQueryProject();
 }

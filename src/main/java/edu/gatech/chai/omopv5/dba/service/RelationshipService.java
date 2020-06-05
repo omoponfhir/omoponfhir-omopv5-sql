@@ -100,6 +100,8 @@ public interface RelationshipService extends IService<Relationship> {
 			alias = Relationship._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 				relationship.setId(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {

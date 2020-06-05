@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -441,13 +442,32 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 //		return sql;
 //	}
 
+	private List<String> listOfColumns(String sql) {
+		List<String> retv = new ArrayList<String>();
+
+		// select <columnSection> from ...
+		int endIndex = sql.indexOf("from");
+		if (endIndex > 7) {
+			String columnSection = sql.substring(7, endIndex).trim();
+			String[] columns = columnSection.split(",");
+			for (String column : columns) {
+				retv.add(column.substring(column.indexOf(" as ") + 4).trim().toLowerCase());
+			}
+		}
+
+		return retv;
+	}
+
 	private Long insertEntity(Class<T> clazz, T entity) {
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
+		String primaryId = getSqlTableColumnName("id");
+		String tableName = getSqlTableName(clazz);
+
 		String sql = "insert into @table ";
 		parameterList.add("table");
-		valueList.add(getSqlTableName(clazz));
+		valueList.add(tableName);
 
 		String columns = "";
 		String values = "";
@@ -473,7 +493,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 						// Vocabulary table has Id. But, it's string. So, we only care Long ID
 						Long nextId = (Long) field.get(entity);
 						if (nextId == null || nextId == 0L) {
-							String primaryId = getSqlTableColumnName("id");
 							nextIdString = "coalesce(max(" + primaryId + "), 0)+1";
 //
 //							nextIdString = getNextId(clazz, parameterList, valueList);
@@ -512,19 +531,32 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			try {
 				Object fieldObject = field.get(entity);
 				if (fieldObject != null) {
+					System.out.println("FIELDOBJECT:" + fieldObject.toString() + ":FIELDOBJECT");
+					System.out.println("FIELDTYPE:" + field.getType() + ":FIELDTYPE");
+
 					if (field.getType() == String.class) {
 						fieldValue = "'" + (String) fieldObject + "'";
 					} else if (field.getType() == Double.class || field.getType() == Integer.class
-							|| field.getType() == Date.class || field.getType() == Short.class
-							|| field.getType() == DateTime.class || field.getType() == Long.class) {
+							|| field.getType() == Short.class || field.getType() == Long.class) {
 						fieldValue = fieldObject.toString();
+					} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
+						if (columnName.endsWith("time")) {
+							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+							fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
+						} else {
+							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+							fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
+						}
 					} else {
 						Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
 						Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
 						if (idObject instanceof String) {
 							fieldValue = "'" + (String) idObject + "'";
-						} else {
+						} else if (idObject instanceof Long) {
 							fieldValue = idObject.toString();
+						} else {
+							logger.error(columnName + " is foreign table. id cannot be null");
+							return null;
 						}
 					}
 				} else if (nextIdString == null) {
@@ -601,6 +633,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		}
 
+		Long id = null;
 		if (!columns.isEmpty() && !values.isEmpty() && !"".equals(columns) && !"".equals(values)) {
 			sql += "(" + columns + ") select " + values + " from @table";
 			sql = renderedSql(sql, parameterList, valueList);
@@ -609,14 +642,29 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			logger.debug("SqlRender:" + sql);
 
 			try {
-				Long id = getQueryEntityDao().updateQuery(sql);
-				return id;
-			} catch (SQLException e) {
+				if (getQueryEntityDao().isBigQuery()) {
+					getQueryEntityDao().runBigQuery(sql);
+
+					// We need get the last inserted id.
+					sql = "select max(" + primaryId + ") as last_id from " + tableName;
+					TableResult result = getQueryEntityDao().runBigQuery(sql);
+					for (FieldValueList row : result.iterateAll()) {
+						id = row.get("last_id").getLongValue();
+						if (id != null) {
+							break;
+						}
+					}
+				} else {
+					id = getQueryEntityDao().updateQuery(sql);
+					return id;
+				}
+
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		return null;
+		return id;
 	}
 
 	public T create(T entity) {
@@ -995,9 +1043,18 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		try {
 			if (getQueryEntityDao().isBigQuery()) {
 				TableResult result = getQueryEntityDao().runBigQuery(sql);
+				List<String> columns = listOfColumns(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				System.out.println(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				for (String column : columns) {
+//					System.out.println(column);
+//				}
 				for (FieldValueList row : result.iterateAll()) {
-					List<String> columns = new ArrayList<String>();
 					T entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						entities.add(entity);
+					}
 				}
 			} else {
 
@@ -1070,16 +1127,34 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			logger.debug("SqlRender:" + sql);
 
 			try {
-				ResultSet rs = getQueryEntityDao().runQuery(sql);
+				if (getQueryEntityDao().isBigQuery()) {
+					TableResult result = getQueryEntityDao().runBigQuery(sql);
+					List<String> columns = listOfColumns(sql);
+//					System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//					System.out.println(sql);
+//					System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//					for (String column : columns) {
+//						System.out.println(column);
+//					}
+					for (FieldValueList row : result.iterateAll()) {
+						T entity = construct(row, null, getSqlTableName(), columns);
+						if (entity != null) {
+							entities.add(entity);
+						}
+					}
+				} else {
 
-				while (rs.next()) {
-					T entity = construct(rs, null, getSqlTableName());
-					if (entity != null) {
-						entities.add(entity);
+					ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+					while (rs.next()) {
+						T entity = construct(rs, null, getSqlTableName());
+						if (entity != null) {
+							entities.add(entity);
+						}
 					}
 				}
 
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

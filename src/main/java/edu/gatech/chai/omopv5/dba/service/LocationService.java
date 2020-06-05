@@ -91,6 +91,8 @@ public interface LocationService extends IService<Location> {
 			alias = Location._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_location_id")) {
 				location.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {

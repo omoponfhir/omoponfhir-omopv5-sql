@@ -95,6 +95,8 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 			alias = ConditionOccurrence._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
 				conditionOccurrence.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.google.cloud.bigquery.FieldValue;
 import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.CareSite;
@@ -168,6 +169,8 @@ public interface FPersonService extends IService<FPerson> {
 
 		for (String columnInfo : columns) {
 			// f_table content
+			if (rowResult.get(columnInfo).isNull()) continue;
+			
 			if (columnInfo.equalsIgnoreCase(alias + "_person_id")) {
 				fPerson.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_family_name")) {

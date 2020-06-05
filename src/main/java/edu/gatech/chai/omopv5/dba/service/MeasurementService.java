@@ -113,6 +113,8 @@ public interface MeasurementService extends IService<Measurement> {
 			alias = Measurement._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_measurement_id")) {
 				measurement.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

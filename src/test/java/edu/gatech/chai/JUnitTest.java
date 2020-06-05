@@ -16,8 +16,9 @@
  *******************************************************************************/
 package edu.gatech.chai;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -32,10 +33,12 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
-import edu.gatech.chai.omopv5.dba.service.ParameterWrapper;
+import edu.gatech.chai.omopv5.dba.service.ObservationService;
 import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfiguration;
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
+import edu.gatech.chai.omopv5.model.entity.Observation;
 
 /**
  * Unit test for simple App.
@@ -54,6 +57,9 @@ public class JUnitTest {
 	@Autowired
 	private FObservationViewService fObservationViewService;
 
+	@Autowired
+	private ObservationService observationService;
+
 	@Test
 	public void personTableTest() {
 //		ds = new PGPoolingDataSource();
@@ -70,23 +76,50 @@ public class JUnitTest {
 
 		databaseConfiguration.setSqlRenderTargetDialect("bigquery");
 		databaseConfiguration.setBigQueryDataset(System.getenv("BIGQUERYDATASET"));
+		databaseConfiguration.setBigQueryProject(System.getenv("BIGQUERYPROJECT"));
 
-		List<FPerson> outFperson = fPersonService.searchWithoutParams(0, 10, null);
-//		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
+//		List<FPerson> outFperson = fPersonService.searchWithoutParams(0, 10, null);
 		
-		logger.debug("Total Returned FPerson: "+outFperson.size());
-		for (FPerson fperson : outFperson) {
-			System.out.println(fperson.toString());
-		}
-		
-//		logger.debug("Total Returned FObservationView: "+outFObs.size());
-//		for (FObservationView fObservationView : outFObs) {
-//			System.out.println(fObservationView.toString());
+//		logger.debug("Total Returned FPerson: "+outFperson.size());
+//		System.out.println("Total Returned FPerson: "+outFperson.size());
+//		for (FPerson fperson : outFperson) {
+//			System.out.println(fperson.toString());
 //		}
 
-		assert(outFperson.size() > 0);
+		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
+		logger.debug("Total Returned FObservationView: "+outFObs.size());
+		for (FObservationView fObservationView : outFObs) {
+			System.out.println(fObservationView.toString());
+		}
+
+//		assert(outFperson.size() > 0);
 //		assert(outFObs.size() > 0);
+
 		
+//		FPerson fPerson = new FPerson();
+//		fPerson.setGivenName1("GBQ");
+//		fPerson.setFamilyName("Testing");
+//		fPerson.setYearOfBirth(2015);
+//		FPerson retFPerson = fPersonService.create(fPerson);
+//		System.out.println(retFPerson.toString());
+
+		Observation observation = new Observation();
+		observation.setObservationConcept(new Concept(3012030L));
+		FPerson fPerson = new FPerson();
+		fPerson.setId(2L);
+		observation.setFPerson(fPerson);
+		observation.setObservationTypeConcept(new Concept(38000280L));
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd").parse("2138-07-17");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		observation.setObservationDate(date);
+		
+		Observation retObs = observationService.create(observation);
+		System.out.println(retObs.toString());
+
 //		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
 //		ParameterWrapper paramWrapper = new ParameterWrapper();
 //		paramWrapper.setParameterType("String");

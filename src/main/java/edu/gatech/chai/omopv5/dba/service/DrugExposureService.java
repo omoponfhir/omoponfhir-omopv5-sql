@@ -117,6 +117,8 @@ public interface DrugExposureService extends IService<DrugExposure> {
 			alias = DrugExposure._getTableName();
 		
 			for (String columnInfo : columns) {
+				if (rowResult.get(columnInfo).isNull()) continue;
+
 				if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_id")) {
 					drugExposure.setId(rowResult.get(columnInfo).getLongValue());
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {

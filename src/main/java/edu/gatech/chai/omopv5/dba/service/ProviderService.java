@@ -95,6 +95,8 @@ public interface ProviderService extends IService<Provider> {
 			alias = Provider._getTableName();
 
 		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
 			if (columnInfo.equalsIgnoreCase(alias + "_provider_id")) {
 				provider.setId(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_provider_name")) {

@@ -298,7 +298,9 @@ public class ParameterWrapper {
 					Long dateInMili = Long.valueOf(_valueName);
 					Date value = new Date(dateInMili);
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-					valueName = "'" + dateFormat.format(value) + "'";
+					valueName = "cast ('" + dateFormat.format(value) + "' as date)";
+				} else {
+					valueName = _valueName;
 				}
 
 				String oper = operIter.next();
@@ -306,13 +308,14 @@ public class ParameterWrapper {
 				logger.debug("--- value:" + valueName);
 				logger.debug("--- operator:" + oper);
 
-				Field field = entityClass.getDeclaredField(attributeName);
+				Field field; 
 
+				// Column path can be set with "." for foreign tables.
 				String[] columnPath = attributeName.split("\\.");
 				if (columnPath.length == 1) {
-					// If columnPath is not set, then this is where statement for local
-					// table columns.
-
+					// If columnPath is not set, then this is local table column.
+					field = entityClass.getDeclaredField(attributeName);
+					
 					// the attribute name needs to be changed to alias.sqlColumnName format.
 					Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
 
@@ -346,6 +349,9 @@ public class ParameterWrapper {
 					// columnPath[1]: column variable in the foreign table class column variable.
 					//
 					// The annotation for this field must be JoinColumn.
+
+					field = entityClass.getDeclaredField(columnPath[0]);
+
 					JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 					if (joinColumnAnnotation == null) {
 						logger.error("JoinColumn is missing for this attribute, " + attributeName);
@@ -354,7 +360,8 @@ public class ParameterWrapper {
 					}
 
 					// Now, check if the foreign table column exists and get real sql column name.
-					Class<?> fTableClazz = field.getDeclaringClass();
+//					Class<?> fTableClazz = field.getDeclaringClass();
+					Class<?> fTableClazz = field.getType();
 					String sqlColumnName = SqlUtil.getSqlColumnName(fTableClazz, columnPath[1]);
 					if (sqlColumnName == null) {
 						logger.error("Failed to get sql column name for table=" + fTableClazz.getCanonicalName()

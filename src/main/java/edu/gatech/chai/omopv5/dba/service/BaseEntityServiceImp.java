@@ -191,10 +191,14 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public String constructSqlSelectWithoutWhere() {
-		return constructSqlSelectWithoutWhere(null);
+		return constructSqlSelectWithoutWhere(null, false);
 	}
 
 	public String constructSqlSelectWithoutWhere(String rootTableName) {
+		return constructSqlSelectWithoutWhere(rootTableName, false);
+	}
+	
+	public String constructSqlSelectWithoutWhere(String rootTableName, boolean getCount) {
 		String sqlResultList = "";
 
 		Class<T> clazz = getEntityClass();
@@ -247,7 +251,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		for (Field field : fields) {
 			String tableName = SqlUtil.getTableName(field.getDeclaringClass());
+			if (tableName == null) continue;
+			
 			String variableName = field.getName();
+//			System.out.println("+++++++++++++"+tableName+"  "+variableName);
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
 			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 
@@ -353,7 +360,14 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 		}
 
-		return "select " + sqlResultList + " from " + sqlFromTableList;
+		String retVal;
+		if (getCount) {
+			retVal = "select count(*) as count from " + sqlFromTableList;
+		} else {
+			retVal = "select " + sqlResultList + " from " + sqlFromTableList;
+		}
+		
+		return retVal;
 	}
 
 	public String getSqlResultTableStatement(List<String> parameterList, List<String> valueList) {
@@ -372,6 +386,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		Long retVal = 0L;
 
 		String queryString = "select count(*) as count from " + getSqlTableName() + ";";
+		queryString = renderedSql(queryString, new ArrayList<String>(), new ArrayList<String>());
 
 		try {
 			if (getQueryEntityDao().isBigQuery()) {
@@ -403,7 +418,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String sql = constructSqlSelectWithoutWhere();
+		String sql = constructSqlSelectWithoutWhere(null, true);
 		try {
 			String joinTablesWhere = ParameterWrapper.constructClause(getEntityClass(), paramList, parameterList,
 					valueList);
@@ -411,6 +426,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				sql = sql + joinTablesWhere;
 			}
 
+			sql = renderedSql(sql, parameterList, valueList);
 			if (getQueryEntityDao().isBigQuery()) {
 				TableResult result = getQueryEntityDao().runBigQuery(sql);
 				for (FieldValueList row : result.iterateAll()) {
@@ -442,7 +458,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 //		return sql;
 //	}
 
-	private List<String> listOfColumns(String sql) {
+	protected List<String> listOfColumns(String sql) {
 		List<String> retv = new ArrayList<String>();
 
 		// select <columnSection> from ...
@@ -540,7 +556,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 							|| field.getType() == Short.class || field.getType() == Long.class) {
 						fieldValue = fieldObject.toString();
 					} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
-						if (columnName.endsWith("time")) {
+						if (columnName.endsWith("time") || field.getType() == DateTime.class) {
 							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 							fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
 						} else {

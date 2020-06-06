@@ -81,7 +81,7 @@ public class SqlUtil {
 			}
 			tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
 			if (tableAnnotation == null) {
-				logger.error("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
+				logger.warn("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
 				return null;
 			}
 		}

@@ -17,14 +17,13 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
 import edu.gatech.chai.omopv5.model.entity.Concept;
 
@@ -34,85 +33,96 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
  */
 @Service
 public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements ConceptService {
-	
+
 	/**
 	 * Instantiates a new concept service imp.
 	 */
 	public ConceptServiceImp() {
 		super(Concept.class);
 	}
-	
-	/* (non-Javadoc)
-	 * @see edu.gatech.chai.omopv5.dba.service.ConceptService#getIngredient(edu.gatech.chai.omopv5.model.entity.Concept)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.gatech.chai.omopv5.dba.service.ConceptService#getIngredient(edu.gatech.
+	 * chai.omopv5.model.entity.Concept)
 	 */
-	@Transactional(readOnly = true)
 	public List<Concept> getIngredient(Concept concept) {
-		
+
 		List<Concept> concepts = new ArrayList<Concept>();
-		
+
 		if ("Ingredient".equals(concept.getConceptClassId())) {
 			// This is ingredient. Just return empty list
 			return concepts;
 		}
-		
+
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
-		
+
 		String sql = null;
 		if ("NDC".equals(concept.getVocabularyId())) {
 			// Use JPQL
-			sql = "select c "
-					+ "FROM Concept src "
-					+ "JOIN ConceptRelationship cr on src.id = cr.conceptId1 "
-			        + "AND cr.relationship_id = 'Maps to' "
-			        + "AND cr.invalid_reason is null "
-			        + "JOIN Concept tar on cr.conceptId2 = tar.id "
-			        + "AND tar.standardConcept = 'S' "
-			        + "AND tar.invalidReason is null "
-			        + "JOIN ConceptAncestor ca ON ca.ancestorConcept = tar.id "
-			        + "JOIN Concept c ON ca.ancestorConcept = c.id "
-			        + "WHERE src.conceptCode = :med_code "
-			        + "AND 'NDC' = src.vocabulary "
-			        + "AND c.vocabulary = 'RxNorm' "
-			        + "AND c.conceptClass = 'Ingredient' "
-			        + "AND src.invalidReason is null";
+			sql = "select c " + "FROM Concept src " + "JOIN ConceptRelationship cr on src.id = cr.conceptId1 "
+					+ "AND cr.relationship_id = 'Maps to' " + "AND cr.invalid_reason is null "
+					+ "JOIN Concept tar on cr.conceptId2 = tar.id " + "AND tar.standardConcept = 'S' "
+					+ "AND tar.invalidReason is null " + "JOIN ConceptAncestor ca ON ca.ancestorConcept = tar.id "
+					+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
+					+ "AND 'NDC' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
+					+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null";
 		} else if ("RxNorm".equals(concept.getVocabularyId())) {
 			// when RxNorm.
-			sql = "select c "
-					+ "FROM Concept src " 
-					+ "JOIN ConceptAncestor ca ON ca.descendantConcept = src.id "
-					+ "JOIN Concept c ON ca.ancestorConcept = c.id "
-					+ "WHERE src.conceptCode = :med_code "
-					+ "AND 'RxNorm' = src.vocabulary "
-					+ "AND c.vocabulary = 'RxNorm' "
-					+ "AND c.conceptClass = 'Ingredient' "
-					+ "AND src.invalidReason is null "
+			sql = "select c " + "FROM Concept src " + "JOIN ConceptAncestor ca ON ca.descendantConcept = src.id "
+					+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
+					+ "AND 'RxNorm' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
+					+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null "
 					+ "AND c.invalidReason is null";
 		} else {
 			return concepts;
 		}
-		
+
 		sql = renderedSql(sql, parameterList, valueList);
 
 		System.out.println(sql);
 
+		Concept entity;
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(sql);
+				List<String> columns = listOfColumns(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				System.out.println(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				for (String column : columns) {
+//					System.out.println(column);
+//				}
+				for (FieldValueList row : result.iterateAll()) {
+					entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						break;
+					}
+				}
+			} else {
 
-			while (rs.next()) {
-				Concept entity = ConceptService._construct(rs, null, "c");
-				if (entity != null) {
-					concepts.add(entity);
+				ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+				while (rs.next()) {
+					entity = ConceptService._construct(rs, null, "c");
+					if (entity != null) {
+						concepts.add(entity);
+					}
 				}
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return concepts;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see edu.gatech.chai.omopv5.dba.service.ConceptService#getLargestId()
 	 */
 	@Override

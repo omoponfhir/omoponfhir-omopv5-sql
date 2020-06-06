@@ -115,7 +115,6 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 	    } 
 
 	    System.out.println("GENERATED ID: "+queryJob.getGeneratedId());
-	    System.out.println("QueryJOB: "+queryJob.getQueryResults().getValues());
 		return queryJob.getQueryResults();
 	}
 

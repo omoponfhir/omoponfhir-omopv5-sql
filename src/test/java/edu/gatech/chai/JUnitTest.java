@@ -33,11 +33,13 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
+import edu.gatech.chai.omopv5.dba.service.MeasurementService;
 import edu.gatech.chai.omopv5.dba.service.ObservationService;
 import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
+import edu.gatech.chai.omopv5.model.entity.Measurement;
 import edu.gatech.chai.omopv5.model.entity.Observation;
 
 /**
@@ -59,6 +61,9 @@ public class JUnitTest {
 
 	@Autowired
 	private ObservationService observationService;
+
+	@Autowired
+	private MeasurementService measurementService;
 
 	@Test
 	public void personTableTest() {
@@ -103,24 +108,44 @@ public class JUnitTest {
 //		FPerson retFPerson = fPersonService.create(fPerson);
 //		System.out.println(retFPerson.toString());
 
-		Observation observation = new Observation();
-		observation.setObservationConcept(new Concept(3012030L));
+//		Observation observation = new Observation();
+//		observation.setObservationConcept(new Concept(3012030L));
+//		FPerson fPerson = new FPerson();
+//		fPerson.setId(2L);
+//		observation.setFPerson(fPerson);
+//		observation.setObservationTypeConcept(new Concept(38000280L));
+//		Date date = null;
+//		try {
+//			date = new SimpleDateFormat("yyyy-MM-dd").parse("2138-07-17");
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+//		observation.setObservationDate(date);
+//		
+//		Observation retObs = observationService.create(observation);
+//		System.out.println(retObs.toString());
+
+
+		Measurement measurement = new Measurement();
+		measurement.setMeasurementConcept(new Concept(3026314L));
 		FPerson fPerson = new FPerson();
-		fPerson.setId(2L);
-		observation.setFPerson(fPerson);
-		observation.setObservationTypeConcept(new Concept(38000280L));
+		fPerson.setId(3L);
+		measurement.setFPerson(fPerson);
+		measurement.setMeasurementTypeConcept(new Concept(0L));
 		Date date = null;
 		try {
-			date = new SimpleDateFormat("yyyy-MM-dd").parse("2138-07-17");
+			date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2138-07-17 14:35:00");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		observation.setObservationDate(date);
+		measurement.setMeasurementDate(date);
+		measurement.setMeasurementDateTime(date);
 		
-		Observation retObs = observationService.create(observation);
-		System.out.println(retObs.toString());
+		Measurement retVal = measurementService.create(measurement);
+		System.out.println(retVal.toString());
 
-//		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
+		
+		//		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
 //		ParameterWrapper paramWrapper = new ParameterWrapper();
 //		paramWrapper.setParameterType("String");
 //		paramWrapper

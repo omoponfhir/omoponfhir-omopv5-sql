@@ -17,15 +17,8 @@
 package edu.gatech.chai.omopv5.model.entity;
 
 import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.List;
 
-import edu.gatech.chai.omopv5.dba.service.CareSiteService;
-import edu.gatech.chai.omopv5.dba.service.CareSiteServiceImp;
-import edu.gatech.chai.omopv5.dba.service.ConceptService;
-import edu.gatech.chai.omopv5.dba.service.LocationService;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
@@ -141,6 +134,11 @@ public class CareSite extends BaseEntity {
 				if (annotation != null) {
 					return CareSite._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return CareSite._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

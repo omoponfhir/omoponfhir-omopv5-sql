@@ -197,7 +197,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	public String constructSqlSelectWithoutWhere(String rootTableName) {
 		return constructSqlSelectWithoutWhere(rootTableName, false);
 	}
-	
+
 	public String constructSqlSelectWithoutWhere(String rootTableName, boolean getCount) {
 		String sqlResultList = "";
 
@@ -251,8 +251,9 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		for (Field field : fields) {
 			String tableName = SqlUtil.getTableName(field.getDeclaringClass());
-			if (tableName == null) continue;
-			
+			if (tableName == null)
+				continue;
+
 			String variableName = field.getName();
 //			System.out.println("+++++++++++++"+tableName+"  "+variableName);
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
@@ -366,7 +367,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		} else {
 			retVal = "select " + sqlResultList + " from " + sqlFromTableList;
 		}
-		
+
 		return retVal;
 	}
 
@@ -472,6 +473,59 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		return retv;
+	}
+
+	protected T readEntity(String sql) throws Exception {
+		T entity = null;
+		if (getQueryEntityDao().isBigQuery()) {
+			TableResult result = getQueryEntityDao().runBigQuery(sql);
+			List<String> columns = listOfColumns(sql);
+			for (FieldValueList row : result.iterateAll()) {
+				entity = construct(row, null, getSqlTableName(), columns);
+				if (entity != null) {
+					break;
+				}
+			}
+		} else {
+
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+			if (rs.next()) {
+				entity = construct(rs, null, getSqlTableName());
+				if (entity != null) {
+					return entity;
+				}
+			}
+		}
+
+		return entity;
+	}
+
+	protected List<T> searchEntity(String sql) throws Exception {
+		List<T> entities = new ArrayList<T>();
+		
+		if (getQueryEntityDao().isBigQuery()) {
+			TableResult result = getQueryEntityDao().runBigQuery(sql);
+			List<String> columns = listOfColumns(sql);
+			for (FieldValueList row : result.iterateAll()) {
+				T entity = construct(row, null, getSqlTableName(), columns);
+				if (entity != null) {
+					entities.add(entity);
+				}
+			}
+		} else {
+
+			ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+			while (rs.next()) {
+				T entity = construct(rs, null, getSqlTableName());
+				if (entity != null) {
+					entities.add(entity);
+				}
+			}
+		}
+
+		return entities;
 	}
 
 	private Long insertEntity(Class<T> clazz, T entity) {
@@ -910,22 +964,34 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		System.out.println(sql);
 		logger.debug("SqlRender:" + sql);
 
+		T entity = null; 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-			if (rs.next()) {
-				T entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					return entity;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+			entity = readEntity(sql);
+//			if (getQueryEntityDao().isBigQuery()) {
+//				TableResult result = getQueryEntityDao().runBigQuery(sql);
+//				List<String> columns = listOfColumns(sql);
+//				for (FieldValueList row : result.iterateAll()) {
+//					entity = construct(row, null, getSqlTableName(), columns);
+//					if (entity != null) {
+//						break;
+//					}
+//				}
+//			} else {
+//
+//				ResultSet rs = getQueryEntityDao().runQuery(sql);
+//
+//				if (rs.next()) {
+//					entity = construct(rs, null, getSqlTableName());
+//					if (entity != null) {
+//						return entity;
+//					}
+//				}
+//			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return null;
+		return entity;
 	}
 
 	public Long removeById(Long id) {
@@ -1057,32 +1123,33 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		logger.debug("SqlRender:" + sql);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(sql);
-				List<String> columns = listOfColumns(sql);
-//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//				System.out.println(sql);
-//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//				for (String column : columns) {
-//					System.out.println(column);
+			entities.addAll(searchEntity(sql));
+//			if (getQueryEntityDao().isBigQuery()) {
+//				TableResult result = getQueryEntityDao().runBigQuery(sql);
+//				List<String> columns = listOfColumns(sql);
+////				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+////				System.out.println(sql);
+////				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+////				for (String column : columns) {
+////					System.out.println(column);
+////				}
+//				for (FieldValueList row : result.iterateAll()) {
+//					T entity = construct(row, null, getSqlTableName(), columns);
+//					if (entity != null) {
+//						entities.add(entity);
+//					}
 //				}
-				for (FieldValueList row : result.iterateAll()) {
-					T entity = construct(row, null, getSqlTableName(), columns);
-					if (entity != null) {
-						entities.add(entity);
-					}
-				}
-			} else {
-
-				ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-				while (rs.next()) {
-					T entity = construct(rs, null, getSqlTableName());
-					if (entity != null) {
-						entities.add(entity);
-					}
-				}
-			}
+//			} else {
+//
+//				ResultSet rs = getQueryEntityDao().runQuery(sql);
+//
+//				while (rs.next()) {
+//					T entity = construct(rs, null, getSqlTableName());
+//					if (entity != null) {
+//						entities.add(entity);
+//					}
+//				}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1143,32 +1210,33 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			logger.debug("SqlRender:" + sql);
 
 			try {
-				if (getQueryEntityDao().isBigQuery()) {
-					TableResult result = getQueryEntityDao().runBigQuery(sql);
-					List<String> columns = listOfColumns(sql);
-//					System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//					System.out.println(sql);
-//					System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//					for (String column : columns) {
-//						System.out.println(column);
+				entities.addAll(searchEntity(sql));
+//				if (getQueryEntityDao().isBigQuery()) {
+//					TableResult result = getQueryEntityDao().runBigQuery(sql);
+//					List<String> columns = listOfColumns(sql);
+////					System.out.println("++++++++++++++++++++++++++++++++++++++++");
+////					System.out.println(sql);
+////					System.out.println("++++++++++++++++++++++++++++++++++++++++");
+////					for (String column : columns) {
+////						System.out.println(column);
+////					}
+//					for (FieldValueList row : result.iterateAll()) {
+//						T entity = construct(row, null, getSqlTableName(), columns);
+//						if (entity != null) {
+//							entities.add(entity);
+//						}
 //					}
-					for (FieldValueList row : result.iterateAll()) {
-						T entity = construct(row, null, getSqlTableName(), columns);
-						if (entity != null) {
-							entities.add(entity);
-						}
-					}
-				} else {
-
-					ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-					while (rs.next()) {
-						T entity = construct(rs, null, getSqlTableName());
-						if (entity != null) {
-							entities.add(entity);
-						}
-					}
-				}
+//				} else {
+//
+//					ResultSet rs = getQueryEntityDao().runQuery(sql);
+//
+//					while (rs.next()) {
+//						T entity = construct(rs, null, getSqlTableName());
+//						if (entity != null) {
+//							entities.add(entity);
+//						}
+//					}
+//				}
 
 			} catch (Exception e) {
 				e.printStackTrace();

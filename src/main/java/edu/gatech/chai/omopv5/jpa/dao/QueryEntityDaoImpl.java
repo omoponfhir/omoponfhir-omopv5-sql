@@ -101,7 +101,7 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		
 		JobId jobId = JobId.of(databaseConfig.getBigQueryProject(), UUID.randomUUID().toString());
 		
-		System.out.println("jobId:"+jobId.toString()+ ", queryConfig:"+queryConfig.toString());
+//		System.out.println("jobId:"+jobId.toString()+ ", queryConfig:"+queryConfig.toString());
 	    Job queryJob = getBigQuery().create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
 
 	    // Wait for the query to complete.

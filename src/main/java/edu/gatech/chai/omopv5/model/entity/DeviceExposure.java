@@ -203,6 +203,11 @@ public class DeviceExposure extends BaseEntity {
 				if (annotation != null) {
 					return DeviceExposure._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return DeviceExposure._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

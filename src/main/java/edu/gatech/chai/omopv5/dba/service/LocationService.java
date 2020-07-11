@@ -69,7 +69,7 @@ public interface LocationService extends IService<Location> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_state")) {
 					location.setState(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
-					location.setZipCode(rs.getString(columnInfo));
+					location.setZip(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
 					location.setLocationSourceValue(rs.getString(columnInfo));
 				}
@@ -104,7 +104,7 @@ public interface LocationService extends IService<Location> {
 			} else if (columnInfo.equalsIgnoreCase(alias + "_state")) {
 				location.setState(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_zip")) {
-				location.setZipCode(rowResult.get(columnInfo).getStringValue());
+				location.setZip(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
 				location.setLocationSourceValue(rowResult.get(columnInfo).getStringValue());
 			}

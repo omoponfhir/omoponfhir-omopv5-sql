@@ -43,7 +43,7 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="drug_exposure_start_date", nullable=false)
 	private Date drugExposureStartDate;
 	
-	@Column(name="drug_exposure_start_datetime")
+	@Column(name="drug_exposure_start_datetime", nullable=false)
 	private Date drugExposureStartDateTime;
 
 	@Column(name="drug_exposure_end_date", nullable=false)

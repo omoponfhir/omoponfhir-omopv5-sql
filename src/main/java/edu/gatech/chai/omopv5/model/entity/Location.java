@@ -47,7 +47,7 @@ public class Location extends BaseEntity {
 	private String state;
 	
 	@Column(name="zip")
-	private String zipCode;
+	private String zip;
 	
 	@Column(name="county")
 	private String county;
@@ -63,14 +63,13 @@ public class Location extends BaseEntity {
 		this.id = id;
 	}
 	
-	public Location(String address1, String address2, String city,
-			String state, String zipCode) {
+	public Location(String address1, String address2, String city, String state, String zip) {
 		super();
 		this.address1 = address1;
 		this.address2 = address2;
 		this.city = city;
 		this.state = state;
-		this.zipCode = zipCode;		
+		this.zip = zip;		
 	}
 
 	public String getAddress1() {
@@ -105,12 +104,12 @@ public class Location extends BaseEntity {
 		this.state = state;
 	}
 
-	public String getZipCode() {
-		return zipCode;
+	public String getZip() {
+		return zip;
 	}
 
-	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
+	public void setZip(String zip) {
+		this.zip = zip;
 	}
 
 	public String getCounty() {

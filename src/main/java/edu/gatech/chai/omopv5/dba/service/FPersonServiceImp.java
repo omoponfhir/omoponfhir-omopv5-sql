@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Location;
@@ -57,58 +58,82 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 	}
 
 	public FPerson searchByNameAndLocation(String familyName, String given1Name, String given2Name, Location location) {
+		FPerson entity = null;
+		
 		String queryString = "select t from " + FPerson._getTableName() + " t WHERE";
-		Map<String, String> columnList = new HashMap<String, String>();
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
 
 		// Construct where clause here.
 		String where_clause = "";
 		if (familyName != null) {
-			where_clause = FPerson._getColumnName("familyName") + " like :fname";
-			columnList.put(":fname", familyName);
+			where_clause = FPerson._getColumnName("familyName") + " like @fname";
+			parameterList.add("fname");
+			valueList.add(familyName);
 		}
+
 		if (given1Name != null) {
 			if (where_clause == "")
-				where_clause = FPerson._getColumnName("givenName1") + " like :gname1";
+				where_clause = FPerson._getColumnName("givenName1") + " like @gname1";
 			else
-				where_clause += " AND " + FPerson._getColumnName("givenName1") + " like :gname1";
-			columnList.put(":gname1", given1Name);
+				where_clause += " AND " + FPerson._getColumnName("givenName1") + " like @gname1";
+			parameterList.add("gname1");
+			valueList.add(given1Name);
 		}
+		
 		if (given2Name != null) {
 			if (where_clause == "")
-				where_clause = FPerson._getColumnName("givenName2") + " like :gname2";
+				where_clause = FPerson._getColumnName("givenName2") + " like @gname2";
 			else
-				where_clause += " AND " + FPerson._getColumnName("givenName2") + " like :gname2";
-			columnList.put(":gname2", given1Name);
+				where_clause += " AND " + FPerson._getColumnName("givenName2") + " like @gname2";
+
+			parameterList.add("gname2");
+			valueList.add(given2Name);
 		}
 
 		if (location != null) {
 			if (where_clause == "")
-				where_clause = FPerson._getColumnName("location") + " = :location";
+				where_clause = FPerson._getColumnName("location") + " = @location";
 			else
-				where_clause += " AND " + FPerson._getColumnName("location") + " = :location";
+				where_clause += " AND " + FPerson._getColumnName("location") + " = @location";
 
-			columnList.put(":location", location.getId().toString());
+			parameterList.add("location");
+			valueList.add(location.getId().toString());
 		}
 
 		queryString += " " + where_clause;
-		logger.debug("Query for FPerson" + queryString);
+		
+		queryString = renderedSql(queryString, parameterList, valueList);
+		
+		logger.debug("Query for FPerson: " + queryString);
 		logger.debug(
 				FPerson._getColumnName("familyName") + ":" + familyName + " " + FPerson._getColumnName("givenName1")
 						+ ":" + given1Name + " " + FPerson._getColumnName("givenName2") + ":" + given2Name);
 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(queryString);
-
-			while (rs.next()) {
-				FPerson fp = construct(rs, null, "t");
-				if (fp != null)
-					return fp;
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+				List<String> columns = listOfColumns(queryString);
+				for (FieldValueList row : result.iterateAll()) {
+					entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						break;
+					}
+				}
+			} else {
+				ResultSet rs = getQueryEntityDao().runQuery(queryString);
+	
+				while (rs.next()) {
+					entity = construct(rs, null, "t");
+					if (entity != null)
+						break;
+				}
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return null;
+		return entity;
 	}
 
 	@Override
@@ -124,7 +149,11 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 		parameterList.add("value");
 
 		valueList.add(getEntity().getTableName());
-		valueList.add(getEntity().getColumnName("id"));
+		String idColumn = getEntity().getColumnName("id");
+		// idColumn has tablealias.column. But, when we delete, we need delete one at a time.
+		// so, we must not use alias here. 
+		idColumn = idColumn.substring(idColumn.indexOf(".")+1);
+		valueList.add(idColumn);
 		valueList.add(id.toString());
 
 		String[] parameters = new String[parameterList.size()];
@@ -135,8 +164,13 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 
 		sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 		try {
-			retVal = getQueryEntityDao().updateQuery(sql);
-		} catch (SQLException e) {
+			if (getQueryEntityDao().isBigQuery()) {
+				getQueryEntityDao().runBigQuery(sql);
+				retVal = 1L;
+			} else {
+				retVal = getQueryEntityDao().updateQuery(sql);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -145,11 +179,18 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 			sql = "delete from @table where @parameter=@value;";
 
 			valueList.set(0, Person._getTableName());
+			values = new String[valueList.size()];
+			values = valueList.toArray(values);
 			sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 
 			try {
-				retVal = getQueryEntityDao().updateQuery(sql);
-			} catch (SQLException e) {
+				if (getQueryEntityDao().isBigQuery()) {
+					getQueryEntityDao().runBigQuery(sql);
+					retVal = 1L;
+				} else {
+					retVal = getQueryEntityDao().updateQuery(sql);
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

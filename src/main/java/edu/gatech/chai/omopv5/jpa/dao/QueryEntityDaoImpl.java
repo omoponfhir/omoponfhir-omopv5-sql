@@ -167,7 +167,7 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		} else {
 			if (connection != null)
 				connection.close();
-			throw new SQLException("INSERT failed, no ID generated, with " + query);
+			throw new SQLException("update Query failed, no ID generated, with " + query);
 		}
 	}
 

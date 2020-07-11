@@ -171,8 +171,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			field = clazz.getDeclaredField(columnName);
 			sqlColumnName = getSqlTableColumnName(field);
 		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-
 			if (parentClazz != null) {
 				try {
 					field = parentClazz.getDeclaredField(columnName);
@@ -182,6 +180,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				} catch (SecurityException e1) {
 					e1.printStackTrace();
 				}
+			} else {
+				e.printStackTrace();
 			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -514,7 +514,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				}
 			}
 		} else {
-
 			ResultSet rs = getQueryEntityDao().runQuery(sql);
 
 			while (rs.next()) {
@@ -905,9 +904,13 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			logger.debug("SqlRender:" + sql);
 
 			try {
-				getQueryEntityDao().updateQuery(sql);
+				if (getQueryEntityDao().isBigQuery()) {
+					getQueryEntityDao().runBigQuery(sql);
+				} else {
+					getQueryEntityDao().updateQuery(sql);
+				}
 				return entity;
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -1009,9 +1012,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 		try {
-			Long ret = getQueryEntityDao().updateQuery(sql);
+			Long ret;
+			if (getQueryEntityDao().isBigQuery()) {
+				getQueryEntityDao().runBigQuery(sql);
+				ret = 1L;
+			} else {
+				ret = getQueryEntityDao().updateQuery(sql);
+			}
 			return ret;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -1031,24 +1040,37 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		parameterList.add("column");
 		parameterList.add("value");
 
-		valueList.add(getSqlTableColumnName(column));
+		valueList.add(getEntity().getColumnName(column));
 		valueList.add(value);
 
 		sql = renderedSql(sql, parameterList, valueList);
 
 		System.out.println(sql);
 		logger.debug("SqlRender:" + sql);
-
+		
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-			while (rs.next()) {
-				T entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					entities.add(entity);
-				}
-			}
-		} catch (SQLException e) {
+			entities.addAll(searchEntity(sql));
+//
+//			if (getQueryEntityDao().isBigQuery()) {
+//				TableResult result = getQueryEntityDao().runBigQuery(sql);
+//				List<String> columns = listOfColumns(sql);
+//				for (FieldValueList row : result.iterateAll()) {
+//					T entity = construct(row, null, getSqlTableName(), columns);
+//					if (entity != null) {
+//						entities.add(entity);
+//					}
+//				}
+//			} else {
+//					ResultSet rs = getQueryEntityDao().runQuery(sql);
+//		
+//					while (rs.next()) {
+//						T entity = construct(rs, null, getSqlTableName());
+//						if (entity != null) {
+//							entities.add(entity);
+//						}
+//					}
+//			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -1077,15 +1099,27 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		logger.debug("SqlRender:" + sql);
 
 		try {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-			while (rs.next()) {
-				T entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					entities.add(entity);
-				}
-			}
-		} catch (SQLException e) {
+			entities.addAll(searchEntity(sql));
+//			if (getQueryEntityDao().isBigQuery()) {
+//				TableResult result = getQueryEntityDao().runBigQuery(sql);
+//				List<String> columns = listOfColumns(sql);
+//				for (FieldValueList row : result.iterateAll()) {
+//					T entity = construct(row, null, getSqlTableName(), columns);
+//					if (entity != null) {
+//						entities.add(entity);
+//					}
+//				}
+//			} else {	
+//				ResultSet rs = getQueryEntityDao().runQuery(sql);
+//	
+//				while (rs.next()) {
+//					T entity = construct(rs, null, getSqlTableName());
+//					if (entity != null) {
+//						entities.add(entity);
+//					}
+//				}
+//			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -1177,7 +1211,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 
-			return null;
+			return entities;
 		}
 
 		if (sql != null && !sql.isEmpty()) {

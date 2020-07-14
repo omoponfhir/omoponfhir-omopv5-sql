@@ -3,7 +3,9 @@ package edu.gatech.chai.omopv5.dba.util;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,11 +110,18 @@ public class SqlUtil {
 		Date date = null;
 
 		if (dateString != null && !dateString.isEmpty()) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			try {
-				date = dateFormat.parse(dateString);
-			} catch (ParseException e) {
-				e.printStackTrace();
+			List<SimpleDateFormat> dateFormats = new ArrayList<SimpleDateFormat>();
+
+			dateFormats.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+			dateFormats.add(new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss"));
+
+			for (SimpleDateFormat dateFormat: dateFormats) {
+				try {
+					date = dateFormat.parse(dateString);
+					return date;
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

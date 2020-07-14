@@ -113,7 +113,7 @@ public class SqlUtil {
 			List<SimpleDateFormat> dateFormats = new ArrayList<SimpleDateFormat>();
 
 			dateFormats.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-			dateFormats.add(new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss"));
+			dateFormats.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
 
 			for (SimpleDateFormat dateFormat: dateFormats) {
 				try {

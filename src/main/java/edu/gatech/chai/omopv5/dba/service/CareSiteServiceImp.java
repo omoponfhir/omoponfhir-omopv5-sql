@@ -44,7 +44,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByLocation(edu.gatech.chai.omopv5.model.entity.Location)
 	 */
-	@Transactional(readOnly = true)
 	public CareSite searchByLocation(Location location) {
 		String query = "SELECT t FROM CareSite t WHERE location_id like :value";
 		return null;
@@ -53,7 +52,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByNameAndLocation(java.lang.String, edu.gatech.chai.omopv5.model.entity.Location)
 	 */
-	@Transactional(readOnly = true)
 	public CareSite searchByNameAndLocation(String careSiteName, Location location) {
 		String queryString = "SELECT t FROM CareSite t WHERE";
 		

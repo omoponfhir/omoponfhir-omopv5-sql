@@ -599,6 +599,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			try {
 				Object fieldObject = field.get(entity);
+				System.out.println("COLUMNNAME:" + columnName + ":COLUMNNAME");
 				if (fieldObject != null) {
 					System.out.println("FIELDOBJECT:" + fieldObject.toString() + ":FIELDOBJECT");
 					System.out.println("FIELDTYPE:" + field.getType() + ":FIELDTYPE");

@@ -47,9 +47,9 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 				String columnInfo = metaData.getColumnName(i);
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
-					conceptRelationship.setConcept1(rs.getLong(columnInfo));
+					conceptRelationship.setConceptId1(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
-					conceptRelationship.setConcept2(rs.getLong(columnInfo));
+					conceptRelationship.setConceptId2(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 					conceptRelationship.setRelationshipId(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
@@ -81,9 +81,9 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 			if (rowResult.get(columnInfo).isNull()) continue;
 
 			if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
-				conceptRelationship.setConcept1(rowResult.get(columnInfo).getLongValue());
+				conceptRelationship.setConceptId1(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
-				conceptRelationship.setConcept2(rowResult.get(columnInfo).getLongValue());
+				conceptRelationship.setConceptId2(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 				conceptRelationship.setRelationshipId(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {

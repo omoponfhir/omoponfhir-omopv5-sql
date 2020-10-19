@@ -31,10 +31,10 @@ public class ConceptRelationship extends BaseEntity {
 	 */
 
 	@Column(name="concept_id_1", nullable=false)
-	private Long concept1;
+	private Long conceptId1;
 	
 	@Column(name="concept_id_2", nullable=false)
-    private Long concept2;
+    private Long conceptId2;
 	
 	@Column(name="relationship_id", nullable=false)
 	private String relationshipId;
@@ -51,9 +51,9 @@ public class ConceptRelationship extends BaseEntity {
     public ConceptRelationship() {
     }
     
-    public ConceptRelationship(Long concept1, Long concept2, String relationshipId) {
-    	this.concept1 = concept1;
-    	this.concept2 = concept2;
+    public ConceptRelationship(Long conceptId1, Long conceptId2, String relationshipId) {
+    	this.conceptId1 = conceptId1;
+    	this.conceptId2 = conceptId2;
     	this.relationshipId = relationshipId;
     }
 
@@ -72,20 +72,20 @@ public class ConceptRelationship extends BaseEntity {
 		// We don't. So, just silently ignore...
 	}
 	
-	public Long getConcept1() {
-		return this.concept1;
+	public Long getConceptId1() {
+		return this.conceptId1;
 	}
 	
-	public void setConcept1(Long concept1) {
-		this.concept1 = concept1;
+	public void setConceptId1(Long conceptId1) {
+		this.conceptId1 = conceptId1;
 	}
 
-	public Long getConcept2() {
-		return this.concept2;
+	public Long getConceptId2() {
+		return this.conceptId2;
 	}
 	
-	public void setConcept2(Long concept2) {
-		this.concept2 = concept2;
+	public void setConceptId2(Long conceptId2) {
+		this.conceptId2 = conceptId2;
 	}
 	
 	public String getRelationshipId() {

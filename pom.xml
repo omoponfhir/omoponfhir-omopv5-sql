@@ -15,7 +15,7 @@
 	<packaging>jar</packaging>
 	<version>1.0.0</version>
 	<name>omoponfhir-omopv5-sql</name>
-	<description>OMOP on FHIR SQL for OMOP version 5</description>
+	<description>OMOP on FHIR SQL for OMOP version 5.2</description>
 	<url>http://maven.apache.org</url>
 
 	<licenses>

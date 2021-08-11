@@ -50,7 +50,7 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	public Location searchByAddress(String line1, String line2, String city, String state, String zip) {
 		Location entity = null;
 		
-		String queryString ="SELECT t FROM " + Location._getTableName() + " t WHERE";
+		String queryString ="SELECT * FROM " + Location._getTableName() + " WHERE";
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 

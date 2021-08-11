@@ -17,11 +17,8 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +27,6 @@ import org.springframework.stereotype.Service;
 import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.TableResult;
 
-import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
 // TODO: Auto-generated Javadoc
@@ -58,48 +54,48 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
-		String where_clause = "";
+		String where_clause = new String();
 		if (line1 != null) {
-			where_clause = Location._getColumnName("address1") + " like @line1";
+			where_clause = Location._getColumnName("address1") + " like '@line1'";
 			parameterList.add("line1");
 			valueList.add(line1);
 		}
 
 		if (line2 != null) {
-			if (where_clause == "")
-				where_clause = Location._getColumnName("address2") + " like @line2";
+			if (where_clause.isEmpty())
+				where_clause = Location._getColumnName("address2") + " like '@line2'";
 			else
-				where_clause += " AND " + Location._getColumnName("address2") + " like @line2";
+				where_clause += " AND " + Location._getColumnName("address2") + " like '@line2'";
 
 			parameterList.add("line2");
 			valueList.add(line2);
 		}
 
 		if (city != null) {
-			if (where_clause == "")
-				where_clause = Location._getColumnName("city") + " like @city";
+			if (where_clause.isEmpty())
+				where_clause = Location._getColumnName("city") + " like '@city'";
 			else
-				where_clause += " AND " + Location._getColumnName("city") + " like @city";
+				where_clause += " AND " + Location._getColumnName("city") + " like '@city'";
 
 			parameterList.add("city");
 			valueList.add(city);
 		}
 
 		if (state != null) {
-			if (where_clause == "")
-				where_clause = Location._getColumnName("state") + " like @state";
+			if (where_clause.isEmpty())
+				where_clause = Location._getColumnName("state") + " like '@state'";
 			else
-				where_clause += " AND " + Location._getColumnName("state") + " like @state";
+				where_clause += " AND " + Location._getColumnName("state") + " like '@state'";
 
 			parameterList.add("state");
 			valueList.add(state);
 		}
 
 		if (zip != null) {
-			if (where_clause == "")
-				where_clause = Location._getColumnName("zip") + " like @zip";
+			if (where_clause.isEmpty())
+				where_clause = Location._getColumnName("zip") + " like '@zip'";
 			else
-				where_clause += " AND " + Location._getColumnName("zip") + " like @zip";
+				where_clause += " AND " + Location._getColumnName("zip") + " like '@zip'";
 
 			parameterList.add("zip");
 			valueList.add(zip);

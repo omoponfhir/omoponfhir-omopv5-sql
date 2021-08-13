@@ -157,6 +157,7 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 
 			return 0L;
 		}
+		connection.commit();
 
 		ResultSet generatedKeys = stmt.getGeneratedKeys();
 		if (generatedKeys.next()) {

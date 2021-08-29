@@ -937,10 +937,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		if (parentClazz != null) {
-			if (updateEntity(id, parentClazz, entity) == null) {
-				logger.error("Failed to update parent table: " + getSqlTableName(parentClazz));
-				return null;
-			}
+			updateEntity(id, parentClazz, entity);
 		}
 
 		if (updateEntity(id, clazz, entity) == null) {

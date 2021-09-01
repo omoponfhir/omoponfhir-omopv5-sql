@@ -13,7 +13,7 @@
 	<groupId>edu.gatech.chai</groupId>
 	<artifactId>omoponfhir-omopv5-sql</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<name>omoponfhir-omopv5-sql</name>
 	<description>OMOP on FHIR SQL for OMOP version 5.2</description>
 	<url>http://maven.apache.org</url>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4.1211.jre7</version>
+			<version>42.2.23.jre7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -31,7 +31,6 @@ import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class FObservationViewServiceImp.
  */

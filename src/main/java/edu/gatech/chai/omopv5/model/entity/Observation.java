@@ -67,7 +67,7 @@ public class Observation extends BaseEntity {
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id", referencedColumnName="concept_id")
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="observation_source_value")

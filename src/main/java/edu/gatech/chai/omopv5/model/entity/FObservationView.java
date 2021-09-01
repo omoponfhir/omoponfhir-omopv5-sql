@@ -21,6 +21,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
@@ -28,6 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 @Table(name = "f_observation_view")
 public class FObservationView extends BaseEntity {
+	private static final Logger logger = LoggerFactory.getLogger(FObservationView.class);
 
 	@Id
 	@Column(name="observation_id", nullable=false)
@@ -284,7 +288,7 @@ public class FObservationView extends BaseEntity {
 						return FObservationView._getTableName() + "." + joinAnnotation.name();
 					}
 
-					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					logger.error("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
 			}

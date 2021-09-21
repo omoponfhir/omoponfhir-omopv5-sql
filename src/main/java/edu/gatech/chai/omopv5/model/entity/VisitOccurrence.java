@@ -243,6 +243,11 @@ public class VisitOccurrence extends BaseEntity {
 				if (annotation != null) {
 					return VisitOccurrence._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return VisitOccurrence._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

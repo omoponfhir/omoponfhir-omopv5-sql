@@ -19,6 +19,8 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
 
 // TODO: Auto-generated Javadoc
@@ -121,4 +123,7 @@ public interface IService<v extends BaseEntity> {
 //	Long getNextId();
 	
 	v construct (ResultSet rs, v entity, String alias);
+
+	v construct (FieldValueList rowResult, v entity, String alias, List<String> columns);
+
 }

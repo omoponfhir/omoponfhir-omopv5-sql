@@ -17,7 +17,11 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.Measurement;
 
@@ -38,6 +42,11 @@ public class MeasurementServiceImp extends BaseEntityServiceImp<Measurement> imp
 	@Override
 	public Measurement construct(ResultSet rs, Measurement entity, String alias) {
 		return MeasurementService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Measurement construct(FieldValueList rowResult, Measurement entity, String alias, List<String> columns) {
+		return MeasurementService._construct(rowResult, entity, alias, columns);
 	}
 
 }

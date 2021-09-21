@@ -19,4 +19,5 @@ import java.sql.SQLException;
 
 public interface QueryEntityDao extends IDao {
 	public void closeConnection() throws SQLException;
+	public boolean isBigQuery();
 }

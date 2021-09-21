@@ -19,7 +19,12 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -31,8 +36,9 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  */
 public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 	public static VisitOccurrence _construct(ResultSet rs, VisitOccurrence visitOccurrence, String alias) {
-		if (visitOccurrence == null) visitOccurrence = new VisitOccurrence();
-		
+		if (visitOccurrence == null)
+			visitOccurrence = new VisitOccurrence();
+
 		if (alias == null || alias.isEmpty())
 			alias = VisitOccurrence._getTableName();
 
@@ -44,78 +50,47 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_visit_occurrence_id")) {
 					visitOccurrence.setId(rs.getLong(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					visitOccurrence.setFPerson(fPerson);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitConcept_concept_id")) {
 					Concept visitConcept = ConceptService._construct(rs, null, "visitConcept");
 					visitOccurrence.setVisitConcept(visitConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
 					visitOccurrence.setVisitStartDate(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
 					visitOccurrence.setVisitStartDateTime(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
 					visitOccurrence.setVisitEndDate(rs.getDate(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
 					visitOccurrence.setVisitEndDateTime(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
 					Concept visitTypeConcept = ConceptService._construct(rs, null, "visitTypeConcept");
 					visitOccurrence.setVisitTypeConcept(visitTypeConcept);
-				}
-				
-				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
 					Provider provider = ProviderService._construct(rs, null, "provider");
 					visitOccurrence.setProvider(provider);
-				}
-
-				if (columnInfo.equalsIgnoreCase("careSite_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("careSite_provider_id")) {
 					CareSite careSite = CareSiteService._construct(rs, null, "careSite");
 					visitOccurrence.setCareSite(careSite);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_source_value")) {
 					visitOccurrence.setVisitSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
 					Concept visitSourceConcept = ConceptService._construct(rs, null, "visitSourceConcept");
 					visitOccurrence.setVisitSourceConcept(visitSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
 					Concept admittingSourceConcept = ConceptService._construct(rs, null, "admittingSourceConcept");
 					visitOccurrence.setAdmittingSourceConcept(admittingSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
 					visitOccurrence.setAdmittingSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
 					Concept dischargeToConcept = ConceptService._construct(rs, null, "dischargeToConcept");
 					visitOccurrence.setDischargeToConcept(dischargeToConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
 					visitOccurrence.setDischargeToSourceValue(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null, "precedingVisitOccurrence");
+				} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
+					VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null,
+							"precedingVisitOccurrence");
 					visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);
 				}
 
@@ -124,7 +99,84 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 			e.printStackTrace();
 			return null;
 		}
-		
+
+		return visitOccurrence;
+	}
+
+	public static VisitOccurrence _construct(FieldValueList rowResult, VisitOccurrence visitOccurrence, String alias,
+			List<String> columns) {
+		if (visitOccurrence == null)
+			visitOccurrence = new VisitOccurrence();
+
+		if (alias == null || alias.isEmpty())
+			alias = VisitOccurrence._getTableName();
+
+		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
+			if (columnInfo.equalsIgnoreCase(alias + "_visit_occurrence_id")) {
+				visitOccurrence.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rowResult, null, "fPerson", columns);
+				visitOccurrence.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("visitConcept_concept_id")) {
+				Concept visitConcept = ConceptService._construct(rowResult, null, "visitConcept", columns);
+				visitOccurrence.setVisitConcept(visitConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					visitOccurrence.setVisitStartDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					visitOccurrence.setVisitStartDateTime(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					visitOccurrence.setVisitEndDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					visitOccurrence.setVisitEndDateTime(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
+				Concept visitTypeConcept = ConceptService._construct(rowResult, null, "visitTypeConcept", columns);
+				visitOccurrence.setVisitTypeConcept(visitTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rowResult, null, "provider", columns);
+				visitOccurrence.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("careSite_provider_id")) {
+				CareSite careSite = CareSiteService._construct(rowResult, null, "careSite", columns);
+				visitOccurrence.setCareSite(careSite);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_source_value")) {
+				visitOccurrence.setVisitSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
+				Concept visitSourceConcept = ConceptService._construct(rowResult, null, "visitSourceConcept", columns);
+				visitOccurrence.setVisitSourceConcept(visitSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
+				Concept admittingSourceConcept = ConceptService._construct(rowResult, null, "admittingSourceConcept", columns);
+				visitOccurrence.setAdmittingSourceConcept(admittingSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
+				visitOccurrence.setAdmittingSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
+				Concept dischargeToConcept = ConceptService._construct(rowResult, null, "dischargeToConcept", columns);
+				visitOccurrence.setDischargeToConcept(dischargeToConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
+				visitOccurrence.setDischargeToSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rowResult, null, "precedingVisitOccurrence", columns);
+				visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);
+			}
+
+		}
+
 		return visitOccurrence;
 	}
 

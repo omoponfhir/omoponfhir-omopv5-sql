@@ -22,6 +22,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
@@ -42,7 +44,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByLocation(edu.gatech.chai.omopv5.model.entity.Location)
 	 */
-	@Transactional(readOnly = true)
 	public CareSite searchByLocation(Location location) {
 		String query = "SELECT t FROM CareSite t WHERE location_id like :value";
 		return null;
@@ -51,7 +52,6 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByNameAndLocation(java.lang.String, edu.gatech.chai.omopv5.model.entity.Location)
 	 */
-	@Transactional(readOnly = true)
 	public CareSite searchByNameAndLocation(String careSiteName, Location location) {
 		String queryString = "SELECT t FROM CareSite t WHERE";
 		
@@ -74,6 +74,11 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	@Override
 	public CareSite construct(ResultSet rs, CareSite entity, String alias) {
 		return CareSiteService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public CareSite construct(FieldValueList rowResult, CareSite entity, String alias, List<String> columns) {
+		return CareSiteService._construct(rowResult, entity, alias, columns);
 	}
 
 }

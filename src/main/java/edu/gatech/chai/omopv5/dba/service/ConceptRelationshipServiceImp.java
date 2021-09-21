@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationship;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
 
@@ -59,6 +61,12 @@ public class ConceptRelationshipServiceImp extends BaseEntityServiceImp<ConceptR
 	@Override
 	public ConceptRelationship construct(ResultSet rs, ConceptRelationship entity, String alias) {
 		return ConceptRelationshipService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public ConceptRelationship construct(FieldValueList rowResult, ConceptRelationship entity, String alias,
+			List<String> columns) {
+		return ConceptRelationshipService._construct(rowResult, entity, alias, columns);
 	}
 
 }

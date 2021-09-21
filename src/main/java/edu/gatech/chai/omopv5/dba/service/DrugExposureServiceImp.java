@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.DrugExposure;
 
 // TODO: Auto-generated Javadoc
@@ -41,6 +43,11 @@ public class DrugExposureServiceImp extends BaseEntityServiceImp<DrugExposure>
 	@Override
 	public DrugExposure construct(ResultSet rs, DrugExposure entity, String alias) {
 		return DrugExposureService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public DrugExposure construct(FieldValueList rowResult, DrugExposure entity, String alias, List<String> columns) {
+		return DrugExposureService._construct(rowResult, entity, alias, columns);
 	}
 
 }

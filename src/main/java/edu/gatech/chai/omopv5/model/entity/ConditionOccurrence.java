@@ -44,7 +44,7 @@ public class ConditionOccurrence extends BaseEntity {
 	@Column(name="condition_start_date", nullable=false)
 	private Date conditionStartDate;
 	
-	@Column(name="condition_start_datetime")
+	@Column(name="condition_start_datetime", nullable=false)
 	private Date conditionStartDateTime;
 
 	@Column(name="condition_end_date")
@@ -64,9 +64,6 @@ public class ConditionOccurrence extends BaseEntity {
 
 	@JoinColumn(name="visit_occurrence_id", table="visit_occurrence")
 	private VisitOccurrence visitOccurrence;
-
-	@JoinColumn(name="visit_detail_id", table="visit_detail")
-	private VisitDetail visitDetail;
 
 	@Column(name="condition_source_value")
 	private String conditionSourceValue;
@@ -168,14 +165,6 @@ public class ConditionOccurrence extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getConditionSourceValue() {
 		return conditionSourceValue;
 	}
@@ -227,6 +216,11 @@ public class ConditionOccurrence extends BaseEntity {
 				if (annotation != null) {
 					return ConditionOccurrence._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return ConditionOccurrence._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
@@ -296,9 +290,6 @@ public class ConditionOccurrence extends BaseEntity {
 	public static String _getForeignTableName(String foreignVariable) {
 		if ("fPerson".equals(foreignVariable))
 			return FPerson._getTableName();
-		
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 		
 		if ("provider".equals(foreignVariable))
 			return Provider._getTableName();

@@ -34,34 +34,34 @@ public class Provider extends BaseEntity {
 	@Column(name="provider_id", nullable=false)
 	private Long id;
 	
-	@Column(name="provider_name", nullable=false)
+	@Column(name="provider_name")
 	private String providerName;
 	
-	@Column(name="npi", nullable=false)
+	@Column(name="npi")
 	private String npi;
 	
-	@Column(name="dea", nullable=false)
+	@Column(name="dea")
 	private String dea;
 	
-	@JoinColumn(name="specialty_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="specialty_concept_id", referencedColumnName="concept_id")
 	private Concept specialtyConcept;
 	
-	@JoinColumn(name="care_site_id", nullable=false)
+	@JoinColumn(name="care_site_id")
 	private CareSite careSite;
 	
-	@Column(name="year_of_birth", nullable=false)
+	@Column(name="year_of_birth")
 	private Integer yearOfBirth;
 	
-	@JoinColumn(name="gender_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="gender_concept_id", referencedColumnName="concept_id")
 	private Concept genderConcept;
 	
-	@Column(name="provider_source_value", nullable=false)
+	@Column(name="provider_source_value")
 	private String providerSourceValue;
 
-	@Column(name="specialty_source_value", nullable=false)
+	@Column(name="specialty_source_value")
 	private String specialtySourceValue;
 	
-	@JoinColumn(name="specialty_source_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="specialty_source_concept_id", referencedColumnName="concept_id")
 	private Concept specialtySourceConcept;
 	
 	@Column(name="gender_source_value")
@@ -219,6 +219,11 @@ public class Provider extends BaseEntity {
 				if (annotation != null) {
 					return Provider._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return Provider._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

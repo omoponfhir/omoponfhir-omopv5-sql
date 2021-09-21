@@ -49,4 +49,9 @@ public abstract class BaseEntity implements IBaseEntity {
 		return sortClause;
 	}
 
+	@Override
+	public String toString() {
+		return "id: " + this.getIdAsLong() + "\n";
+	}
+
 }

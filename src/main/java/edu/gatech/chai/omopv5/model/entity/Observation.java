@@ -67,11 +67,8 @@ public class Observation extends BaseEntity {
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id", referencedColumnName="concept_id")
+	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
-	
-	@JoinColumn(name="visit_detail_id", referencedColumnName="concept_id")
-	private VisitDetail visitDetail;
 	
 	@Column(name="observation_source_value")
 	private String observationSourceValue;
@@ -189,14 +186,6 @@ public class Observation extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getObservationSourceValue() {
 		return observationSourceValue;
 	}
@@ -247,6 +236,11 @@ public class Observation extends BaseEntity {
 				if (annotation != null) {
 					return Observation._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return Observation._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
@@ -348,9 +342,6 @@ public class Observation extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

@@ -1,6 +1,11 @@
 package edu.gatech.chai.omopv5.dba.util;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +21,14 @@ public class SqlUtil {
 	public static String getSqlColumnName(Class<?> clazz, String columnVariable) {
 		try {
 			Field field = clazz.getDeclaredField(columnVariable);
-			
+
 			// We have Column and JoinColumn annotation to get the name of SQL Column Name.
 			Column columnAnnotation = field.getAnnotation(Column.class);
 			JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
 			if (columnAnnotation != null) {
 				return columnAnnotation.name();
 			}
-			
+
 			if (joinColumnAnnotation != null) {
 				return joinColumnAnnotation.name();
 			}
@@ -38,16 +43,16 @@ public class SqlUtil {
 				try {
 					// We update clazz to parent one.
 					clazz = parentClazz;
-					
+
 					Field field = parentClazz.getDeclaredField(columnVariable);
 					field.getAnnotation(Column.class);
-					
+
 					Column columnAnnotation = field.getAnnotation(Column.class);
 					JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
 					if (columnAnnotation != null) {
 						return columnAnnotation.name();
 					}
-					
+
 					if (joinColumnAnnotation != null) {
 						return joinColumnAnnotation.name();
 					}
@@ -64,10 +69,10 @@ public class SqlUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public static String getTableName(Class<?> clazz) {
 		Table tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
 		if (tableAnnotation == null) {
@@ -78,11 +83,49 @@ public class SqlUtil {
 			}
 			tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
 			if (tableAnnotation == null) {
-				logger.error("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
+				logger.warn("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
 				return null;
 			}
 		}
 
 		return tableAnnotation.name();
 	}
+
+	public static Date string2Date(String dateString) {
+		Date date = null;
+
+		if (dateString != null && !dateString.isEmpty()) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				date = dateFormat.parse(dateString);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return date;
+	}
+
+	public static Date string2DateTime(String dateString) {
+		Date date = null;
+
+		if (dateString != null && !dateString.isEmpty()) {
+			List<SimpleDateFormat> dateFormats = new ArrayList<SimpleDateFormat>();
+
+			dateFormats.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+			dateFormats.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+
+			for (SimpleDateFormat dateFormat: dateFormats) {
+				try {
+					date = dateFormat.parse(dateString);
+					return date;
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return date;
+	}
+
 }

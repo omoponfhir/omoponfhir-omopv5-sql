@@ -19,12 +19,16 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
+import com.google.cloud.bigquery.FieldValueList;
+
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Observation;
 import edu.gatech.chai.omopv5.model.entity.Provider;
-import edu.gatech.chai.omopv5.model.entity.VisitDetail;
 import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 
 /**
@@ -32,8 +36,9 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  */
 public interface ObservationService extends IService<Observation> {
 	public static Observation _construct(ResultSet rs, Observation observation, String alias) {
-		if (observation == null) observation = new Observation();
-		
+		if (observation == null)
+			observation = new Observation();
+
 		if (alias == null || alias.isEmpty())
 			alias = Observation._getTableName();
 
@@ -45,86 +50,48 @@ public interface ObservationService extends IService<Observation> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_observation_id")) {
 					observation.setId(rs.getLong(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					observation.setFPerson(fPerson);
-				}
-				
-				if (columnInfo.equalsIgnoreCase("observationConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("observationConcept_concept_id")) {
 					Concept observationConcept = ConceptService._construct(rs, null, "observationConcept");
 					observation.setObservationConcept(observationConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
 					observation.setObservationDate(rs.getDate(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
 					observation.setObservationDateTime(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
 					Concept observationTypeConcept = ConceptService._construct(rs, null, "observationTypeConcept");
 					observation.setObservationTypeConcept(observationTypeConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
 					observation.setValueAsNumber(rs.getDouble(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
 					observation.setValueAsString(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
 					Concept valueAsConcept = ConceptService._construct(rs, null, "valueAsConcept");
 					observation.setValueAsConcept(valueAsConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
 					Concept qualifierConcept = ConceptService._construct(rs, null, "qualifierConcept");
 					observation.setQualifierConcept(qualifierConcept);
-				}
-				
-				if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
 					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
 					observation.setUnitConcept(unitConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
 					Provider provider = ProviderService._construct(rs, null, "provider");
 					observation.setProvider(provider);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
 					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
 					observation.setVisitOccurrence(visitOccurrence);
-				}
-
-				if (columnInfo.equalsIgnoreCase("visitDetail_visit_detail_id")) {
-					VisitDetail visitDetail = VisitDetailService._construct(rs, null, "visitDetail");
-					observation.setVisitDetail(visitDetail);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_observation_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_source_value")) {
 					observation.setObservationSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("observationSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("observationSourceConcept_concept_id")) {
 					Concept observationSourceConcept = ConceptService._construct(rs, null, "observationSourceConcept");
 					observation.setObservationSourceConcept(observationSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
 					observation.setUnitSourceValue(rs.getString(columnInfo));
-				}				
-
-				if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
 					observation.setQualifierSourceValue(rs.getString(columnInfo));
-				}				
-
+				}
 
 			}
 		} catch (SQLException e) {
@@ -133,5 +100,74 @@ public interface ObservationService extends IService<Observation> {
 		}
 		return observation;
 	}
-	
+
+	public static Observation _construct(FieldValueList rowResult, Observation observation, String alias,
+			List<String> columns) {
+		if (observation == null)
+			observation = new Observation();
+
+		if (alias == null || alias.isEmpty())
+			alias = Observation._getTableName();
+
+		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
+			if (columnInfo.equalsIgnoreCase(alias + "_observation_id")) {
+				observation.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rowResult, null, "fPerson", columns);
+				observation.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("observationConcept_concept_id")) {
+				Concept observationConcept = ConceptService._construct(rowResult, null, "observationConcept", columns);
+				observation.setObservationConcept(observationConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					observation.setObservationDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					observation.setObservationDateTime(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
+				Concept observationTypeConcept = ConceptService._construct(rowResult, null, "observationTypeConcept", columns);
+				observation.setObservationTypeConcept(observationTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
+				observation.setValueAsNumber(rowResult.get(columnInfo).getDoubleValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
+				observation.setValueAsString(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
+				Concept valueAsConcept = ConceptService._construct(rowResult, null, "valueAsConcept", columns);
+				observation.setValueAsConcept(valueAsConcept);
+			} else if (columnInfo.equalsIgnoreCase("qualifierConcept_concept_id")) {
+				Concept qualifierConcept = ConceptService._construct(rowResult, null, "qualifierConcept", columns);
+				observation.setQualifierConcept(qualifierConcept);
+			} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+				Concept unitConcept = ConceptService._construct(rowResult, null, "unitConcept", columns);
+				observation.setUnitConcept(unitConcept);
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rowResult, null, "provider", columns);
+				observation.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rowResult, null, "visitOccurrence", columns);
+				observation.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_observation_source_value")) {
+				observation.setObservationSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("observationSourceConcept_concept_id")) {
+				Concept observationSourceConcept = ConceptService._construct(rowResult, null, "observationSourceConcept", columns);
+				observation.setObservationSourceConcept(observationSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+				observation.setUnitSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
+				observation.setQualifierSourceValue(rowResult.get(columnInfo).getStringValue());
+			}
+
+		}
+
+		return observation;
+	}
+
 }

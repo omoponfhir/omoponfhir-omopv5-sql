@@ -79,8 +79,8 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 				} else if (columnInfo.equalsIgnoreCase("procedureSourceConcept_concept_id")) {
 					Concept procedureSourceConcept = ConceptService._construct(rs, null, "procedureSourceConcept");
 					procedureOccurrence.setProcedureSourceConcept(procedureSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
-					procedureOccurrence.setQualifierSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_modifier_source_value")) {
+					procedureOccurrence.setModifierSourceValue(rs.getString(columnInfo));
 				}
 
 			}
@@ -142,8 +142,8 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 			} else if (columnInfo.equalsIgnoreCase("procedureSourceConcept_concept_id")) {
 				Concept procedureSourceConcept = ConceptService._construct(rowResult, null, "procedureSourceConcept", columns);
 				procedureOccurrence.setProcedureSourceConcept(procedureSourceConcept);
-			} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
-				procedureOccurrence.setQualifierSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_modifier_source_value")) {
+				procedureOccurrence.setModifierSourceValue(rowResult.get(columnInfo).getStringValue());
 			}
 
 		}

@@ -68,8 +68,8 @@ public class ProcedureOccurrence extends BaseEntity {
 	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id")
 	private Concept procedureSourceConcept;
 	
-	@Column(name="qualifier_source_value")
-	private String qualifierSourceValue;
+	@Column(name="modifier_source_value")
+	private String modifierSourceValue;
 
 	public ProcedureOccurrence() {
 		super();
@@ -176,12 +176,12 @@ public class ProcedureOccurrence extends BaseEntity {
 		this.procedureSourceConcept = procedureSourceConcept;
 	}
 
-	public String getQualifierSourceValue() {
-		return qualifierSourceValue;
+	public String getModifierSourceValue() {
+		return modifierSourceValue;
 	}
 	
-	public void setQualifierSourceValue(String qualifierSourceValue) {
-		this.qualifierSourceValue = qualifierSourceValue;
+	public void setModifierSourceValue(String modifierSourceValue) {
+		this.modifierSourceValue = modifierSourceValue;
 	}
 
 	@Override
@@ -218,44 +218,6 @@ public class ProcedureOccurrence extends BaseEntity {
 		}
 
 		return null;
-
-//		if ("id".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_occurrence_id";
-//
-//		if ("fPerson".equals(columnVariable)) 
-//			return "procedure_occurrence.person_id";
-//
-//		if ("procedureConcept".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_concept_id";
-//
-//		if ("procedureDate".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_date";
-//
-//		if ("procedureTypeConcept".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_type_concept_id";
-//
-//		if ("modifierConcept".equals(columnVariable)) 
-//			return "procedure_occurrence.modifier_concept_id";
-//
-//		if ("quantity".equals(columnVariable)) 
-//			return "procedure_occurrence.quantity";
-//
-//		if ("provider".equals(columnVariable)) 
-//			return "procedure_occurrence.provider_id";
-//
-//		if ("visitOccurrence".equals(columnVariable)) 
-//			return "procedure_occurrence.visit_occurrence_id";
-//
-//		if ("procedureSourceValue".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_source_value";
-//
-//		if ("procedureSourceConcept".equals(columnVariable)) 
-//			return "procedure_occurrence.procedure_source_concept_id";
-//
-//		if ("qualifierSourceValue".equals(columnVariable)) 
-//			return "procedure_occurrence.qualifier_source_value";
-//
-//		return null;
 	}
 
 	@Override

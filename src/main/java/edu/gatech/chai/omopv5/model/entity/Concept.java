@@ -38,15 +38,15 @@ public class Concept extends BaseEntity {
 	@Column(name="domain_id", nullable=false)
 	private String domainId;
 	
+	@Column(name="vocabulary_id", nullable=false)
+	private String vocabularyId;
+
 	@Column(name="concept_class_id", nullable=false)
 	private String conceptClassId;
 	
 	@Column(name="standard_concept")
 	private Character standardConcept;
 	
-	@Column(name="vocabulary_id", nullable=false)
-	private String vocabularyId;
-
 	@Column(name="concept_code", nullable=false)
 	private String conceptCode;
 	
@@ -113,6 +113,14 @@ public class Concept extends BaseEntity {
 		this.domainId = domainId;
 	}
 
+	public String getVocabularyId() {
+		return vocabularyId;
+	}
+
+	public void setVocabularyId(String vocabularyId) {
+		this.vocabularyId = vocabularyId;
+	}
+
 	public String getConceptClassId() {
 		return conceptClassId;
 	}
@@ -127,14 +135,6 @@ public class Concept extends BaseEntity {
 
 	public void setStandardConcept(Character standardConcept) {
 		this.standardConcept = standardConcept;
-	}
-
-	public String getVocabularyId() {
-		return vocabularyId;
-	}
-
-	public void setVocabularyId(String vocabularyId) {
-		this.vocabularyId = vocabularyId;
 	}
 
 	public String getConceptCode() {

@@ -46,6 +46,9 @@ public class Measurement extends BaseEntity {
 	@Column(name="measurement_datetime")
 	private Date measurementDateTime;
 	
+	@Column(name="measurement_time")
+	private String measurementTime;
+	
 	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept measurementTypeConcept;
 
@@ -123,6 +126,14 @@ public class Measurement extends BaseEntity {
 	
 	public void setMeasurementDateTime(Date measurementDateTime) {
 		this.measurementDateTime = measurementDateTime;
+	}
+	
+	public String getMeasurementTime() {
+		return measurementTime;
+	}
+	
+	public void setMeasurementTime(String measurementTime) {
+		this.measurementTime = measurementTime;
 	}
 	
 	public Concept getMeasurementTypeConcept() {

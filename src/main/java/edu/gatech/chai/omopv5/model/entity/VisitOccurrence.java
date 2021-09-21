@@ -59,7 +59,7 @@ public class VisitOccurrence extends BaseEntity {
 	private Provider provider;
 	
 	@JoinColumn(name="care_site_id")
-	private CareSite careSite; //FIXME field names should reflect fhir names, for validation purposes.
+	private CareSite careSite;
 	
 	@Column(name="visit_source_value")
 	private String visitSourceValue;

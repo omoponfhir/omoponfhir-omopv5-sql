@@ -44,7 +44,7 @@ public class ConditionOccurrence extends BaseEntity {
 	@Column(name="condition_start_date", nullable=false)
 	private Date conditionStartDate;
 	
-	@Column(name="condition_start_datetime", nullable=false)
+	@Column(name="condition_start_datetime")
 	private Date conditionStartDateTime;
 
 	@Column(name="condition_end_date")

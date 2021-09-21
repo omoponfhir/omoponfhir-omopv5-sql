@@ -34,15 +34,15 @@ public class CareSite extends BaseEntity {
 	@Column(name="care_site_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="location_id", table="location")
-	private Location location;
-
-	@JoinColumn(name="place_of_service_concept_id", referencedColumnName="concept_id", table="concept")
-	private Concept placeOfServiceConcept;
-	
 	@Column(name="care_site_name")
 	private String careSiteName;
 	
+	@JoinColumn(name="place_of_service_concept_id", referencedColumnName="concept_id", table="concept")
+	private Concept placeOfServiceConcept;
+	
+	@JoinColumn(name="location_id", table="location")
+	private Location location;
+
 	@Column(name="care_site_source_value")
 	private String careSiteSourceValue;
 	
@@ -76,12 +76,12 @@ public class CareSite extends BaseEntity {
 		this.id = id;
 	}
 	
-	public Location getLocation() {
-		return location;
+	public String getCareSiteName() {
+		return careSiteName;
 	}
 	
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setCareSiteName(String careSiteName) {
+		this.careSiteName = careSiteName;
 	}
 	
 	public Concept getPlaceOfServiceConcept() {
@@ -92,12 +92,12 @@ public class CareSite extends BaseEntity {
 		this.placeOfServiceConcept = placeOfServiceConcept;
 	}
 	
-	public String getCareSiteName() {
-		return careSiteName;
+	public Location getLocation() {
+		return location;
 	}
 	
-	public void setCareSiteName(String careSiteName) {
-		this.careSiteName = careSiteName;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	
 	public String getCareSiteSourceValue() {

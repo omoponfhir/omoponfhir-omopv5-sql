@@ -21,6 +21,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
@@ -28,6 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 @Table(name = "f_observation_view")
 public class FObservationView extends BaseEntity {
+	private static final Logger logger = LoggerFactory.getLogger(FObservationView.class);
 
 	@Id
 	@Column(name="observation_id", nullable=false)
@@ -44,9 +48,6 @@ public class FObservationView extends BaseEntity {
 	
 	@Column(name="observation_datetime")
 	private Date observationDateTime;
-	
-	@Column(name="observation_time")
-	private String observationTime;
 	
 	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept observationTypeConcept;
@@ -80,9 +81,6 @@ public class FObservationView extends BaseEntity {
 	
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
-	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
 	
 	@Column(name="observation_source_value")
 	private String observationSourceValue;
@@ -137,14 +135,6 @@ public class FObservationView extends BaseEntity {
 
 	public void setObservationDateTime(Date observationDateTime) {
 		this.observationDateTime = observationDateTime;
-	}
-
-	public String getObservationTime() {
-		return observationTime;
-	}
-
-	public void setObservationTime(String observationTime) {
-		this.observationTime = observationTime;
 	}
 
 	public Concept getObservationTypeConcept() {
@@ -235,14 +225,6 @@ public class FObservationView extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 
-	public VisitDetail getVisitDetail() {
-		return visitDetail;
-	}
-
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getObservationSourceValue() {
 		return observationSourceValue;
 	}
@@ -301,7 +283,12 @@ public class FObservationView extends BaseEntity {
 				if (annotation != null) {
 					return FObservationView._getTableName() + "." + annotation.name();
 				} else {
-					System.out.println("ERROR: annotation is null for field=" + field.toString());
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return FObservationView._getTableName() + "." + joinAnnotation.name();
+					}
+
+					logger.error("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
 			}
@@ -415,9 +402,6 @@ public class FObservationView extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

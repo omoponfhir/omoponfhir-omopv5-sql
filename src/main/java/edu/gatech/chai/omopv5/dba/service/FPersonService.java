@@ -19,6 +19,12 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Concept;
@@ -43,6 +49,14 @@ public interface FPersonService extends IService<FPerson> {
 	 */
 	public FPerson searchByNameAndLocation(String familyName, String given1Name, String given2Name, Location location);
 
+	/**
+	 * ResultSet based Entity Construction
+	 * 
+	 * @param rs
+	 * @param fPerson
+	 * @param alias
+	 * @return
+	 */
 	public static FPerson _construct(ResultSet rs, FPerson fPerson, String alias) {
 		if (fPerson == null)
 			fPerson = new FPerson();
@@ -59,130 +73,71 @@ public interface FPersonService extends IService<FPerson> {
 				// f_table content
 				if (columnInfo.equalsIgnoreCase(alias + "_person_id")) {
 					fPerson.setId(rs.getLong(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_family_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_family_name")) {
 					fPerson.setFamilyName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_given1_name")) {
+				} else  if (columnInfo.equalsIgnoreCase(alias + "_given1_name")) {
 					fPerson.setGivenName1(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_given2_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_given2_name")) {
 					fPerson.setGivenName2(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_prefix_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_prefix_name")) {
 					fPerson.setPrefixName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_suffix_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_suffix_name")) {
 					fPerson.setSuffixName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_preferred_language")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_preferred_language")) {
 					fPerson.setPreferredLanguage(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_ssn")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_ssn")) {
 					fPerson.setSsn(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_maritalstatus")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_maritalstatus")) {
 					fPerson.setMaritalStatus(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_active")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_active")) {
 					fPerson.setActive(rs.getShort(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_contact_point1")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point1")) {
 					fPerson.setContactPoint1(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_contact_point2")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point2")) {
 					fPerson.setContactPoint2(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_contact_point3")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point3")) {
 					fPerson.setContactPoint3(rs.getString(columnInfo));
-				}
-
-				// person table content.
-				if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
 					Concept genderConcept = ConceptService._construct(rs, null, "genderConcept");
 					fPerson.setGenderConcept(genderConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_year_of_birth")) {
+				} else if (columnInfo.equalsIgnoreCase("person_year_of_birth")) {
 					fPerson.setYearOfBirth(rs.getInt(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_month_of_birth")) {
+				} else if (columnInfo.equalsIgnoreCase("person_month_of_birth")) {
 					fPerson.setMonthOfBirth(rs.getInt(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_day_of_birth")) {
+				} else if (columnInfo.equalsIgnoreCase("person_day_of_birth")) {
 					fPerson.setDayOfBirth(rs.getInt(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
+				} else if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
 					fPerson.setBirthDateTime(rs.getDate(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
 					Concept raceConcept = ConceptService._construct(rs, null, "raceConcept");
 					fPerson.setRaceConcept(raceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("ethnicityConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("ethnicityConcept_concept_id")) {
 					Concept ethnicityConcept = ConceptService._construct(rs, null, "ethnicityConcept");
 					fPerson.setEthnicityConcept(ethnicityConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("location_location_id")) {
+				} else if (columnInfo.equalsIgnoreCase("location_location_id")) {
 					Location location = LocationService._construct(rs, null, "location");
 					fPerson.setLocation(location);
-				}
-
-				if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
 					Provider provider = ProviderService._construct(rs, null, "provider");
 					fPerson.setProvider(provider);
-				}
-
-				if (columnInfo.equalsIgnoreCase("care_site_care_site_id")) {
+				} else if (columnInfo.equalsIgnoreCase("care_site_care_site_id")) {
 					CareSite careSite = CareSiteService._construct(rs, null, "care_site");
 					fPerson.setCareSite(careSite);
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_person_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase("person_person_source_value")) {
 					fPerson.setPersonSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_gender_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase("person_gender_source_value")) {
 					fPerson.setGenderSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
 					Concept genderSourceConcept = ConceptService._construct(rs, null, "genderSourceConcept");
 					fPerson.setGenderSourceConcept(genderSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_race_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase("person_race_source_value")) {
 					fPerson.setRaceSourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("raceSourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("raceSourceConcept_concept_id")) {
 					Concept raceSourceConcept = ConceptService._construct(rs, null, "raceSourceConcept");
 					fPerson.setRaceSourceConcept(raceSourceConcept);
-				}
-
-				if (columnInfo.equalsIgnoreCase("person_ethnicity_source_value")) {
+				} else if (columnInfo.equalsIgnoreCase("person_ethnicity_source_value")) {
 					fPerson.setEthnicitySourceValue(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("ethnicitySourceConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("ethnicitySourceConcept_concept_id")) {
 					Concept ethnicitySourceConcept = ConceptService._construct(rs, null, "ethnicitySourceConcept");
 					fPerson.setEthnicitySourceConcept(ethnicitySourceConcept);
 				}
@@ -193,6 +148,114 @@ public interface FPersonService extends IService<FPerson> {
 			e.printStackTrace();
 			return null;
 		}
+		return fPerson;
+	}
+	
+	/**
+	 * Google Big Query result set based Entity Construction
+	 * 
+	 * @param rs
+	 * @param fPerson
+	 * @param alias
+	 * @return
+	 */
+	public static FPerson _construct(FieldValueList rowResult, FPerson fPerson, String alias, List<String> columns) {
+		if (fPerson == null)
+			fPerson = new FPerson();
+
+		if (alias == null || alias.isEmpty())
+			alias = FPerson._getTableName();
+
+		for (String columnInfo : columns) {
+			// f_table content
+			if (rowResult.get(columnInfo).isNull()) continue;
+			
+			if (columnInfo.equalsIgnoreCase(alias + "_person_id")) {
+				fPerson.setId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_family_name")) {
+				fPerson.setFamilyName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_given1_name")) {
+				fPerson.setGivenName1(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_given2_name")) {
+				fPerson.setGivenName2(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_prefix_name")) {
+				fPerson.setPrefixName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_suffix_name")) {
+				fPerson.setSuffixName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_preferred_language")) {
+				fPerson.setPreferredLanguage(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_ssn")) {
+				fPerson.setSsn(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_maritalstatus")) {
+				fPerson.setMaritalStatus(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_active")) {
+				fPerson.setActive(rowResult.get(columnInfo).getNumericValue().shortValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point1")) {
+				fPerson.setContactPoint1(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point2")) {
+				fPerson.setContactPoint2(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_contact_point3")) {
+				fPerson.setContactPoint3(rowResult.get(columnInfo).getStringValue());
+			}
+
+			// person table content.
+			if (columnInfo.equalsIgnoreCase("genderConcept_concept_id")) {
+				Concept genderConcept = ConceptService._construct(rowResult, null, "genderConcept", columns);
+				fPerson.setGenderConcept(genderConcept);
+			} else if (columnInfo.equalsIgnoreCase("person_year_of_birth")) {
+				fPerson.setYearOfBirth((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("person_month_of_birth")) {
+				fPerson.setMonthOfBirth((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("person_day_of_birth")) {
+				fPerson.setDayOfBirth((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				if (dateString != null && !dateString.isEmpty()) {
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					Date date;
+					try {
+						date = dateFormat.parse(dateString);
+						fPerson.setBirthDateTime(date);
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}
+			} else if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
+				Concept raceConcept = ConceptService._construct(rowResult, null, "raceConcept", columns);
+				fPerson.setRaceConcept(raceConcept);
+			} else if (columnInfo.equalsIgnoreCase("ethnicityConcept_concept_id")) {
+				Concept ethnicityConcept = ConceptService._construct(rowResult, null, "ethnicityConcept", columns);
+				fPerson.setEthnicityConcept(ethnicityConcept);
+			} else if (columnInfo.equalsIgnoreCase("location_location_id")) {
+				Location location = LocationService._construct(rowResult, null, "location", columns);
+				fPerson.setLocation(location);
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rowResult, null, "provider", columns);
+				fPerson.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("care_site_care_site_id")) {
+				CareSite careSite = CareSiteService._construct(rowResult, null, "care_site", columns);
+				fPerson.setCareSite(careSite);
+			} else if (columnInfo.equalsIgnoreCase("person_person_source_value")) {
+				fPerson.setPersonSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("person_gender_source_value")) {
+				fPerson.setGenderSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("genderSourceConcept_concept_id")) {
+				Concept genderSourceConcept = ConceptService._construct(rowResult, null, "genderSourceConcept", columns);
+				fPerson.setGenderSourceConcept(genderSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase("person_race_source_value")) {
+				fPerson.setRaceSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("raceSourceConcept_concept_id")) {
+				Concept raceSourceConcept = ConceptService._construct(rowResult, null, "raceSourceConcept", columns);
+				fPerson.setRaceSourceConcept(raceSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase("person_ethnicity_source_value")) {
+				fPerson.setEthnicitySourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("ethnicitySourceConcept_concept_id")) {
+				Concept ethnicitySourceConcept = ConceptService._construct(rowResult, null, "ethnicitySourceConcept", columns);
+				fPerson.setEthnicitySourceConcept(ethnicitySourceConcept);
+			}
+
+		}
+
 		return fPerson;
 	}
 }

@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Relationship;
 
 // TODO: Auto-generated Javadoc
@@ -74,6 +76,11 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	@Override
 	public Relationship construct(ResultSet rs, Relationship entity, String alias) {
 		return RelationshipService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Relationship construct(FieldValueList rowResult, Relationship entity, String alias, List<String> columns) {
+		return RelationshipService._construct(rowResult, entity, alias, columns);
 	}
 	
 }

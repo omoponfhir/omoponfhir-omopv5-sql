@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Provider;
 
 // TODO: Auto-generated Javadoc
@@ -40,6 +42,11 @@ public class ProviderServiceImp extends BaseEntityServiceImp<Provider> implement
 	@Override
 	public Provider construct(ResultSet rs, Provider entity, String alias) {
 		return ProviderService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Provider construct(FieldValueList rowResult, Provider entity, String alias, List<String> columns) {
+		return ProviderService._construct(rowResult, entity, alias, columns);
 	}
 
 }

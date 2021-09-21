@@ -7,6 +7,10 @@ import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FObservationViewServiceImp;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
 import edu.gatech.chai.omopv5.dba.service.FPersonServiceImp;
+import edu.gatech.chai.omopv5.dba.service.MeasurementService;
+import edu.gatech.chai.omopv5.dba.service.MeasurementServiceImp;
+import edu.gatech.chai.omopv5.dba.service.ObservationService;
+import edu.gatech.chai.omopv5.dba.service.ObservationServiceImp;
 import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfigurationImpl;
 import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
@@ -22,6 +26,16 @@ public class AppConfig {
 	@Bean
 	public FObservationViewService getFObservationViewService() {
 		return new FObservationViewServiceImp();
+	}
+
+	@Bean
+	public ObservationService getObservationService() {
+		return new ObservationServiceImp();
+	}
+
+	@Bean
+	public MeasurementService getMeasurementService() {
+		return new MeasurementServiceImp();
 	}
 
 	@Bean

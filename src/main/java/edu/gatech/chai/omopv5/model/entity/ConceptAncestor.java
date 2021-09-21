@@ -76,6 +76,11 @@ public class ConceptAncestor extends BaseEntity {
 				if (annotation != null) {
 					return ConceptAncestor._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return ConceptAncestor._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

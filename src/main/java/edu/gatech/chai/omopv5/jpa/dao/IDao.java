@@ -18,9 +18,14 @@ package edu.gatech.chai.omopv5.jpa.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
+
+import com.google.cloud.bigquery.TableResult;
 
 public interface IDao {
+	// JDBC Query
 	public ResultSet runQuery(String query) throws SQLException;
 	public Long updateQuery(String query) throws SQLException;
+	
+	// BigQuery
+	public TableResult runBigQuery(String query) throws Exception;
 }

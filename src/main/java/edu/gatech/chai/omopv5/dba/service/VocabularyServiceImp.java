@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 
 // TODO: Auto-generated Javadoc
@@ -66,6 +68,11 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 	@Override
 	public Vocabulary construct(ResultSet rs, Vocabulary entity, String alias) {
 		return VocabularyService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Vocabulary construct(FieldValueList rowResult, Vocabulary entity, String alias, List<String> columns) {
+		return VocabularyService._construct(rowResult, entity, alias, columns);
 	}
 
 }

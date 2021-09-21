@@ -17,18 +17,26 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import edu.gatech.chai.omopv5.model.entity.FObservationView;
+import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
-// TODO: Auto-generated Javadoc
+import edu.gatech.chai.omopv5.model.entity.Concept;
+import edu.gatech.chai.omopv5.model.entity.FObservationView;
+import edu.gatech.chai.omopv5.model.entity.FPerson;
+
 /**
  * The Class FObservationViewServiceImp.
  */
 @Service
-public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservationView> implements FObservationViewService {
+public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservationView>
+		implements FObservationViewService {
 
 	/**
 	 * Instantiates a new f observation view service imp.
@@ -36,12 +44,64 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	public FObservationViewServiceImp() {
 		super(FObservationView.class);
 	}
-	
-	/* (non-Javadoc)
-	 * @see edu.gatech.chai.omopv5.dba.service.FObservationViewService#findDiastolic(java.lang.Long, java.lang.Long, java.util.Date, java.lang.String)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.gatech.chai.omopv5.dba.service.FObservationViewService#findDiastolic(java
+	 * .lang.Long, java.lang.Long, java.util.Date, java.lang.String)
 	 */
-	public FObservationView findDiastolic(Long conceptId, Long personId, Date date, String time) {
-		return null;
+	public FObservationView findDiastolic(Long conceptId, Long personId, Date date, Date time) {
+		List<FObservationView> entities = new ArrayList<FObservationView>();
+		
+		String myTable = getSqlTableName();
+		String select_from = constructSqlSelectWithoutWhere(myTable);
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String dateValue = "cast('" + dateFormat.format(date) + "' as date)";
+
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String dateTimeValue = "cast('" + dateFormat.format(time) + "' as datetime)";
+
+		String where = "observationConcept." + Concept._getColumnName("id") + "=" + conceptId 
+				+ " and " + "fPerson." + FPerson._getColumnName("id") + "=" + personId 
+				+ " and " + myTable + "." + FObservationView._getColumnName("observationDate") + "=" + dateValue 
+				+ " and " + myTable + "." + FObservationView._getColumnName("observationDateTime") + "=" + dateTimeValue;
+
+		String sql = select_from + " where " + where;
+		FObservationView entity = null;
+		
+		try {
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(sql);
+				List<String> columns = listOfColumns(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				System.out.println(sql);
+//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
+//				for (String column : columns) {
+//					System.out.println(column);
+//				}
+				for (FieldValueList row : result.iterateAll()) {
+					entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						break;
+					}
+				}
+			} else {
+
+				ResultSet rs = getQueryEntityDao().runQuery(sql);
+
+				if (rs.next()) {
+					entity = construct(rs, null, getSqlTableName());
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return entity;
 	}
 
 	@Override
@@ -53,6 +113,12 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	@Override
 	public FObservationView construct(ResultSet rs, FObservationView entity, String alias) {
 		return FObservationViewService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public FObservationView construct(FieldValueList rowResult, FObservationView entity, String alias,
+			List<String> columns) {
+		return FObservationViewService._construct(rowResult, entity, alias, columns);
 	}
 
 }

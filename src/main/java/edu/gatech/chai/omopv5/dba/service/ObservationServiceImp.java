@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Observation;
 
 // TODO: Auto-generated Javadoc
@@ -40,6 +42,11 @@ public class ObservationServiceImp extends BaseEntityServiceImp<Observation> imp
 	@Override
 	public Observation construct(ResultSet rs, Observation entity, String alias) {
 		return ObservationService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Observation construct(FieldValueList rowResult, Observation entity, String alias, List<String> columns) {
+		return ObservationService._construct(rowResult, entity, alias, columns);
 	}
 
 }

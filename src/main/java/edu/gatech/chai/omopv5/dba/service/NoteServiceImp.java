@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.Note;
 
 // TODO: Auto-generated Javadoc
@@ -40,6 +42,11 @@ public class NoteServiceImp extends BaseEntityServiceImp<Note> implements NoteSe
 	@Override
 	public Note construct(ResultSet rs, Note entity, String alias) {
 		return NoteService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public Note construct(FieldValueList rowResult, Note entity, String alias, List<String> columns) {
+		return NoteService._construct(rowResult, entity, alias, columns);
 	}
 
 }

@@ -23,6 +23,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
+import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
 @Table(name = "location")
@@ -46,7 +47,7 @@ public class Location extends BaseEntity {
 	private String state;
 	
 	@Column(name="zip")
-	private String zipCode;
+	private String zip;
 	
 	@Column(name="county")
 	private String county;
@@ -62,14 +63,13 @@ public class Location extends BaseEntity {
 		this.id = id;
 	}
 	
-	public Location(String address1, String address2, String city,
-			String state, String zipCode) {
+	public Location(String address1, String address2, String city, String state, String zip) {
 		super();
 		this.address1 = address1;
 		this.address2 = address2;
 		this.city = city;
 		this.state = state;
-		this.zipCode = zipCode;		
+		this.zip = zip;		
 	}
 
 	public String getAddress1() {
@@ -104,12 +104,12 @@ public class Location extends BaseEntity {
 		this.state = state;
 	}
 
-	public String getZipCode() {
-		return zipCode;
+	public String getZip() {
+		return zip;
 	}
 
-	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
+	public void setZip(String zip) {
+		this.zip = zip;
 	}
 
 	public String getCounty() {
@@ -154,6 +154,11 @@ public class Location extends BaseEntity {
 				if (annotation != null) {
 					return Location._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return Location._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}

@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.cloud.bigquery.FieldValueList;
+
 import edu.gatech.chai.omopv5.model.entity.DeviceExposure;
 
 // TODO: Auto-generated Javadoc
@@ -41,6 +43,12 @@ public class DeviceExposureServiceImp extends BaseEntityServiceImp<DeviceExposur
 	@Override
 	public DeviceExposure construct(ResultSet rs, DeviceExposure entity, String alias) {
 		return DeviceExposureService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public DeviceExposure construct(FieldValueList rowResult, DeviceExposure entity, String alias,
+			List<String> columns) {
+		return DeviceExposureService._construct(rowResult, entity, alias, columns);
 	}
 
 }

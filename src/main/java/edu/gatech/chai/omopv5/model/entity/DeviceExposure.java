@@ -67,9 +67,6 @@ public class DeviceExposure extends BaseEntity {
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
 	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
-	
 	@Column(name="device_source_value")
 	private String deviceSourceValue;
 	
@@ -172,14 +169,6 @@ public class DeviceExposure extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 	
-	public VisitDetail getVisitDetail () {
-		return visitDetail;
-	}
-	
-	public void setVisitDetail (VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-	
 	public Concept getDeviceSourceConcept () {
 		return this.deviceSourceConcept;
 	}
@@ -214,6 +203,11 @@ public class DeviceExposure extends BaseEntity {
 				if (annotation != null) {
 					return DeviceExposure._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return DeviceExposure._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
@@ -297,9 +291,6 @@ public class DeviceExposure extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

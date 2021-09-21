@@ -43,7 +43,7 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="drug_exposure_start_date", nullable=false)
 	private Date drugExposureStartDate;
 	
-	@Column(name="drug_exposure_start_datetime")
+	@Column(name="drug_exposure_start_datetime", nullable=false)
 	private Date drugExposureStartDateTime;
 
 	@Column(name="drug_exposure_end_date", nullable=false)
@@ -84,9 +84,6 @@ public class DrugExposure extends BaseEntity {
 	
 	@JoinColumn(name="visit_occurrence_id")
 	private VisitOccurrence visitOccurrence;
-	
-	@JoinColumn(name="visit_detail_id")
-	private VisitDetail visitDetail;
 	
 	@Column(name="drug_source_value")
 	private String drugSourceValue;
@@ -251,14 +248,6 @@ public class DrugExposure extends BaseEntity {
 		this.visitOccurrence = visitOccurrence;
 	}
 
-	public VisitDetail getVisitDetail() {
-		return this.visitDetail;
-	}
-
-	public void setVisitDetail(VisitDetail visitDetail) {
-		this.visitDetail = visitDetail;
-	}
-
 	public String getDrugSourceValue() {
 		return drugSourceValue;
 	}
@@ -309,6 +298,11 @@ public class DrugExposure extends BaseEntity {
 				if (annotation != null) {
 					return DrugExposure._getTableName() + "." + annotation.name();
 				} else {
+					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+					if (joinAnnotation != null) {
+						return DrugExposure._getTableName() + "." + joinAnnotation.name();
+					}
+
 					System.out.println("ERROR: annotation is null for field=" + field.toString());
 					return null;
 				}
@@ -420,9 +414,6 @@ public class DrugExposure extends BaseEntity {
 
 		if ("visitOccurrence".equals(foreignVariable))
 			return VisitOccurrence._getTableName();
-
-		if ("visitDetail".equals(foreignVariable))
-			return VisitDetail._getTableName();
 
 		return null;
 	}

@@ -19,6 +19,9 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+
+import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.Vocabulary;
@@ -28,7 +31,7 @@ import edu.gatech.chai.omopv5.model.entity.Vocabulary;
  * The Interface VocabularyService.
  */
 public interface VocabularyService extends IService<Vocabulary> {
-	
+
 	/**
 	 * Find by id.
 	 *
@@ -36,7 +39,7 @@ public interface VocabularyService extends IService<Vocabulary> {
 	 * @return the vocabulary
 	 */
 	public Vocabulary findById(String id);
-	
+
 	/**
 	 * Removes the by id.
 	 *
@@ -44,10 +47,11 @@ public interface VocabularyService extends IService<Vocabulary> {
 	 * @return the string
 	 */
 	public String removeById(String id);
-	
+
 	public static Vocabulary _construct(ResultSet rs, Vocabulary vocabulary, String alias) {
-		if (vocabulary == null) vocabulary = new Vocabulary();
-		
+		if (vocabulary == null)
+			vocabulary = new Vocabulary();
+
 		if (alias == null || alias.isEmpty())
 			alias = Vocabulary._getTableName();
 
@@ -59,21 +63,13 @@ public interface VocabularyService extends IService<Vocabulary> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
 					vocabulary.setId(rs.getString(columnInfo));
-				}
-				
-				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {
 					vocabulary.setVocabularyName(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_reference")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_reference")) {
 					vocabulary.setVocabularyReference(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_version")) {
+				} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_version")) {
 					vocabulary.setVocabularyVersion(rs.getString(columnInfo));
-				}
-
-				if (columnInfo.equalsIgnoreCase("vocabularyConcept_concept_id")) {
+				} else if (columnInfo.equalsIgnoreCase("vocabularyConcept_concept_id")) {
 					Concept vocabularyConcept = ConceptService._construct(rs, null, "vocabularyConcept");
 					vocabulary.setVocabularyConcept(vocabularyConcept);
 				}
@@ -83,8 +79,36 @@ public interface VocabularyService extends IService<Vocabulary> {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return vocabulary;
 	}
 
+	public static Vocabulary _construct(FieldValueList rowResult, Vocabulary vocabulary, String alias,
+			List<String> columns) {
+		if (vocabulary == null)
+			vocabulary = new Vocabulary();
+
+		if (alias == null || alias.isEmpty())
+			alias = Vocabulary._getTableName();
+
+		for (String columnInfo : columns) {
+			if (rowResult.get(columnInfo).isNull()) continue;
+
+			if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
+				vocabulary.setId(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_name")) {
+				vocabulary.setVocabularyName(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_reference")) {
+				vocabulary.setVocabularyReference(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_version")) {
+				vocabulary.setVocabularyVersion(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("vocabularyConcept_concept_id")) {
+				Concept vocabularyConcept = ConceptService._construct(rowResult, null, "vocabularyConcept", columns);
+				vocabulary.setVocabularyConcept(vocabularyConcept);
+			}
+
+		}
+
+		return vocabulary;
+	}
 }

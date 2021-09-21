@@ -17,38 +17,48 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
-import edu.gatech.chai.omopv5.model.entity.ProcedureOccurrence;
+import edu.gatech.chai.omopv5.model.entity.Concept;
+import edu.gatech.chai.omopv5.model.entity.FImmunizationView;
+import edu.gatech.chai.omopv5.model.entity.FPerson;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ProcedureOccurrenceServiceImp.
+ * The Class FImmunizationViewServiceImp.
  */
 @Service
-public class ProcedureOccurrenceServiceImp extends BaseEntityServiceImp<ProcedureOccurrence>
-		implements ProcedureOccurrenceService {
+public class FImmunizationViewServiceImp extends BaseEntityServiceImp<FImmunizationView>
+		implements FImmunizationViewService {
 
 	/**
-	 * Instantiates a new procedure occurrence service imp.
+	 * Instantiates a new f observation view service imp.
 	 */
-	public ProcedureOccurrenceServiceImp() {
-		super(ProcedureOccurrence.class);
+	public FImmunizationViewServiceImp() {
+		super(FImmunizationView.class);
 	}
 
 	@Override
-	public ProcedureOccurrence construct(ResultSet rs, ProcedureOccurrence entity, String alias) {
-		return ProcedureOccurrenceService._construct(rs, entity, alias);
+	public FImmunizationView update(FImmunizationView entity) {
+		return null;
 	}
 
 	@Override
-	public ProcedureOccurrence construct(FieldValueList rowResult, ProcedureOccurrence entity, String alias,
+	public FImmunizationView construct(ResultSet rs, FImmunizationView entity, String alias) {
+		return FImmunizationViewService._construct(rs, entity, alias);
+	}
+
+	@Override
+	public FImmunizationView construct(FieldValueList rowResult, FImmunizationView entity, String alias,
 			List<String> columns) {
-		return ProcedureOccurrenceService._construct(rowResult, entity, alias, columns);
+		return FImmunizationViewService._construct(rowResult, entity, alias, columns);
 	}
 
 }

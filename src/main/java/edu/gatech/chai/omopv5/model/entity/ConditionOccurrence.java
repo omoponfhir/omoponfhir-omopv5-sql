@@ -101,35 +101,35 @@ public class ConditionOccurrence extends BaseEntity {
 		this.conditionConcept = conditionConcept;
 	}
 
-	public Date getStartDate() {
+	public Date getConditionStartDate() {
 		return conditionStartDate;
 	}
 
-	public void setStartDate(Date conditionStartDate) {
+	public void setConditionStartDate(Date conditionStartDate) {
 		this.conditionStartDate = conditionStartDate;
 	}
 
-	public Date getStartDateTime() {
+	public Date getConditionStartDateTime() {
 		return conditionStartDateTime;
 	}
 	
-	public void setStartDateTime(Date conditionStartDateTime) {
+	public void setConditionStartDateTime(Date conditionStartDateTime) {
 		this.conditionStartDateTime = conditionStartDateTime;
 	}
 
-	public Date getEndDate() {
+	public Date getConditionEndDate() {
 		return conditionEndDate;
 	}
 
-	public void setEndDate(Date conditionEndDate) {
+	public void setConditionEndDate(Date conditionEndDate) {
 		this.conditionEndDate = conditionEndDate;
 	}
 
-	public Date getEndDateTime() {
+	public Date getConditionEndDateTime() {
 		return conditionEndDateTime;
 	}
 	
-	public void setEndDateTime(Date conditionEndDateTime) {
+	public void setConditionEndDateTime(Date conditionEndDateTime) {
 		this.conditionEndDateTime = conditionEndDateTime;
 	}
 	

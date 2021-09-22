@@ -68,6 +68,8 @@ public interface IService<v extends BaseEntity> {
 	 */
 	public List<v> searchByColumnString (String column, Long value);
 	
+	public List<v> searchBySql (int fromIndex, int toIndex, String sql, List<String> parameterList, List<String> valueList, String sort);
+
 	/**
 	 * Search with params.
 	 *
@@ -120,7 +122,9 @@ public interface IService<v extends BaseEntity> {
 	 */
 	Long getSize(List<ParameterWrapper> paramList);
 	
-//	Long getNextId();
+	Long getSize(String sqlString, List<String> parameterList, List<String> valueList);
+
+	//	Long getNextId();
 	
 	v construct (ResultSet rs, v entity, String alias);
 

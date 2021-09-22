@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ConditionOccurrenceServiceImp.
  */

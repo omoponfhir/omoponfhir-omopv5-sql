@@ -24,11 +24,11 @@ public class FactRelationship extends BaseEntity {
 	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept relationshipConcept;
 	
-	public Long getDomainConcept1() {
+	public Long getDomainConceptId1() {
 		return this.domainConceptId1;
 	}
 	
-	public void setDomainConcept1(Long domainConceptId1) {
+	public void setDomainConceptId1(Long domainConceptId1) {
 		this.domainConceptId1 = domainConceptId1;
 	}
 	
@@ -40,11 +40,11 @@ public class FactRelationship extends BaseEntity {
 		this.factId1 = factId1;
 	}
 	
-	public Long getDomainConcept2() {
+	public Long getDomainConceptId2() {
 		return this.domainConceptId2;
 	}
 	
-	public void setDomainConcept2(Long domainConceptId2) {
+	public void setDomainConceptId2(Long domainConceptId2) {
 		this.domainConceptId2 = domainConceptId2;
 	}
 	

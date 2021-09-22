@@ -62,11 +62,11 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 				String columnInfo = metaData.getColumnName(i);
 
 				if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
-					factRelationship.setDomainConcept1(rs.getLong(columnInfo));
+					factRelationship.setDomainConceptId1(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {
 					factRelationship.setFactId1(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_2")) {
-					factRelationship.setDomainConcept2(rs.getLong(columnInfo));
+					factRelationship.setDomainConceptId2(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_2")) {
 					factRelationship.setFactId2(rs.getLong(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
@@ -95,11 +95,11 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 			if (rowResult.get(columnInfo).isNull()) continue;
 
 			if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
-				factRelationship.setDomainConcept1(rowResult.get(columnInfo).getLongValue());
+				factRelationship.setDomainConceptId1(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {
 				factRelationship.setFactId1(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_2")) {
-				factRelationship.setDomainConcept2(rowResult.get(columnInfo).getLongValue());
+				factRelationship.setDomainConceptId2(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_2")) {
 				factRelationship.setFactId2(rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {

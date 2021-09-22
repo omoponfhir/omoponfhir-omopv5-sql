@@ -57,9 +57,9 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 					Concept conditionConcept = ConceptService._construct(rs, null, "conditionConcept");
 					conditionOccurrence.setConditionConcept(conditionConcept);
 				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
-					conditionOccurrence.setStartDate(rs.getDate(columnInfo));
+					conditionOccurrence.setConditionStartDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
-					conditionOccurrence.setEndDate(rs.getDate(columnInfo));
+					conditionOccurrence.setConditionEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
 					Concept conditionTypeConcept = ConceptService._construct(rs, null, "conditionTypeConcept");
 					conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
@@ -109,13 +109,13 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 				String dateString = rowResult.get(columnInfo).getStringValue();
 				Date date = SqlUtil.string2Date(dateString);
 				if (date != null) {
-					conditionOccurrence.setStartDate(date);
+					conditionOccurrence.setConditionStartDate(date);
 				}
 			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
 				String dateString = rowResult.get(columnInfo).getStringValue();
 				Date date = SqlUtil.string2Date(dateString);
 				if (date != null) {
-					conditionOccurrence.setEndDate(date);
+					conditionOccurrence.setConditionEndDate(date);
 				}
 			} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
 				Concept conditionTypeConcept = ConceptService._construct(rowResult, null, "conditionTypeConcept", columns);

@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -384,33 +383,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public Long getSize() {
-		Long retVal = 0L;
-
-		String queryString = "select count(*) as count from " + getSqlTableName() + ";";
-		queryString = renderedSql(queryString, new ArrayList<String>(), new ArrayList<String>());
-
-		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
-				for (FieldValueList row : result.iterateAll()) {
-					retVal = row.get("count").getLongValue();
-					if (retVal != null) {
-						break;
-					}
-				}
-			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
-				if (rs.next()) {
-					retVal = (long) rs.getInt("count");
-				}
-
-				getQueryEntityDao().closeConnection();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return retVal;
+		return getSize(null, null, null);
 	}
 
 	public Long getSize(List<ParameterWrapper> paramList) {
@@ -444,6 +417,48 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				getQueryEntityDao().closeConnection();
 			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return retVal;
+	}
+
+	public Long getSize(String sql, List<String> parameterList, List<String> valueList) {
+		Long retVal = 0L;
+
+		String queryString = "";
+		if (sql == null) {
+			sql = "select count(*) as count from " + getSqlTableName() + ";";
+		} 
+		
+		if (parameterList == null) {
+			parameterList = new ArrayList<String>();
+		}
+
+		if (valueList == null) {
+			valueList = new ArrayList<String>();
+		}
+
+		queryString = renderedSql(sql, parameterList, valueList);
+
+		try {
+			if (getQueryEntityDao().isBigQuery()) {
+				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+				for (FieldValueList row : result.iterateAll()) {
+					retVal = row.get("count").getLongValue();
+					if (retVal != null) {
+						break;
+					}
+				}
+			} else {
+				ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				if (rs.next()) {
+					retVal = (long) rs.getInt("count");
+				}
+
+				getQueryEntityDao().closeConnection();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1270,6 +1285,43 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 //					}
 //				}
 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return entities;
+	}
+
+	public List<T> searchBySql (int fromIndex, int toIndex, String sql, List<String> parameterList, List<String> valueList, String sort) {
+		List<T> entities = new ArrayList<T>();
+		int length = toIndex - fromIndex;
+
+		String sortClause = getEntity().getSortClause(sort);
+
+		if (sql != null && !sql.isEmpty()) {
+			sql = sql + " @sort @limit";
+			parameterList.add("sort");
+			parameterList.add("limit");
+
+			if (sortClause != null && !sortClause.isEmpty()) {
+				valueList.add(sortClause);
+			} else {
+				valueList.add("");
+			}
+
+			if (length > 0) {
+				valueList.add("limit " + length + " offset " + fromIndex);
+			} else {
+				valueList.add("");
+			}
+
+			sql = renderedSql(sql, parameterList, valueList);
+
+			logger.debug("SqlRender:" + sql);
+
+			try {
+				entities.addAll(searchEntity(sql));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -145,3 +145,6 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+# vscode
+.vscode

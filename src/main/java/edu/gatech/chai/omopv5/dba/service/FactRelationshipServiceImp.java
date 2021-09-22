@@ -59,7 +59,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				for (FieldValueList row : result.iterateAll()) {
 					FactRelationship entity = construct(row, null, getSqlTableName(), columns);
 					
-					Long domainConcept2 = entity.getDomainConcept2();
+					Long domainConcept2 = entity.getDomainConceptId2();
 					Long fact2 = entity.getFactId2();
 
 					if (domainConcept2 == 58L) {
@@ -80,7 +80,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				while (rs.next()) {
 					FactRelationship entity = construct(rs, null, "t");
 
-					Long domainConcept2 = entity.getDomainConcept2();
+					Long domainConcept2 = entity.getDomainConceptId2();
 					Long fact2 = entity.getFactId2();
 
 					if (domainConcept2 == 58L) {

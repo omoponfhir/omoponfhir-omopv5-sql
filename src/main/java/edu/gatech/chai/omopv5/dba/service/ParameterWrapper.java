@@ -226,6 +226,18 @@ public class ParameterWrapper {
 		this.upperRelationship = upperRelationship;
 	}
 
+	public void addParameter(String parameter) {
+		this.parameters.add(parameter);
+	}
+
+	public void addOperator(String operator) {
+		this.operators.add(operator);
+	}
+
+	public void addValue(String value) {
+		this.values.add(value);
+	}
+
 	/**
 	 * Construct predicate.
 	 *
@@ -257,7 +269,7 @@ public class ParameterWrapper {
 			}
 		}
 
-		String tableName = tableAnnotation.name();
+		// String tableName = tableAnnotation.name();
 
 //		Method method = entityClass.getDeclaredMethod("_getColumnName", String.class);
 //		String myTablePrimaryId = (String) method.invoke(null, "id");
@@ -281,8 +293,10 @@ public class ParameterWrapper {
 			String valueName = null;
 			String _valueName = null;
 			for (Iterator<String> attributeIter = param.getParameters().iterator(), operIter = param.getOperators()
-					.iterator(), valueIter = param.getValues()
-							.iterator(); (attributeIter.hasNext() || valueIter.hasNext()) && operIter.hasNext();) {
+					.iterator(), valueIter = param.getValues().iterator(); (attributeIter.hasNext() 
+					|| valueIter.hasNext()) && operIter.hasNext();) {
+						
+				String tableName = tableAnnotation.name();
 
 				if (attributeIter.hasNext())
 					attributeName = attributeIter.next();
@@ -314,7 +328,24 @@ public class ParameterWrapper {
 				String[] columnPath = attributeName.split("\\.");
 				if (columnPath.length == 1) {
 					// If columnPath is not set, then this is local table column.
-					field = entityClass.getDeclaredField(attributeName);
+					try {
+						field = entityClass.getDeclaredField(attributeName);
+					} catch (NoSuchFieldException e) {
+						Class<?> parentClass = entityClass.getSuperclass();
+						if (parentClass != null) {
+							// this is local column but this must be 1-to-1 mapped class
+							// set the parent table name.
+							Table newTableAnnotation = parentClass.getDeclaredAnnotation(Table.class);
+							if (newTableAnnotation == null) {
+								logger.error("Table annotation is not available for " + parentClass.getCanonicalName());
+								return null;
+							}
+							tableName = newTableAnnotation.name();
+							field = parentClass.getDeclaredField(attributeName);
+						} else {
+							throw new NoSuchFieldException(e.getMessage());
+						}
+					}
 					
 					// the attribute name needs to be changed to alias.sqlColumnName format.
 					Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
@@ -323,8 +354,13 @@ public class ParameterWrapper {
 					if (columnAnnotation != null) {
 						sqlColumnName = tableName + "." + columnAnnotation.name();
 					} else {
-						logger.error("Column annotation is mission for this attribute, " + attributeName);
-						return null;
+						JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
+						if (joinColumnAnnotation != null) {
+							sqlColumnName = tableName + "." + joinColumnAnnotation.name();
+						} else {
+							logger.error("Column annotation is mission for this attribute, " + attributeName);
+							return null;
+						}
 					}
 
 //					Method getColumnName = entityClass.getDeclaredMethod("_getColumnName", String.class);

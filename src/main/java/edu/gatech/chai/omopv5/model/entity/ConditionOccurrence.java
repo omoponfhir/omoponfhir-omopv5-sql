@@ -189,11 +189,11 @@ public class ConditionOccurrence extends BaseEntity {
 		this.conditionStatusSourceValue = conditionStatusSourceValue;
 	}
 	
-	public Concept getStatusConcept() {
+	public Concept getConditionStatusConcept() {
 		return conditionStatusConcept;
 	}
 	
-	public void setStatusConcept(Concept conditionStatusConcept) {
+	public void setConditionStatusConcept(Concept conditionStatusConcept) {
 		this.conditionStatusConcept = conditionStatusConcept;
 	}
 	

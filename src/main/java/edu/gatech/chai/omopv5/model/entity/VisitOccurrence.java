@@ -67,17 +67,17 @@ public class VisitOccurrence extends BaseEntity {
 	@JoinColumn(name="visit_source_concept_id", referencedColumnName="concept_id")
 	private Concept visitSourceConcept;
 	
-	@JoinColumn(name="admitting_source_concept_id", referencedColumnName="concept_id")
-	private Concept admittingSourceConcept;
+	@JoinColumn(name="admitted_from_concept_id", referencedColumnName="concept_id")
+	private Concept admittedFromConcept;
 	
-	@Column(name="admitting_source_value")
-	private String admittingSourceValue;
+	@Column(name="admitted_from_source_value")
+	private String admittedFromSourceValue;
 	
-	@JoinColumn(name="discharge_to_concept_id", referencedColumnName="concept_id")
-	private Concept dischargeToConcept;
+	@JoinColumn(name="discharged_to_concept_id", referencedColumnName="concept_id")
+	private Concept dischargedToConcept;
 	
-	@Column(name="discharge_to_source_value")
-	private String dischargeToSourceValue;
+	@Column(name="discharged_to_source_value")
+	private String dischargedToSourceValue;
 	
 	@JoinColumn(name="preceding_visit_occurrence_id", referencedColumnName="visit_occurrence_id")
 	private VisitOccurrence precedingVisitOccurrence;
@@ -185,36 +185,36 @@ public class VisitOccurrence extends BaseEntity {
 		this.visitSourceConcept = visitSourceConcept;
 	}
 
-	public Concept getAdmittingSourceConcept() {
-		return admittingSourceConcept;
+	public Concept getAdmittedFromConcept() {
+		return admittedFromConcept;
 	}
 	
-	public void setAdmittingSourceConcept(Concept admittingSourceConcept) {
-		this.admittingSourceConcept = admittingSourceConcept;
+	public void setAdmittedFromConcept(Concept admittedFromConcept) {
+		this.admittedFromConcept = admittedFromConcept;
 	}
 	
-	public String getAdmittingSourceValue() {
-		return admittingSourceValue;
+	public String getAdmittedFromSourceValue() {
+		return admittedFromSourceValue;
 	}
 	
-	public void setAdmittingSourceValue(String admittingSourceValue) {
-		this.admittingSourceValue = admittingSourceValue;
+	public void setAdmittedFromSourceValue(String admittedFromSourceValue) {
+		this.admittedFromSourceValue = admittedFromSourceValue;
 	}
 	
-	public Concept getDischargeToConcept() {
-		return dischargeToConcept;
+	public Concept getDischargedToConcept() {
+		return dischargedToConcept;
 	}
 	
-	public void setDischargeToConcept(Concept dischargeToConcept) {
-		this.dischargeToConcept = dischargeToConcept;
+	public void setDischargedToConcept(Concept dischargedToConcept) {
+		this.dischargedToConcept = dischargedToConcept;
 	}
 	
-	public String getDischargeToSourceValue() {
-		return dischargeToSourceValue;
+	public String getDischargedToSourceValue() {
+		return dischargedToSourceValue;
 	}
 	
-	public void setDischargeToSourceValue(String dischargeToSourceValue) {
-		this.dischargeToSourceValue = dischargeToSourceValue;
+	public void setDischargedToSourceValue(String dischargedToSourceValue) {
+		this.dischargedToSourceValue = dischargedToSourceValue;
 	}
 	
 	public VisitOccurrence getPrecedingVisitOccurrence() {

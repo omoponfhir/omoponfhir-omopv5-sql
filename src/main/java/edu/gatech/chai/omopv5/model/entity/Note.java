@@ -70,6 +70,12 @@ public class Note extends BaseEntity {
 	@Column(name="note_source_value")
 	private String noteSourceValue;
 
+	@Column(name="note_event_id")
+	private Long noteEventId;
+
+	@JoinColumn(name="note_event_field_concept_id", referencedColumnName="concept_id", nullable=false)
+	private Concept noteEventFieldConcept;
+
 	public Note() {
 		super();
 	}
@@ -181,6 +187,22 @@ public class Note extends BaseEntity {
 	
 	public void setNoteSourceValue(String noteSourceValue) {
 		this.noteSourceValue = noteSourceValue;
+	}
+	
+	public Long getNoteEventId() {
+		return noteEventId;
+	}
+	
+	public void setNoteEventId(Long noteEventId) {
+		this.noteEventId = noteEventId;
+	}
+	
+	public Concept getNoteEventFieldConcept() {
+		return noteEventFieldConcept;
+	}
+	
+	public void setNoteEventFieldConcept(Concept noteEventFieldConcept) {
+		this.noteEventFieldConcept = noteEventFieldConcept;
 	}
 	
 	@Override

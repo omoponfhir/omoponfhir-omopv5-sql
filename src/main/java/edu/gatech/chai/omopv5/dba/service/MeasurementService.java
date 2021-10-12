@@ -91,8 +91,16 @@ public interface MeasurementService extends IService<Measurement> {
 					measurement.setMeasurementSourceConcept(measurementSourceConcept);
 				} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
 					measurement.setUnitSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
+					Concept unitSourceConcept = ConceptService._construct(rs, null, "unitSourceConcept");
+					measurement.setUnitSourceConcept(unitSourceConcept);
 				} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
 					measurement.setValueSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_event_id")) {
+					measurement.setMeasurementEventId(rs.getLong(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("measEventFieldConcept_concept_id")) {
+					Concept measEventFieldConcept = ConceptService._construct(rs, null, "measEventFieldConcept");
+					measurement.setMeasEventFieldConcept(measEventFieldConcept);
 				}
 
 			}
@@ -166,8 +174,16 @@ public interface MeasurementService extends IService<Measurement> {
 				measurement.setMeasurementSourceConcept(measurementSourceConcept);
 			} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
 				measurement.setUnitSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
+				Concept unitSourceConcept = ConceptService._construct(rowResult, null, "unitSourceConcept", columns);
+				measurement.setUnitSourceConcept(unitSourceConcept);
 			} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
 				measurement.setValueSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_event_id")) {
+				measurement.setMeasurementEventId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("measEventFieldConcept_concept_id")) {
+				Concept measEventFieldConcept = ConceptService._construct(rowResult, null, "measEventFieldConcept", columns);
+				measurement.setMeasEventFieldConcept(measEventFieldConcept);
 			}
 
 		}

@@ -82,6 +82,15 @@ public class Observation extends BaseEntity {
 	@Column(name="qualifier_source_value")
 	private String qualifierSourceValue;
 
+	@Column(name="value_source_value")
+	private String valueSourceValue;
+	
+	@Column(name="observation_event_id")
+	private Long observationEventId;
+	
+	@JoinColumn(name="obs_event_field_concept_id", referencedColumnName="concept_id")
+	private Concept obsEventFieldConcept;
+	
 	public Long getId() {
 		return id;
 	}
@@ -216,6 +225,30 @@ public class Observation extends BaseEntity {
 	
 	public void setQualifierSourceValue (String qualifierSourceValue) {
 		this.qualifierSourceValue = qualifierSourceValue;
+	}
+	
+	public String getValueSourceValue() {
+		return valueSourceValue;
+	}
+	
+	public void setValueSourceValue(String valueSourceValue) {
+		this.valueSourceValue = valueSourceValue;
+	}
+	
+	public Long getObservationEventId() {
+		return observationEventId;
+	}
+	
+	public void setObservationEventId(Long observationEventId) {
+		this.observationEventId = observationEventId;
+	}
+	
+	public Concept getObsEventFieldConcept() {
+		return obsEventFieldConcept;
+	}
+	
+	public void setObsEventFieldConcept(Concept obsEventFieldConcept) {
+		this.obsEventFieldConcept = obsEventFieldConcept;
 	}
 	
 	@Override

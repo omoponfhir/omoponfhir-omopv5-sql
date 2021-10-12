@@ -78,16 +78,16 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 				} else if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
 					Concept visitSourceConcept = ConceptService._construct(rs, null, "visitSourceConcept");
 					visitOccurrence.setVisitSourceConcept(visitSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
-					Concept admittingSourceConcept = ConceptService._construct(rs, null, "admittingSourceConcept");
-					visitOccurrence.setAdmittingSourceConcept(admittingSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
-					visitOccurrence.setAdmittingSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
-					Concept dischargeToConcept = ConceptService._construct(rs, null, "dischargeToConcept");
-					visitOccurrence.setDischargeToConcept(dischargeToConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
-					visitOccurrence.setDischargeToSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("admittedFromConcept_concept_id")) {
+					Concept admittedFromConcept = ConceptService._construct(rs, null, "admittedFromConcept");
+					visitOccurrence.setAdmittedFromConcept(admittedFromConcept);
+				} else if (columnInfo.equalsIgnoreCase(alias + "_admitted_source_value")) {
+					visitOccurrence.setAdmittedFromSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("dischargedToConcept_concept_id")) {
+					Concept dischargedToConcept = ConceptService._construct(rs, null, "dischargedToConcept");
+					visitOccurrence.setDischargedToConcept(dischargedToConcept);
+				} else if (columnInfo.equalsIgnoreCase(alias + "_discharged_to_source_value")) {
+					visitOccurrence.setDischargedToSourceValue(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
 					VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null,
 							"precedingVisitOccurrence");
@@ -161,15 +161,15 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 				Concept visitSourceConcept = ConceptService._construct(rowResult, null, "visitSourceConcept", columns);
 				visitOccurrence.setVisitSourceConcept(visitSourceConcept);
 			} else if (columnInfo.equalsIgnoreCase("admittingSourceConcept_concept_id")) {
-				Concept admittingSourceConcept = ConceptService._construct(rowResult, null, "admittingSourceConcept", columns);
-				visitOccurrence.setAdmittingSourceConcept(admittingSourceConcept);
-			} else if (columnInfo.equalsIgnoreCase(alias + "_admitting_source_value")) {
-				visitOccurrence.setAdmittingSourceValue(rowResult.get(columnInfo).getStringValue());
-			} else if (columnInfo.equalsIgnoreCase("dischargeToConcept_concept_id")) {
-				Concept dischargeToConcept = ConceptService._construct(rowResult, null, "dischargeToConcept", columns);
-				visitOccurrence.setDischargeToConcept(dischargeToConcept);
-			} else if (columnInfo.equalsIgnoreCase(alias + "_discharge_to_source_value")) {
-				visitOccurrence.setDischargeToSourceValue(rowResult.get(columnInfo).getStringValue());
+				Concept admittedFromConcept = ConceptService._construct(rowResult, null, "admittedFromConcept", columns);
+				visitOccurrence.setAdmittedFromConcept(admittedFromConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_admitted_from_source_value")) {
+				visitOccurrence.setAdmittedFromSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("dischargedToConcept_concept_id")) {
+				Concept dischargedToConcept = ConceptService._construct(rowResult, null, "dischargedToConcept", columns);
+				visitOccurrence.setDischargedToConcept(dischargedToConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_discharged_to_source_value")) {
+				visitOccurrence.setDischargedToSourceValue(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
 				VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rowResult, null, "precedingVisitOccurrence", columns);
 				visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);

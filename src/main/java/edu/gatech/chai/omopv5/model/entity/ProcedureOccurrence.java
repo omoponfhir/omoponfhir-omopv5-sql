@@ -47,6 +47,12 @@ public class ProcedureOccurrence extends BaseEntity {
 	@Column(name="procedure_datetime")
 	private Date procedureDateTime;
 	
+	@Column(name="procedure_end_date")
+	private Date procedureEndDate;
+	
+	@Column(name="procedure_end_datetime")
+	private Date procedureEndDateTime;
+	
 	@JoinColumn(name="procedure_type_concept_id", referencedColumnName="concept_id", nullable=false)
 	private Concept procedureTypeConcept;
 	
@@ -118,6 +124,22 @@ public class ProcedureOccurrence extends BaseEntity {
 
 	public void setProcedureDateTime(Date procedureDateTime) {
 		this.procedureDateTime = procedureDateTime;
+	}
+
+	public Date getProcedureEndDate() {
+		return procedureEndDate;
+	}
+
+	public void setProcedureEndDate(Date procedureEndDate) {
+		this.procedureEndDate = procedureEndDate;
+	}
+
+	public Date getProcedureEndDateTime() {
+		return procedureEndDateTime;
+	}
+
+	public void setProcedureEndDateTime(Date procedureEndDateTime) {
+		this.procedureEndDateTime = procedureEndDateTime;
 	}
 
 	public Concept getProcedureTypeConcept() {

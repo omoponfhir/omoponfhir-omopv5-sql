@@ -81,6 +81,11 @@ public interface NoteService extends IService<Note> {
 					note.setVisitOccurrence(visitOccurrence);
 				} else if (columnInfo.equalsIgnoreCase(alias + "_note_source_value")) {
 					note.setNoteSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_note_event_id")) {
+					note.setNoteEventId(rs.getLong(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("noteEventFieldConcept_concept_id")) {
+					Concept noteEventFieldConcept = ConceptService._construct(rs, null, "noteEventFieldConcept");
+					note.setNoteEventFieldConcept(noteEventFieldConcept);
 				}
 			}
 		} catch (SQLException e) {
@@ -142,6 +147,11 @@ public interface NoteService extends IService<Note> {
 				note.setVisitOccurrence(visitOccurrence);
 			} else if (columnInfo.equalsIgnoreCase(alias + "_note_source_value")) {
 				note.setNoteSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_event_id")) {
+				note.setNoteEventId(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("noteEventFieldConcept_concept_id")) {
+				Concept noteEventFieldConcept = ConceptService._construct(rowResult, null, "noteEventFieldConcept", columns);
+				note.setNoteEventFieldConcept(noteEventFieldConcept);
 			}
 		}
 

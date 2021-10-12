@@ -58,6 +58,9 @@ public class DeviceExposure extends BaseEntity {
 	@Column(name="unique_device_id")
 	private String uniqueDeviceId;
 	
+	@Column(name="production_id")
+	private String productionId;
+	
 	@Column(name="quantity")
 	private Integer quantity;
 	
@@ -72,6 +75,15 @@ public class DeviceExposure extends BaseEntity {
 	
 	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id")
 	private Concept deviceSourceConcept;
+	
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	private Concept unitConcept;
+	
+	@Column(name="unit_source_value")
+	private String unitSourceValue;
+	
+	@JoinColumn(name="unit_source_concept_id", referencedColumnName="concept_id")
+	private Concept unitSourceConcept;
 	
 	public Long getId() {
 		return id;
@@ -129,6 +141,14 @@ public class DeviceExposure extends BaseEntity {
 		this.deviceExposureEndDateTime = deviceExposureEndDateTime;
 	}
 	
+	public Concept getDeviceTypeConcept () {
+		return deviceTypeConcept;
+	}
+	
+	public void setDeviceTypeConcept (Concept deviceTypeConcept) {
+		this.deviceTypeConcept = deviceTypeConcept;
+	}
+	
 	public String getUniqueDeviceId () {
 		return uniqueDeviceId;
 	}
@@ -137,12 +157,12 @@ public class DeviceExposure extends BaseEntity {
 		this.uniqueDeviceId = uniqueDeviceId;
 	}
 	
-	public Concept getDeviceTypeConcept () {
-		return deviceTypeConcept;
+	public String getProductionId () {
+		return productionId;
 	}
 	
-	public void setDeviceTypeConcept (Concept deviceTypeConcept) {
-		this.deviceTypeConcept = deviceTypeConcept;
+	public void setProductionId (String productionId) {
+		this.productionId = productionId;
 	}
 	
 	public Integer getQuantity() {
@@ -183,6 +203,30 @@ public class DeviceExposure extends BaseEntity {
 	
 	public void setDeviceSourceValue (String deviceSourceValue) {
 		this.deviceSourceValue = deviceSourceValue;
+	}
+	
+	public Concept getUnitConcept () {
+		return this.unitConcept;
+	}
+	
+	public void setUnitConcept (Concept unitConcept) {
+		this.unitConcept = unitConcept;
+	}
+	
+	public String getUnitSourceValue () {
+		return this.unitSourceValue;
+	}
+	
+	public void setUnitSourceValue (String unitSourceValue) {
+		this.unitSourceValue = unitSourceValue;
+	}
+	
+	public Concept getUnitSourceConcept () {
+		return this.unitSourceConcept;
+	}
+	
+	public void setUnitSourceConcept (Concept unitSourceConcept) {
+		this.unitSourceConcept = unitSourceConcept;
 	}
 	
 	@Override

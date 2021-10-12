@@ -85,8 +85,17 @@ public class Measurement extends BaseEntity {
 	@Column(name="unit_source_value")
 	private String unitSourceValue;
 	
+	@JoinColumn(name="unit_source_concept_id", referencedColumnName="concept_id")
+	private Concept unitSourceConcept;
+	
 	@Column(name="value_source_value")
 	private String valueSourceValue;
+	
+	@Column(name="measurement_event_id")
+	private Long measurementEventId;
+	
+	@JoinColumn(name="meas_event_field_concept_id", referencedColumnName="concept_id")
+	private Concept measEventFieldConcept;
 	
 	public Long getId() {
 		return id;
@@ -232,6 +241,14 @@ public class Measurement extends BaseEntity {
 		this.unitSourceValue = unitSourceValue;
 	}
 
+	public Concept getUnitSourceConcept() {
+		return unitSourceConcept;
+	}
+	
+	public void setUnitSourceConcept(Concept unitSourceConcept) {
+		this.unitSourceConcept = unitSourceConcept;
+	}
+
 	public String getValueSourceValue() {
 		return valueSourceValue;
 	}
@@ -240,6 +257,22 @@ public class Measurement extends BaseEntity {
 		this.valueSourceValue = valueSourceValue;
 	}
 	
+	public Long getMeasurementEventId() {
+		return measurementEventId;
+	}
+	
+	public void setMeasurementEventId(Long measurementEventId) {
+		this.measurementEventId = measurementEventId;
+	}
+	
+	public Concept getMeasEventFieldConcept() {
+		return measEventFieldConcept;
+	}
+	
+	public void setMeasEventFieldConcept(Concept measEventFieldConcept) {
+		this.measEventFieldConcept = measEventFieldConcept;
+	}
+
 	@Override
 	public Long getIdAsLong() {
 		return getId();

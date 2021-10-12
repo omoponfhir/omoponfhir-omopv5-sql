@@ -1,5 +1,5 @@
 
-Database layer for OMOPonFHIR with OMOP v5.3.1 using SqlRender to access database like BigQuery.
+Database layer for OMOPonFHIR with OMOP v5.4 using SqlRender to access database like BigQuery.
 Current testing procedure (Writing to OMOP only)
 
 | RESOURCE             | TEST1 with internal | TEST2 with AoU data |

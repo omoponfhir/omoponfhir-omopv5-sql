@@ -33,7 +33,7 @@ public abstract class BaseEntity implements IBaseEntity {
 			String[] sort_ = sort.split(",");
 			for (int i = 0; i < sort_.length; i++) {
 				String[] items = sort_[i].split(" ");
-				String sortItem = getColumnName(items[0]) + " " + items[1];
+				String sortItem = getColumnName(items[0]).replace(".", "_") + " " + items[1];
 				if (sortClause == null || sortClause.isEmpty()) {
 					sortClause = sortItem;
 				} else {

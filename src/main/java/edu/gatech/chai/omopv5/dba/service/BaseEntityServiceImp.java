@@ -96,6 +96,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return this.entityClass;
 	}
 
+	public void setEntityClass(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+	
 	public T getEntity() {
 		return this.entity;
 	}

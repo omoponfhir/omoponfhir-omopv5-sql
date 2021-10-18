@@ -75,9 +75,9 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		}
 	}
 
-	private void getConnection() throws SQLException {
+	private Connection getConnection() throws SQLException {
 		if (connection == null || connection.isClosed()) {
-			connection = ds.getConnection();
+			this.connection = ds.getConnection();
 
 			if (connection.getAutoCommit()) {
 				try {
@@ -87,21 +87,19 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 			}
 		}
 
+		return this.connection;
 	}
 
 	@Override
 	public TableResult runBigQuery(String query) throws Exception {
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
-		System.out.println(
-				"Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+		logger.debug("runBigQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
 		DatasetId defaultDataset = DatasetId.of(databaseConfig.getBigQueryProject(), databaseConfig.getBigQueryDataset());
 		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(query).setDefaultDataset(defaultDataset).setUseLegacySql(false).build();
 		
 		JobId jobId = JobId.of(databaseConfig.getBigQueryProject(), UUID.randomUUID().toString());
 		
-//		System.out.println("jobId:"+jobId.toString()+ ", queryConfig:"+queryConfig.toString());
 	    Job queryJob = getBigQuery().create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
 
 	    // Wait for the query to complete.
@@ -114,7 +112,7 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 	      throw new RuntimeException(queryJob.getStatus().getExecutionErrors().toString());
 	    } 
 
-	    System.out.println("GENERATED ID: "+queryJob.getGeneratedId());
+	    logger.debug("GENERATED ID: "+queryJob.getGeneratedId());
 		return queryJob.getQueryResults();
 	}
 
@@ -125,16 +123,10 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
-		System.out.println(
-				"Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+		logger.debug("runQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
 		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-
-//		connection.close();
-
-		return rs;
+		return stmt.executeQuery(query);
 	}
 
 	@Override
@@ -144,16 +136,13 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
-		System.out.println(
-				"Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+		logger.debug("UpdateQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
 		PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		int affectedRows = stmt.executeUpdate();
 		if (affectedRows == 0) {
 			logger.debug("INSERT failed with " + query);
-			if (connection != null)
-				connection.close();
+			connection.close();
 
 			return 0L;
 		}
@@ -162,12 +151,11 @@ public class QueryEntityDaoImpl implements QueryEntityDao {
 		ResultSet generatedKeys = stmt.getGeneratedKeys();
 		if (generatedKeys.next()) {
 			Long retVal = generatedKeys.getLong(1);
-			connection.close();
+			// connection.close();
 
 			return retVal;
 		} else {
-			if (connection != null)
-				connection.close();
+			connection.close();
 			throw new SQLException("update Query failed, no ID generated, with " + query);
 		}
 	}

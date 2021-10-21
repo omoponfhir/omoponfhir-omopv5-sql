@@ -35,7 +35,7 @@ import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
 import edu.gatech.chai.omopv5.dba.service.MeasurementService;
 import edu.gatech.chai.omopv5.dba.service.ObservationService;
-import edu.gatech.chai.omopv5.jpa.dao.DatabaseConfiguration;
+import edu.gatech.chai.omopv5.dba.dao.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;

@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
 import edu.gatech.chai.omopv5.model.entity.Measurement;
@@ -40,8 +39,8 @@ public class TransactionServiceImp implements TransactionService {
 //	private TransactionDao transactionDao;
 	
 	/** The person dao. */
-	@Autowired
-	private QueryEntityDao myDao;
+	// @Autowired
+	// private QueryEntityDao myDao;
 	
 //	public TransactionDao getEntityDao() {
 //		return transactionDao;

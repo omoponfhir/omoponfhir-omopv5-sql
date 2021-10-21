@@ -50,7 +50,9 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	public Location searchByAddress(String line1, String line2, String city, String state, String zip) {
 		Location entity = null;
 		
-		String queryString ="SELECT * FROM " + Location._getTableName() + " WHERE";
+		String queryString = "SELECT location.location_id as location_location_id, location.address_1 as location_address_1, " +
+			"location.address_2 as location_address_2, location.city as location_city, location.state as location_state, location.zip as location_zip, " + 
+			"location.county as location_county, location.location_source_value as location_location_source_value FROM " + Location._getTableName() + " location WHERE";
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 
@@ -114,8 +116,8 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 						+ ":" + zip);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				List<String> columns = listOfColumns(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					entity = construct(row, null, getSqlTableName(), columns);
@@ -124,13 +126,17 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
-	
-				while (rs.next()) {
-					entity = construct(rs, null, "t");
-					if (entity != null)
-						break;
+				// ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				List<Location> myEntities = runQuery(queryString, null, "location");
+				if (!myEntities.isEmpty()) {
+					entity = myEntities.get(0);
 				}
+	
+				// while (rs.next()) {
+				// 	entity = construct(rs, null, "t");
+				// 	if (entity != null)
+				// 		break;
+				// }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

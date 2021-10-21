@@ -111,8 +111,8 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 						+ ":" + given1Name + " " + FPerson._getColumnName("givenName2") + ":" + given2Name);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				List<String> columns = listOfColumns(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					entity = construct(row, null, getSqlTableName(), columns);
@@ -121,13 +121,16 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
-	
-				while (rs.next()) {
-					entity = construct(rs, null, "t");
-					if (entity != null)
-						break;
+				// ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				List<FPerson> myEntities = runQuery(queryString, null, "t");
+				if (!myEntities.isEmpty()) {
+					entity = myEntities.get(0);
 				}
+				// while (rs.next()) {
+				// 	entity = construct(rs, null, "t");
+				// 	if (entity != null)
+				// 		break;
+				// }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -164,11 +167,11 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 
 		sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				getQueryEntityDao().runBigQuery(sql);
+			if (isBigQuery()) {
+				runBigQuery(sql);
 				retVal = 1L;
 			} else {
-				retVal = getQueryEntityDao().updateQuery(sql);
+				retVal = updateQuery(sql);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,11 +187,11 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 			sql = SqlRender.renderSql(sql, parameters, values).replaceAll("\\s+", " ");
 
 			try {
-				if (getQueryEntityDao().isBigQuery()) {
-					getQueryEntityDao().runBigQuery(sql);
+				if (isBigQuery()) {
+					runBigQuery(sql);
 					retVal = 1L;
 				} else {
-					retVal = getQueryEntityDao().updateQuery(sql);
+					retVal = updateQuery(sql);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

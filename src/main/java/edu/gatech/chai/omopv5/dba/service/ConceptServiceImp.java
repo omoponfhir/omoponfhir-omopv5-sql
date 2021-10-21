@@ -26,6 +26,7 @@ import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.TableResult;
 
 import edu.gatech.chai.omopv5.model.entity.Concept;
+import edu.gatech.chai.omopv5.model.entity.IBaseEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -87,8 +88,8 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 
 		Concept entity;
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(sql);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(sql);
 				List<String> columns = listOfColumns(sql);
 //				System.out.println("++++++++++++++++++++++++++++++++++++++++");
 //				System.out.println(sql);
@@ -103,15 +104,17 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 					}
 				}
 			} else {
-
-				ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-				while (rs.next()) {
-					entity = ConceptService._construct(rs, null, "c");
-					if (entity != null) {
-						concepts.add(entity);
-					}
+				List<Concept> myEntities = runQuery(sql, null, "c");
+				if (!myEntities.isEmpty()) {
+					concepts.addAll(myEntities);					
 				}
+
+				// while (rs.next()) {
+				// 	entity = ConceptService._construct(rs, null, "c");
+				// 	if (entity != null) {
+				// 		concepts.add(entity);
+				// 	}
+				// }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

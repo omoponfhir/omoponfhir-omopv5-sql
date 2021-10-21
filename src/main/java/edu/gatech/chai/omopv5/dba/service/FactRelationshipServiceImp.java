@@ -1,9 +1,12 @@
 package edu.gatech.chai.omopv5.dba.service;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -53,8 +56,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		queryString = renderedSql(queryString, parameterList, valueList);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				List<String> columns = listOfColumns(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					FactRelationship entity = construct(row, null, getSqlTableName(), columns);
@@ -75,7 +78,15 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 //					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				// ResultSet rs = runQuery(queryString);
+
+				String query = SqlTranslate.translateSql(queryString, databaseConfig.getSqlRenderTargetDialect());
+				logger.debug("searchMeasurementUsingMethod: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+		
+				Connection connection = getConnection();
+		
+				Statement stmt = connection.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
 	
 				while (rs.next()) {
 					FactRelationship entity = construct(rs, null, "t");
@@ -94,6 +105,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 //					if (entity != null)
 //						entities.add(new Note(entity.getFactId1()));
 				}
+
+				closeConnection(connection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -119,8 +132,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		queryString = renderedSql(queryString, parameterList, valueList);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				List<String> columns = listOfColumns(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					FactRelationship entity = construct(row, null, getSqlTableName(), columns);
@@ -129,13 +142,22 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				// ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				String query = SqlTranslate.translateSql(queryString, databaseConfig.getSqlRenderTargetDialect());
+				logger.debug("searchMeasurementContainsComments: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+		
+				Connection connection = getConnection();
+		
+				Statement stmt = connection.createStatement();
+				ResultSet rs = stmt.executeQuery(query);
 	
 				while (rs.next()) {
 					FactRelationship entity = construct(rs, null, "t");
 					if (entity != null)
 						entities.add(new Note(entity.getFactId1()));
 				}
+
+				closeConnection(connection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -216,8 +238,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				+ FactRelationship._getColumnName("relationshipConcept") + ":" + relationshipId);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				List<String> columns = listOfColumns(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					FactRelationship entity = construct(row, null, getSqlTableName(), columns);
@@ -226,13 +248,15 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
-	
-				while (rs.next()) {
-					FactRelationship entity = construct(rs, null, "t");
-					if (entity != null)
-						entities.add(entity);
-				}
+				// ResultSet rs = getQueryEntityDao().runQuery(queryString);
+				List<FactRelationship> myEntities = runQuery(queryString, null, "t");
+				entities.addAll(myEntities);
+
+				// while (rs.next()) {
+				// 	FactRelationship entity = construct(rs, null, "t");
+				// 	if (entity != null)
+				// 		entities.add(entity);
+				// }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

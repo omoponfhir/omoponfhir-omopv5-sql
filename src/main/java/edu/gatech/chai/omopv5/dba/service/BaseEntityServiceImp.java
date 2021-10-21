@@ -19,24 +19,42 @@ package edu.gatech.chai.omopv5.dba.service;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.ohdsi.sql.SqlRender;
+import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.api.client.util.DateTime;
+import com.google.cloud.bigquery.BigQuery;
+import com.google.cloud.bigquery.BigQueryOptions;
+import com.google.cloud.bigquery.DatasetId;
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.Job;
+import com.google.cloud.bigquery.JobId;
+import com.google.cloud.bigquery.JobInfo;
+import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 
+import edu.gatech.chai.omopv5.dba.dao.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
-import edu.gatech.chai.omopv5.jpa.dao.QueryEntityDao;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
+import edu.gatech.chai.omopv5.model.entity.IBaseEntity;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
@@ -53,15 +71,13 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
  */
 public abstract class BaseEntityServiceImp<T extends BaseEntity> implements IService<T> {
 	private static final Logger logger = LoggerFactory.getLogger(BaseEntityServiceImp.class);
+	private BigQuery bigQuery;
+	private DataSource ds;
+	private Class<T> entityClass;
+	private T entity;
 
 	@Autowired
-	private QueryEntityDao queryEntityDao;
-
-	/** The entity class. */
-	private Class<T> entityClass;
-
-	/** The entity instance */
-	private T entity;
+	DatabaseConfiguration databaseConfig;
 
 	/**
 	 * Instantiates a new base entity service imp.
@@ -78,15 +94,141 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 	}
 
-	/**
-	 * Gets the entity dao.
-	 *
-	 * @return the entity dao
-	 */
-	public QueryEntityDao getQueryEntityDao() {
-		return queryEntityDao;
+	@PostConstruct
+	private void postConstruct() {
+		ds = databaseConfig.getDataSource();
 	}
 
+	public boolean isBigQuery() {
+		return "bigquery".equals(databaseConfig.getSqlRenderTargetDialect());
+	}
+
+	public BigQuery getBigQuery() {
+		if (bigQuery == null) {
+			bigQuery = BigQueryOptions.getDefaultInstance().getService();
+		}
+
+		return bigQuery;
+	}
+	
+	public void closeConnection(Connection connection) throws SQLException {
+		if (connection != null) {
+			connection.close();
+		}
+	}
+
+	public Connection getConnection() throws SQLException {
+		 Connection connection = ds.getConnection();
+
+		if (connection.getAutoCommit()) {
+			try {
+				connection.setAutoCommit(false);
+			} catch (SQLFeatureNotSupportedException ignored) {
+				logger.debug("SetAutoCommit failed.");
+			}
+		}
+
+		return connection;
+	}
+
+	public TableResult runBigQuery(String query) throws Exception {
+		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+		logger.debug("runBigQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+
+		DatasetId defaultDataset = DatasetId.of(databaseConfig.getBigQueryProject(), databaseConfig.getBigQueryDataset());
+		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(query).setDefaultDataset(defaultDataset).setUseLegacySql(false).build();
+		
+		JobId jobId = JobId.of(databaseConfig.getBigQueryProject(), UUID.randomUUID().toString());
+		
+	    Job queryJob = getBigQuery().create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
+
+	    // Wait for the query to complete.
+	    queryJob = queryJob.waitFor();
+
+	    // Check for errors
+	    if (queryJob == null) {
+			throw new RuntimeException("Job no longer exists");
+	    } else if (queryJob.getStatus().getError() != null) {
+			throw new RuntimeException(queryJob.getStatus().getExecutionErrors().toString());
+	    } 
+
+	    logger.debug("GENERATED ID: "+queryJob.getGeneratedId());
+		return queryJob.getQueryResults();
+	}
+
+	public List<T> runQuery(String query, T myEntity, String alias) throws SQLException {
+		T newEntity = null;
+		List<T> entities = new ArrayList<T>();
+
+		// sql string is full completed string rendered by SqlRender.
+		// Now, we translate this to attached database SQL.
+		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+		logger.debug("runQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+
+		Connection connection = getConnection();
+
+		Statement stmt = connection.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		while (rs.next()) {
+			newEntity = construct(rs, myEntity, alias);
+			if (newEntity != null) {
+				entities.add(newEntity);
+			}
+		}
+
+		closeConnection(connection);
+		return entities;
+	}
+
+	public Long updateQuery(String query) throws SQLException {
+		Long retVal;
+
+		// sql string is full completed string rendered by SqlRender.
+		// Now, we translate this to attached database SQL.
+		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+		logger.debug("UpdateQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+
+		Connection connection = getConnection();
+		PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		int affectedRows = stmt.executeUpdate();
+		if (affectedRows == 0) {
+			logger.debug("UPDATE failed with " + query);
+			closeConnection(connection);
+
+			return 0L;
+		}
+		connection.commit();
+
+		ResultSet generatedKeys = stmt.getGeneratedKeys();
+		if (generatedKeys.next()) {
+			retVal = generatedKeys.getLong(1);
+		} else {
+			closeConnection(connection);
+			throw new SQLException("update Query failed, no ID generated, with " + query);
+		}
+
+		closeConnection(connection);		
+		return retVal;
+	}
+
+	public Long runCountQuery(String query, String alias) throws SQLException {
+		Long retVal = 0L;
+
+		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+		logger.debug("runCountQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
+
+		Connection connection = getConnection();
+
+		Statement stmt = connection.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		if (rs.next()) {
+			retVal = (long) rs.getInt(alias);
+		}
+
+		closeConnection(connection);
+		return retVal;
+	}
+		
 	/**
 	 * Gets the entity class.
 	 *
@@ -123,21 +265,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 	}
 
-//	private String getAliasedSqlColumnName(String tableInfo, String columnName, String sqlColumnName) {
-//		String alias = columnName;
-//		String[] tables = tableInfo.split(",");
-//		for (String table : tables) {
-//			String[] tableNameAlias = table.split(":");
-//			if (tableNameAlias.length == 1) {
-//				alias = columnName;
-//			} else {
-//				alias = tableNameAlias[1];
-//			}
-//		}
-//
-//		return alias + "." + sqlColumnName;
-//	}
-
 	public String getSqlTableColumnName(Field field) {
 		if (field != null) {
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
@@ -148,7 +275,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				if (joinColumnAnnotation != null) {
 					return joinColumnAnnotation.name();
 				}
-				System.out.println("ERROR: annotation is null for field=" + field.toString());
+				logger.error("ERROR: annotation is null for field=" + field.toString());
 				return null;
 			}
 		} else {
@@ -254,7 +381,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				continue;
 
 			String variableName = field.getName();
-//			System.out.println("+++++++++++++"+tableName+"  "+variableName);
 			Column columnAnnotation = field.getDeclaredAnnotation(Column.class);
 			JoinColumn joinColumnAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 
@@ -401,8 +527,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			sql = renderedSql(sql, parameterList, valueList);
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(sql);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(sql);
 				for (FieldValueList row : result.iterateAll()) {
 					retVal = row.get("count").getLongValue();
 					if (retVal != null) {
@@ -410,11 +536,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(sql);
-				if (rs.next()) {
-					retVal = (long) rs.getInt("count");
-				}
-				getQueryEntityDao().closeConnection();
+				retVal = runCountQuery(sql, "count");
+				// if (rs.next()) {
+				// 	retVal = (long) rs.getInt("count");
+				// }
+				// getQueryEntityDao().closeConnection();
 			}
 
 		} catch (Exception e) {
@@ -443,8 +569,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		queryString = renderedSql(sql, parameterList, valueList);
 
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(queryString);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(queryString);
 				for (FieldValueList row : result.iterateAll()) {
 					retVal = row.get("count").getLongValue();
 					if (retVal != null) {
@@ -452,12 +578,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 			} else {
-				ResultSet rs = getQueryEntityDao().runQuery(queryString);
-				if (rs.next()) {
-					retVal = (long) rs.getInt("count");
-				}
+				retVal = runCountQuery(queryString, "count");
+				// if (rs.next()) {
+				// 	retVal = (long) rs.getInt("count");
+				// }
 
-				getQueryEntityDao().closeConnection();
+				// getQueryEntityDao().closeConnection();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -491,55 +617,95 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	protected T readEntity(String sql) throws Exception {
-		T entity = null;
-		if (getQueryEntityDao().isBigQuery()) {
-			TableResult result = getQueryEntityDao().runBigQuery(sql);
+		T myEntity = null;
+		if (isBigQuery()) {
+			TableResult result = runBigQuery(sql);
 			List<String> columns = listOfColumns(sql);
 			for (FieldValueList row : result.iterateAll()) {
-				entity = construct(row, null, getSqlTableName(), columns);
-				if (entity != null) {
+				myEntity = construct(row, null, getSqlTableName(), columns);
+				if (myEntity != null) {
 					break;
 				}
 			}
 		} else {
+			List<T> retEntities = runQuery(sql, null, getSqlTableName());
 
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-			if (rs.next()) {
-				entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					return entity;
-				}
+			if (!retEntities.isEmpty()) {
+				myEntity = retEntities.get(0);
 			}
+			// if (rs.next()) {
+			// 	entity = construct(rs, null, getSqlTableName());
+			// 	if (entity != null) {
+			// 		return entity;
+			// 	}
+			// }
 		}
 
-		return entity;
+		return myEntity;
 	}
 
 	protected List<T> searchEntity(String sql) throws Exception {
 		List<T> entities = new ArrayList<T>();
 		
-		if (getQueryEntityDao().isBigQuery()) {
-			TableResult result = getQueryEntityDao().runBigQuery(sql);
+		if (isBigQuery()) {
+			TableResult result = runBigQuery(sql);
 			List<String> columns = listOfColumns(sql);
 			for (FieldValueList row : result.iterateAll()) {
-				T entity = construct(row, null, getSqlTableName(), columns);
-				if (entity != null) {
-					entities.add(entity);
+				T myEntity = construct(row, null, getSqlTableName(), columns);
+				if (myEntity != null) {
+					entities.add(myEntity);
 				}
 			}
 		} else {
-			ResultSet rs = getQueryEntityDao().runQuery(sql);
+			List<T> retEntities = runQuery(sql, null, getSqlTableName());
+			entities.addAll(retEntities);
 
-			while (rs.next()) {
-				T entity = construct(rs, null, getSqlTableName());
-				if (entity != null) {
-					entities.add(entity);
-				}
-			}
+			// while (rs.next()) {
+			// 	T entity = construct(rs, null, getSqlTableName());
+			// 	if (entity != null) {
+			// 		entities.add(entity);
+			// 	}
+			// }
 		}
 
 		return entities;
+	}
+
+	private String constructFieldValue(Field field, Object fieldObject, String columnName) 
+		throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		String fieldValue = null;
+
+		if (field.getType() == String.class) {
+			fieldValue = "'" + (String) fieldObject + "'";
+		} else if (field.getType() == Double.class || field.getType() == Integer.class
+				|| field.getType() == Short.class || field.getType() == Long.class) {
+			fieldValue = fieldObject.toString();
+		} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
+			if (columnName.endsWith("time") || field.getType() == DateTime.class) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
+			} else {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
+			}
+		} else {
+			Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
+			Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
+			if (idObject instanceof String) {
+				fieldValue = "'" + (String) idObject + "'";
+			} else if (idObject instanceof Long) {
+				if (null == idObject || (Long)idObject == 0L) {
+					fieldValue = "null";
+				} else {
+					fieldValue = idObject.toString();
+				}
+			} else {
+				logger.error(columnName + " is foreign table. id cannot be null");
+				return null;
+			}
+		}
+
+		return fieldValue;
 	}
 
 	private Long insertEntity(Class<T> clazz, T entity) {
@@ -614,36 +780,39 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			try {
 				Object fieldObject = field.get(entity);
-				System.out.println("COLUMNNAME:" + columnName + ":COLUMNNAME");
+				logger.debug("COLUMNNAME:" + columnName + ":COLUMNNAME");
 				if (fieldObject != null) {
-					System.out.println("FIELDOBJECT:" + fieldObject.toString() + ":FIELDOBJECT");
-					System.out.println("FIELDTYPE:" + field.getType() + ":FIELDTYPE");
+					logger.debug("FIELDOBJECT:" + fieldObject.toString() + ":FIELDOBJECT");
+					logger.debug("FIELDTYPE:" + field.getType() + ":FIELDTYPE");
 
-					if (field.getType() == String.class) {
-						fieldValue = "'" + (String) fieldObject + "'";
-					} else if (field.getType() == Double.class || field.getType() == Integer.class
-							|| field.getType() == Short.class || field.getType() == Long.class) {
-						fieldValue = fieldObject.toString();
-					} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
-						if (columnName.endsWith("time") || field.getType() == DateTime.class) {
-							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-							fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
-						} else {
-							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-							fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
-						}
-					} else {
-						Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
-						Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
-						if (idObject instanceof String) {
-							fieldValue = "'" + (String) idObject + "'";
-						} else if (idObject instanceof Long) {
-							fieldValue = idObject.toString();
-						} else {
-							logger.error(columnName + " is foreign table. id cannot be null");
-							return null;
-						}
-					}
+					fieldValue = constructFieldValue(field, fieldObject, columnName);
+					if (fieldValue == null) return null;
+
+					// if (field.getType() == String.class) {
+					// 	fieldValue = "'" + (String) fieldObject + "'";
+					// } else if (field.getType() == Double.class || field.getType() == Integer.class
+					// 		|| field.getType() == Short.class || field.getType() == Long.class) {
+					// 	fieldValue = fieldObject.toString();
+					// } else if (field.getType() == Date.class || field.getType() == DateTime.class) {
+					// 	if (columnName.endsWith("time") || field.getType() == DateTime.class) {
+					// 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+					// 		fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
+					// 	} else {
+					// 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					// 		fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
+					// 	}
+					// } else {
+					// 	Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
+					// 	Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
+					// 	if (idObject instanceof String) {
+					// 		fieldValue = "'" + (String) idObject + "'";
+					// 	} else if (idObject instanceof Long) {
+					// 		fieldValue = idObject.toString();
+					// 	} else {
+					// 		logger.error(columnName + " is foreign table. id cannot be null");
+					// 		return null;
+					// 	}
+					// }
 				} else if (nextIdString == null) {
 					// if value is null and not required, we skip this.
 					if (columnAnnotation != null) {
@@ -721,18 +890,18 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		Long id = null;
 		if (!columns.isEmpty() && !values.isEmpty() && !"".equals(columns) && !"".equals(values)) {
 			sql += "(" + columns + ") select " + values + " from @table";
-			sql = renderedSql(sql, parameterList, valueList);
+			logger.debug("insertEntity: Before SqlRender:" + sql);
 
-			System.out.println(sql);
-			logger.debug("SqlRender:" + sql);
+			sql = renderedSql(sql, parameterList, valueList);
+			logger.debug("insertEntity: SqlRender:" + sql);
 
 			try {
-				if (getQueryEntityDao().isBigQuery()) {
-					getQueryEntityDao().runBigQuery(sql);
+				if (isBigQuery()) {
+					runBigQuery(sql);
 
 					// We need get the last inserted id.
 					sql = "select max(" + primaryId + ") as last_id from " + tableName;
-					TableResult result = getQueryEntityDao().runBigQuery(sql);
+					TableResult result = runBigQuery(sql);
 					for (FieldValueList row : result.iterateAll()) {
 						id = row.get("last_id").getLongValue();
 						if (id != null) {
@@ -740,7 +909,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 						}
 					}
 				} else {
-					id = getQueryEntityDao().updateQuery(sql);
+					id = updateQuery(sql);
 					return id;
 				}
 
@@ -845,29 +1014,30 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			try {
 				Object fieldObject = field.get(entity);
 				if (fieldObject != null) {
-					if (field.getType() == String.class) {
-						fieldValue = "'" + (String) fieldObject + "'";
-					} else if (field.getType() == Double.class || field.getType() == Integer.class
-							|| field.getType() == Date.class || field.getType() == Short.class
-							|| field.getType() == DateTime.class || field.getType() == Long.class) {
-						fieldValue = fieldObject.toString();
-					} else {
-						Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
-						Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
-						if (idObject instanceof String) {
-							fieldValue = "'" + (String) idObject + "'";
-						} else {
-							fieldValue = idObject.toString();
-						}
-					}
+					fieldValue = constructFieldValue(field, fieldObject, columnName);
+					if (fieldValue == null) return null;
+
+					// if (field.getType() == String.class) {
+					// 	fieldValue = "'" + (String) fieldObject + "'";
+					// } else if (field.getType() == Double.class || field.getType() == Integer.class
+					// 		|| field.getType() == Date.class || field.getType() == Short.class
+					// 		|| field.getType() == DateTime.class || field.getType() == Long.class) {
+					// 	fieldValue = fieldObject.toString();
+					// } else {
+					// 	Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
+					// 	Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
+					// 	if (idObject instanceof String) {
+					// 		fieldValue = "'" + (String) idObject + "'";
+					// 	} else {
+					// 		fieldValue = idObject.toString();
+					// 	}
+					// }
 				} else {
 					continue; // value is null. So we skip this.
 				}
 
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				return null;
-			} catch (IllegalAccessException e) {
+			} catch (IllegalArgumentException | IllegalAccessException | NoSuchMethodException
+					| SecurityException | InvocationTargetException e) {
 				e.printStackTrace();
 				return null;
 			} catch (NullPointerException e) {
@@ -885,15 +1055,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 				continue;
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-				return null;
-			} catch (SecurityException e) {
-				e.printStackTrace();
-				return null;
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-				return null;
 			}
 
 			if (i > 1) {
@@ -916,14 +1077,13 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			sql += assignments + " where " + where;
 			sql = renderedSql(sql, parameterList, valueList);
 
-			System.out.println(sql);
 			logger.debug("SqlRender:" + sql);
 
 			try {
-				if (getQueryEntityDao().isBigQuery()) {
-					getQueryEntityDao().runBigQuery(sql);
+				if (isBigQuery()) {
+					runBigQuery(sql);
 				} else {
-					getQueryEntityDao().updateQuery(sql);
+					updateQuery(sql);
 				}
 				return entity;
 			} catch (Exception e) {
@@ -977,7 +1137,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(sql);
 		logger.debug("SqlRender:" + sql);
 
 		T entity = null; 
@@ -1026,11 +1185,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		sql = renderedSql(sql, parameterList, valueList);
 		try {
 			Long ret;
-			if (getQueryEntityDao().isBigQuery()) {
-				getQueryEntityDao().runBigQuery(sql);
+			if (isBigQuery()) {
+				runBigQuery(sql);
 				ret = 1L;
 			} else {
-				ret = getQueryEntityDao().updateQuery(sql);
+				ret = updateQuery(sql);
 			}
 			return ret;
 		} catch (Exception e) {
@@ -1058,7 +1217,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(sql);
 		logger.debug("SqlRender:" + sql);
 		
 		try {
@@ -1108,8 +1266,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(sql);
-		logger.debug("SqlRender:" + sql);
+		logger.debug("searchByColumnString:" + sql);
 
 		try {
 			entities.addAll(searchEntity(sql));
@@ -1166,8 +1323,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 
-		System.out.println(sql);
-		logger.debug("SqlRender:" + sql);
+		logger.debug("searchWithoutParams:" + sql);
 
 		try {
 			entities.addAll(searchEntity(sql));
@@ -1253,8 +1409,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 //			sql = SqlRender.renderSql(sql.trim(), parameters, values).replaceAll("\\s+", " ");
 			sql = renderedSql(sql, parameterList, valueList);
 
-			System.out.println(sql);
-			logger.debug("SqlRender:" + sql);
+			logger.debug("searchWithParams:" + sql);
 
 			try {
 				entities.addAll(searchEntity(sql));
@@ -1318,7 +1473,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 			sql = renderedSql(sql, parameterList, valueList);
 
-			logger.debug("SqlRender:" + sql);
+			logger.debug("searchBySql:" + sql);
 
 			try {
 				entities.addAll(searchEntity(sql));

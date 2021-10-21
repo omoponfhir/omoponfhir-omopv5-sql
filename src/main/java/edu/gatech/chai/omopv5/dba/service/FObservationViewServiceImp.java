@@ -73,15 +73,9 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 		FObservationView entity = null;
 		
 		try {
-			if (getQueryEntityDao().isBigQuery()) {
-				TableResult result = getQueryEntityDao().runBigQuery(sql);
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(sql);
 				List<String> columns = listOfColumns(sql);
-//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//				System.out.println(sql);
-//				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-//				for (String column : columns) {
-//					System.out.println(column);
-//				}
 				for (FieldValueList row : result.iterateAll()) {
 					entity = construct(row, null, getSqlTableName(), columns);
 					if (entity != null) {
@@ -89,11 +83,14 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 					}
 				}
 			} else {
+				// ResultSet rs = getQueryEntityDao().runQuery(sql);
+				List<FObservationView> myEntities = runQuery(sql, null, getSqlTableName());
 
-				ResultSet rs = getQueryEntityDao().runQuery(sql);
-
-				if (rs.next()) {
-					entity = construct(rs, null, getSqlTableName());
+				// if (rs.next()) {
+				// 	entity = construct(rs, null, getSqlTableName());
+				// }
+				if (!myEntities.isEmpty()) {
+					entity = myEntities.get(0);
 				}
 			}
 

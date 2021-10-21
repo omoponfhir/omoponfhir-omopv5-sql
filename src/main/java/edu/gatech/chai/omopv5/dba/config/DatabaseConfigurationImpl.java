@@ -1,4 +1,4 @@
-package edu.gatech.chai.omopv5.dba.dao;
+package edu.gatech.chai.omopv5.dba.config;
 
 import javax.sql.DataSource;
 

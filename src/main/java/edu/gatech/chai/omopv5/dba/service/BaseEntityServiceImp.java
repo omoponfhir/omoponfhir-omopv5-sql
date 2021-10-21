@@ -51,7 +51,7 @@ import com.google.cloud.bigquery.JobInfo;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 
-import edu.gatech.chai.omopv5.dba.dao.DatabaseConfiguration;
+import edu.gatech.chai.omopv5.dba.config.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
 import edu.gatech.chai.omopv5.model.entity.IBaseEntity;

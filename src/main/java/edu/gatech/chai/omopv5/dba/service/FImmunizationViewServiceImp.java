@@ -17,19 +17,13 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
-import com.google.cloud.bigquery.TableResult;
 
-import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FImmunizationView;
-import edu.gatech.chai.omopv5.model.entity.FPerson;
 
 /**
  * The Class FImmunizationViewServiceImp.

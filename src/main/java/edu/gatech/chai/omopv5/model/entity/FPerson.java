@@ -216,8 +216,7 @@ public class FPerson extends Person {
 //					return null;
 				}
 			}
-		} catch (NoSuchFieldException e) {
-		} catch (SecurityException e) {
+		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
 

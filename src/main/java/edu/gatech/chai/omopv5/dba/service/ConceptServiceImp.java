@@ -62,26 +62,45 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		List<String> valueList = new ArrayList<String>();
 
 		String sql = null;
+		String sqlWithoutWhere = constructSqlSelectWithoutWhere();
 		if ("NDC".equals(concept.getVocabularyId())) {
 			// Use JPQL
-			sql = "select c " + "FROM Concept src " + "JOIN ConceptRelationship cr on src.id = cr.conceptId1 "
-					+ "AND cr.relationship_id = 'Maps to' " + "AND cr.invalid_reason is null "
-					+ "JOIN Concept tar on cr.conceptId2 = tar.id " + "AND tar.standardConcept = 'S' "
-					+ "AND tar.invalidReason is null " + "JOIN ConceptAncestor ca ON ca.ancestorConcept = tar.id "
-					+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
-					+ "AND 'NDC' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
-					+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null";
+			sql = sqlWithoutWhere 
+				+ " JOIN concept_relationship cr on concept.concept_id = cr.concept_id_1 "
+				+ "AND cr.relationship_id = 'Maps to' " + "AND cr.invalid_reason is null "
+				+ "JOIN concept tar on cr.concept_id_2 = tar.id " + "AND tar.standard_concept = 'S' "
+				+ "AND tar.invalid_reason is null " + "JOIN concept_ancestor ca ON ca.ancestor_concept_id = tar.concept_id "
+				+ "JOIN concept c ON ca.ancestor_concept_id = c.concept_id "
+				+ " WHERE concept.concept_code = @med_code "
+				+ "AND 'NDC' = concept.vocabulary_id " + "AND c.vocabulary_id = 'RxNorm' "
+				+ "AND c.concept_class_id = 'Ingredient' " + "AND concept.invalid_reason is null";
+			// sql = "select c " + "FROM concept src " + "JOIN concept_relationship cr on src.id = cr.conceptId1 "
+			// 		+ "AND cr.relationship_id = 'Maps to' " + "AND cr.invalid_reason is null "
+			// 		+ "JOIN Concept tar on cr.conceptId2 = tar.id " + "AND tar.standardConcept = 'S' "
+			// 		+ "AND tar.invalidReason is null " + "JOIN ConceptAncestor ca ON ca.ancestorConcept = tar.id "
+			// 		+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
+			// 		+ "AND 'NDC' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
+			// 		+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null";
 		} else if ("RxNorm".equals(concept.getVocabularyId())) {
 			// when RxNorm.
-			sql = "select c " + "FROM Concept src " + "JOIN ConceptAncestor ca ON ca.descendantConcept = src.id "
-					+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
-					+ "AND 'RxNorm' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
-					+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null "
-					+ "AND c.invalidReason is null";
+			sql = sqlWithoutWhere 
+				+ " JOIN concept_ancestor ca ON ca.descendant_concept_id = concept.concept_id "
+				+ "JOIN concept c ON ca.ancestor_concept_id = c.concept_id "
+				+ " WHERE concept.concept_code = @med_code "
+				+ "AND 'RxNorm' = concept.vocabulary_id " + "AND c.vocabulary_id = 'RxNorm' "
+				+ "AND c.concept_class_id = 'Ingredient' " + "AND concept.invalid_reason is null "
+				+ "AND c.invalid_reason is null";
+			// sql = "select c " + "FROM Concept src " + "JOIN ConceptAncestor ca ON ca.descendantConcept = src.id "
+			// 		+ "JOIN Concept c ON ca.ancestorConcept = c.id " + "WHERE src.conceptCode = :med_code "
+			// 		+ "AND 'RxNorm' = src.vocabulary " + "AND c.vocabulary = 'RxNorm' "
+			// 		+ "AND c.conceptClass = 'Ingredient' " + "AND src.invalidReason is null "
+			// 		+ "AND c.invalidReason is null";
 		} else {
 			return concepts;
 		}
 
+		parameterList.add("med_code");
+		valueList.add("'"+concept.getConceptCode()+"'");
 		sql = renderedSql(sql, parameterList, valueList);
 
 		System.out.println(sql);
@@ -104,7 +123,7 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 					}
 				}
 			} else {
-				List<Concept> myEntities = runQuery(sql, null, "c");
+				List<Concept> myEntities = runQuery(sql, null, "concept");
 				if (!myEntities.isEmpty()) {
 					concepts.addAll(myEntities);					
 				}

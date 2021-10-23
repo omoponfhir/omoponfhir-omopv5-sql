@@ -54,7 +54,6 @@ import com.google.cloud.bigquery.TableResult;
 import edu.gatech.chai.omopv5.dba.config.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
-import edu.gatech.chai.omopv5.model.entity.IBaseEntity;
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.GeneratedValue;
 import edu.gatech.chai.omopv5.model.entity.custom.GenerationType;
@@ -75,6 +74,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	private DataSource ds;
 	private Class<T> entityClass;
 	private T entity;
+	private static Connection connection;
+	private boolean connectionErrorOccurred = false;
 
 	@Autowired
 	DatabaseConfiguration databaseConfig;
@@ -111,20 +112,22 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return bigQuery;
 	}
 	
-	public void closeConnection(Connection connection) throws SQLException {
+	public void closeConnection() throws SQLException {
 		if (connection != null) {
 			connection.close();
 		}
 	}
 
 	public Connection getConnection() throws SQLException {
-		 Connection connection = ds.getConnection();
-
-		if (connection.getAutoCommit()) {
-			try {
-				connection.setAutoCommit(false);
-			} catch (SQLFeatureNotSupportedException ignored) {
-				logger.debug("SetAutoCommit failed.");
+		if (connection == null || connection.isClosed() || connectionErrorOccurred) {
+			connection = ds.getConnection();
+			connectionErrorOccurred = false;
+			if (connection.getAutoCommit()) {
+				try {
+					connection.setAutoCommit(false);
+				} catch (SQLFeatureNotSupportedException ignored) {
+					logger.debug("SetAutoCommit failed.");
+				}
 			}
 		}
 
@@ -156,7 +159,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return queryJob.getQueryResults();
 	}
 
-	public List<T> runQuery(String query, T myEntity, String alias) throws SQLException {
+	public List<T> runQuery(String query, T myEntity, String alias) {
 		T newEntity = null;
 		List<T> entities = new ArrayList<T>();
 
@@ -165,67 +168,73 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 		logger.debug("runQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		Connection connection = getConnection();
-
-		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		while (rs.next()) {
-			newEntity = construct(rs, myEntity, alias);
-			if (newEntity != null) {
-				entities.add(newEntity);
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				newEntity = construct(rs, myEntity, alias);
+				if (newEntity != null) {
+					entities.add(newEntity);
+				}
 			}
+		} catch (SQLException e) {
+			connectionErrorOccurred = true;
+			e.printStackTrace();
 		}
 
-		closeConnection(connection);
 		return entities;
 	}
 
-	public Long updateQuery(String query) throws SQLException {
-		Long retVal;
+	public Long updateQuery(String query) {
+		Long retVal = 0L;
 
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 		logger.debug("UpdateQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		Connection connection = getConnection();
-		PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		int affectedRows = stmt.executeUpdate();
-		if (affectedRows == 0) {
-			logger.debug("UPDATE failed with " + query);
-			closeConnection(connection);
-
-			return 0L;
+		PreparedStatement stmt;
+		try {
+			stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			int affectedRows = stmt.executeUpdate();
+			if (affectedRows == 0) {
+				logger.error("UPDATE failed with " + query);
+			}
+			connection.commit();
+	
+			ResultSet generatedKeys = stmt.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				retVal = generatedKeys.getLong(1);
+			} else {
+				logger.error("update Query failed, no ID generated, with " + query);
+			}
+		} catch (SQLException e) {
+			connectionErrorOccurred = true;
+			e.printStackTrace();
 		}
-		connection.commit();
 
-		ResultSet generatedKeys = stmt.getGeneratedKeys();
-		if (generatedKeys.next()) {
-			retVal = generatedKeys.getLong(1);
-		} else {
-			closeConnection(connection);
-			throw new SQLException("update Query failed, no ID generated, with " + query);
-		}
-
-		closeConnection(connection);		
 		return retVal;
 	}
 
-	public Long runCountQuery(String query, String alias) throws SQLException {
+	public Long runCountQuery(String query, String alias) {
 		Long retVal = 0L;
 
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 		logger.debug("runCountQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		Connection connection = getConnection();
-
-		Statement stmt = connection.createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		if (rs.next()) {
-			retVal = (long) rs.getInt(alias);
+		Statement stmt;
+		try {
+			stmt = getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				retVal = (long) rs.getInt(alias);
+			}
+		} catch (SQLException e) {
+			connectionErrorOccurred = true;
+			e.printStackTrace();
 		}
 
-		closeConnection(connection);
 		return retVal;
 	}
 		

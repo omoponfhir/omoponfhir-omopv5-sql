@@ -1,6 +1,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		// 44818800 = Using finding method
 		// 58 = Type Concept, 26 = Note Type
 		// 44818721 = Contains
-		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1 "
+		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
 			+ "fact_relationship.fact_id_1 as fact_relationship_fact_id_1, "
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
@@ -110,6 +111,11 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				}
 			}
 		} catch (Exception e) {
+			try {
+				closeConnection();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 
@@ -126,7 +132,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		List<String> valueList = new ArrayList<String>();
 
 		// 44818721 = Contains
-		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1 "
+		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
 			+ "fact_relationship.fact_id_1 as fact_relationship_fact_id_1, "
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
@@ -163,6 +169,11 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				}
 			}
 		} catch (Exception e) {
+			try {
+				closeConnection();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		
@@ -176,7 +187,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 			Long factId2, Long relationshipId) {
 		List<FactRelationship> entities = new ArrayList<FactRelationship>();
 
-		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1 "
+		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
 			+ "fact_relationship.fact_id_1 as fact_relationship_fact_id_1, "
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
@@ -267,6 +278,11 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				// }
 			}
 		} catch (Exception e) {
+			try {
+				closeConnection();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 

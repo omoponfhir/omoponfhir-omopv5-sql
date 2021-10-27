@@ -67,7 +67,10 @@ public interface MeasurementService extends IService<Measurement> {
 					Concept operatorConcept = ConceptService._construct(rs, null, "operatorConcept");
 					measurement.setOperationConcept(operatorConcept);
 				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
-					measurement.setValueAsNumber(rs.getDouble(columnInfo));
+					double valueAsNumber = rs.getDouble(columnInfo);
+					if (!rs.wasNull()) {
+						measurement.setValueAsNumber(valueAsNumber);
+					}
 				} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
 					Concept valueAsConcept = ConceptService._construct(rs, null, "valueAsConcept");
 					measurement.setValueAsConcept(valueAsConcept);

@@ -73,6 +73,7 @@ public interface CareSiteService extends IService<CareSite> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_care_site_id")) {
 					careSite.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("location_location_id")) {
 					Location location = LocationService._construct(rs, null, "location");
 					careSite.setLocation(location);

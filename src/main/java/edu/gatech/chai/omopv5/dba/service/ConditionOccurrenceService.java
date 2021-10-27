@@ -50,6 +50,7 @@ public interface ConditionOccurrenceService extends IService<ConditionOccurrence
 
 				if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
 					conditionOccurrence.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					conditionOccurrence.setFPerson(fPerson);

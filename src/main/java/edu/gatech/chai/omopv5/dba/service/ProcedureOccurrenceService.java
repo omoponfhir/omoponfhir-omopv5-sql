@@ -50,6 +50,7 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 
 				if (columnInfo.equalsIgnoreCase(alias + "_procedure_occurrence_id")) {
 					procedureOccurrence.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					procedureOccurrence.setFPerson(fPerson);

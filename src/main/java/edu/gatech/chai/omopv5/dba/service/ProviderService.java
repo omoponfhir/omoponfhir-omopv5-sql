@@ -47,6 +47,7 @@ public interface ProviderService extends IService<Provider> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_provider_id")) {
 					provider.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase(alias + "_provider_name")) {
 					provider.setProviderName(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_npi")) {

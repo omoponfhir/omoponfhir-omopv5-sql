@@ -63,6 +63,7 @@ public interface ConceptService extends IService<Concept> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_concept_id")) {
 					concept.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_name")) {
 					concept.setConceptName(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_domain_id")) {

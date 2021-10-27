@@ -49,6 +49,7 @@ public interface DrugExposureService extends IService<DrugExposure> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_id")) {
 					drugExposure.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					drugExposure.setFPerson(fPerson);

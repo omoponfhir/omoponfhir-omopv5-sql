@@ -73,6 +73,7 @@ public interface FPersonService extends IService<FPerson> {
 				// f_table content
 				if (columnInfo.equalsIgnoreCase(alias + "_person_id")) {
 					fPerson.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase(alias + "_family_name")) {
 					fPerson.setFamilyName(rs.getString(columnInfo));
 				} else  if (columnInfo.equalsIgnoreCase(alias + "_given1_name")) {

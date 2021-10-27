@@ -54,6 +54,7 @@ public interface FImmunizationViewService extends IService<FImmunizationView> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_immunization_id")) {
 					fImmunizationView.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					fImmunizationView.setFPerson(fPerson);

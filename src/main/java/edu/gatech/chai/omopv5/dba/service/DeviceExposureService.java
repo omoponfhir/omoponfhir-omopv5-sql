@@ -50,6 +50,7 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_device_exposure_id")) {
 					deviceExposure.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					deviceExposure.setFPerson(fPerson);

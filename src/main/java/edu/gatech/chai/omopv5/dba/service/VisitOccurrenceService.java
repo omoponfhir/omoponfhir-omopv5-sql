@@ -50,6 +50,7 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_visit_occurrence_id")) {
 					visitOccurrence.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					visitOccurrence.setFPerson(fPerson);

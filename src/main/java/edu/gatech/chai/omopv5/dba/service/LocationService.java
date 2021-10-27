@@ -60,6 +60,7 @@ public interface LocationService extends IService<Location> {
 
 				if (columnInfo.equalsIgnoreCase(alias + "_location_id")) {
 					location.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase(alias + "_address_1")) {
 					location.setAddress1(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_address_2")) {

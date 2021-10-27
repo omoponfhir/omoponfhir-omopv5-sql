@@ -63,9 +63,9 @@ public interface FObservationViewService extends IService<FObservationView> {
 			int totalColumnSize = metaData.getColumnCount();
 			for (int i = 1; i <= totalColumnSize; i++) {
 				String columnInfo = metaData.getColumnName(i);
-
 				if (columnInfo.equalsIgnoreCase(alias + "_observation_id")) {
 					fObservationView.setId(rs.getLong(columnInfo));
+					if (rs.wasNull()) return null;
 				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
 					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
 					fObservationView.setFPerson(fPerson);
@@ -77,9 +77,15 @@ public interface FObservationViewService extends IService<FObservationView> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
 					fObservationView.setObservationDateTime(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
-					fObservationView.setValueAsString(rs.getString(columnInfo));
+					String valueAsString = rs.getString(columnInfo);
+					if (!rs.wasNull()) {
+						fObservationView.setValueAsString(valueAsString);
+					}
 				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
-					fObservationView.setValueAsNumber(rs.getDouble(columnInfo));
+					double valueAsNumber = rs.getDouble(columnInfo);
+					if (!rs.wasNull()) {
+						fObservationView.setValueAsNumber(valueAsNumber);
+					}
 				} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
 					Concept valueAsConcept = ConceptService._construct(rs, null, "valueAsConcept");
 					fObservationView.setValueAsConcept(valueAsConcept);

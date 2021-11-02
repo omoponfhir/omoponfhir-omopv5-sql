@@ -546,8 +546,12 @@ public class ParameterWrapper {
 			}
 		}
 
-		if (!"".equals(upperRelationshipOrClauses)) {
-			where = where + " and " + upperRelationshipOrClauses + ")";
+		if (!upperRelationshipOrClauses.isEmpty()) {
+			if (where.isEmpty()) {
+				where = upperRelationshipOrClauses + ")";
+			} else {
+				where = where + " and " + upperRelationshipOrClauses + ")";
+			}
 		}
 
 		if (where == null || where.isEmpty()) {

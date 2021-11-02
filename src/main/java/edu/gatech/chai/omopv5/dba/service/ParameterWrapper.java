@@ -524,7 +524,6 @@ public class ParameterWrapper {
 					} else {
 						upperRelationshipOrClauses += " or " + subWhere;
 					}
-					// where = where + " or " + subWhere;
 				} else {
 					if (!upperRelationshipOrClauses.isEmpty()) {
 						where = where + upperRelationshipOrClauses + ")";
@@ -539,7 +538,6 @@ public class ParameterWrapper {
 					} else {
 						upperRelationshipOrClauses += " or " + subWhere;
 					}
-					// where = subWhere;
 				} else {
 					where = subWhere;
 				}

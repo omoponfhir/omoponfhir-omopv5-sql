@@ -119,6 +119,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public Connection getConnection() throws SQLException {
+		if (connectionErrorOccurred) {
+			closeConnection();
+		}
+		
 		if (connection == null || connection.isClosed() || connectionErrorOccurred) {
 			connection = ds.getConnection();
 			connectionErrorOccurred = false;
@@ -207,7 +211,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			if (generatedKeys.next()) {
 				retVal = generatedKeys.getLong(1);
 			} else {
-				logger.error("update Query failed, no ID generated, with " + query);
+				logger.warn("update Query failed, no ID generated, with " + query);
 			}
 		} catch (SQLException e) {
 			connectionErrorOccurred = true;
@@ -310,9 +314,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				try {
 					field = parentClazz.getDeclaredField(columnName);
 					sqlColumnName = getSqlTableColumnName(field);
-				} catch (NoSuchFieldException e1) {
-					e1.printStackTrace();
-				} catch (SecurityException e1) {
+				} catch (NoSuchFieldException | SecurityException e1) {
 					e1.printStackTrace();
 				}
 			} else {
@@ -795,8 +797,19 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					logger.debug("FIELDTYPE:" + field.getType() + ":FIELDTYPE");
 
 					fieldValue = constructFieldValue(field, fieldObject, columnName);
-					if (fieldValue == null) return null;
+					if (fieldValue == null) {
+						// if value is null and not required, we skip this.
+						if (columnAnnotation != null && columnAnnotation.nullable()) {
+							continue;
+						}
 
+						if (joinColumnAnnotation != null && joinColumnAnnotation.nullable()) {
+							continue;
+						}
+
+						logger.error(columnName + " object is not null. But, the value is null and is not nullable. This happens when the column is a foreign key");
+						return null;
+					}
 					// if (field.getType() == String.class) {
 					// 	fieldValue = "'" + (String) fieldObject + "'";
 					// } else if (field.getType() == Double.class || field.getType() == Integer.class
@@ -840,10 +853,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					return null;
 				}
 
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				return null;
-			} catch (IllegalAccessException e) {
+			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 				return null;
 			} catch (NullPointerException e) {
@@ -898,7 +908,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		Long id = null;
 		if (!columns.isEmpty() && !values.isEmpty() && !"".equals(columns) && !"".equals(values)) {
-			sql += "(" + columns + ") select " + values + " from @table";
+			if (primaryId == null) {
+				sql += "(" + columns + ") values (" + values + ")";
+			} else {
+				sql += "(" + columns + ") select " + values + " from @table";
+			}
 			logger.debug("insertEntity: Before SqlRender:" + sql);
 
 			sql = renderedSql(sql, parameterList, valueList);
@@ -909,17 +923,20 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					runBigQuery(sql);
 
 					// We need get the last inserted id.
-					sql = "select max(" + primaryId + ") as last_id from " + tableName;
-					TableResult result = runBigQuery(sql);
-					for (FieldValueList row : result.iterateAll()) {
-						id = row.get("last_id").getLongValue();
-						if (id != null) {
-							break;
+					if (primaryId != null) {
+						sql = "select max(" + primaryId + ") as last_id from " + tableName;
+						TableResult result = runBigQuery(sql);
+						for (FieldValueList row : result.iterateAll()) {
+							id = row.get("last_id").getLongValue();
+							if (id != null) {
+								break;
+							}
 						}
+					} else {
+						id = 0L;
 					}
 				} else {
 					id = updateQuery(sql);
-					return id;
 				}
 
 			} catch (Exception e) {
@@ -950,17 +967,21 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		Long id = insertEntity(clazz, entity);
-		if (newId == null) {
+		if (newId == null && id != null && id != 0L) {
 			Method setMethod;
 			try {
 				setMethod = clazz.getMethod("setId", Long.class);
 				setMethod.invoke(entity, id);
 			} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				e.printStackTrace();
+				logger.warn("setId() method is not available for " + entity.getTableName());
 			}
 		}
 
+		if (newId == null && id == null) {
+			return null;
+		}
+		
 		return entity;
 	}
 

@@ -17,20 +17,17 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.TableResult;
 
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Location;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class CareSiteServiceImp.
- */
 @Service
 public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implements CareSiteService {
 	
@@ -45,30 +42,93 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByLocation(edu.gatech.chai.omopv5.model.entity.Location)
 	 */
 	public CareSite searchByLocation(Location location) {
-		String query = "SELECT t FROM CareSite t WHERE location_id like :value";
-		return null;
+		List<CareSite> careSites = new ArrayList<CareSite>();
+
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+
+		String sqlWithoutWhere = constructSqlSelectWithoutWhere();
+		String sql = sqlWithoutWhere + " where care_site.location_id = @loc_id";
+
+		parameterList.add("loc_id");
+		valueList.add(location.getId().toString());
+
+		sql = renderedSql(sql, parameterList, valueList);
+
+		CareSite entity;
+		try {
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(sql);
+				List<String> columns = listOfColumns(sql);
+				for (FieldValueList row : result.iterateAll()) {
+					entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						break;
+					}
+				}
+			} else {
+				List<CareSite> myEntities = runQuery(sql, null, "care_site");
+				if (!myEntities.isEmpty()) {
+					careSites.addAll(myEntities);					
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (careSites.isEmpty()) {
+			return null;
+		} else {
+			return careSites.get(0);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByNameAndLocation(java.lang.String, edu.gatech.chai.omopv5.model.entity.Location)
 	 */
 	public CareSite searchByNameAndLocation(String careSiteName, Location location) {
-		String queryString = "SELECT t FROM CareSite t WHERE";
-		
-		// Construct where clause here.
-		String where_clause = "";
-		if (careSiteName != null)  {
-			where_clause = "careSiteName like :cName";
+		List<CareSite> careSites = new ArrayList<CareSite>();
+
+		List<String> parameterList = new ArrayList<String>();
+		List<String> valueList = new ArrayList<String>();
+
+		String sqlWithoutWhere = constructSqlSelectWithoutWhere();
+		String sql = sqlWithoutWhere + " where care_site.care_site_name like @caresite_name and location_id = @loc_id";
+
+		parameterList.add("caresite_name");
+		valueList.add("'%" + careSiteName + "%'");
+
+		parameterList.add("loc_id");
+		valueList.add(location.getId().toString());
+
+		sql = renderedSql(sql, parameterList, valueList);
+
+		CareSite entity;
+		try {
+			if (isBigQuery()) {
+				TableResult result = runBigQuery(sql);
+				List<String> columns = listOfColumns(sql);
+				for (FieldValueList row : result.iterateAll()) {
+					entity = construct(row, null, getSqlTableName(), columns);
+					if (entity != null) {
+						break;
+					}
+				}
+			} else {
+				List<CareSite> myEntities = runQuery(sql, null, "care_site");
+				if (!myEntities.isEmpty()) {
+					careSites.addAll(myEntities);					
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		if (location != null) {
-			if (where_clause == "") where_clause = "location = :location";
-			else where_clause += " AND location = :location";
-		}
-		
-		queryString += " "+where_clause;
-		System.out.println("Query for FPerson"+queryString);		
-		return null;	
+
+		if (careSites.isEmpty()) {
+			return null;
+		} else {
+			return careSites.get(0);
+		}	
 	}
 
 	@Override

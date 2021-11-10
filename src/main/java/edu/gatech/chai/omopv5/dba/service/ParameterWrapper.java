@@ -446,67 +446,6 @@ public class ParameterWrapper {
 					} else {
 						subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
 					}
-
-					// See if the alias is defined in the table attribute of JoinColumn
-//					String foreignTableInfo = joinColumnAnnotation.table();
-//					if (foreignTableInfo != null && foreignTableInfo != "") {
-//						String[] foreignTables = foreignTableInfo.split(",");
-//
-//						Table fTableClassAnnotation = fTableClazz.getAnnotation(Table.class);
-//						String fTableClassName = fTableClassAnnotation.name();
-//
-//						for (String foreignTable : foreignTables) {
-//							String fTableName;
-//							String fTableAlias;
-//							String[] fTableNameAlias = foreignTable.split(":");
-//							if (fTableNameAlias.length == 2) {
-//								fTableName = fTableNameAlias[0];
-//								fTableAlias = fTableNameAlias[1];
-//							} else {
-//								fTableName = fTableNameAlias[0];
-//								fTableAlias = columnPath[0];
-//							}
-//
-//							// Check if
-//						}
-//					}
-
-//					Method getForeignTable = entityClass.getDeclaredMethod("_getForeignTableName", String.class);
-//					String foreignTableName = (String) getForeignTable.invoke(null, columnPath[0]);
-//
-//					Field field = entityClass.getDeclaredField(columnPath[0]);
-//					Class<?> foreignClass = field.getType();
-//					Method getForeignTableColumnName = foreignClass.getDeclaredMethod("_getColumnName", String.class);
-//					String foreignTablePrimaryId = (String) getForeignTableColumnName.invoke(null, "id");
-//					String foreignTableColumnName = foreignTablePrimaryId;
-//
-//					// Add this foreignTableName into joinTables with its alias(columnPath[0])
-//					if (joinTables.contains(foreignTableName) == false) {
-//						joinTables = joinTables + " inner join @table" + i + " on " + "@tableId0" + "=@tableId" + i;
-//
-//						parameterList.add("table" + i);
-//						valueList.add(foreignTableName);
-//
-//						parameterList.add("tableId" + i);
-//						valueList.add(foreignTablePrimaryId);
-//					}
-//
-//					if ("id".equals(columnPath[1]) == false) {
-//						// Add this to where.
-//						foreignTableColumnName = (String) getForeignTableColumnName.invoke(null, columnPath[1]);
-//						String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
-//						parameterList.add("column" + i);
-//						valueList.add(foreignTableColumnName);
-//
-//						parameterList.add("value" + i);
-//						valueList.add(valueName);
-//
-//						if (subWhere.isEmpty() || "".equals(subWhere)) {
-//							subWhere = subWhereToAdd;
-//						} else {
-//							subWhere = subWhere + " " + subWhereRelation + " " + subWhereToAdd;
-//						}
-//					}
 				} else {
 					// We don't support more than 2 level.
 					logger.warn("ParameterWrapper attribute has more then 2 level foreign keys");
@@ -526,7 +465,7 @@ public class ParameterWrapper {
 					}
 				} else {
 					if (!upperRelationshipOrClauses.isEmpty()) {
-						where = where + upperRelationshipOrClauses + ")";
+						where = where + " and " + upperRelationshipOrClauses + ")";
 						upperRelationshipOrClauses = "";
 					}
 					where = where + " and " + subWhere;

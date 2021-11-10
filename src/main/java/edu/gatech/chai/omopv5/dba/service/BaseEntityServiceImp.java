@@ -75,7 +75,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	private Class<T> entityClass;
 	private T entity;
 	private static Connection connection;
-	private boolean connectionErrorOccurred = false;
 
 	@Autowired
 	DatabaseConfiguration databaseConfig;
@@ -118,14 +117,9 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 	}
 
-	public Connection getConnection() throws SQLException {
-		if (connectionErrorOccurred) {
-			closeConnection();
-		}
-		
-		if (connection == null || connection.isClosed() || connectionErrorOccurred) {
+	public Connection getConnection() throws SQLException {		
+		if (connection == null || connection.isClosed()) {
 			connection = ds.getConnection();
-			connectionErrorOccurred = false;
 			if (connection.getAutoCommit()) {
 				try {
 					connection.setAutoCommit(false);
@@ -140,13 +134,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	public TableResult runBigQuery(String query) throws Exception {
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("runBigQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
 		DatasetId defaultDataset = DatasetId.of(databaseConfig.getBigQueryProject(), databaseConfig.getBigQueryDataset());
 		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(query).setDefaultDataset(defaultDataset).setUseLegacySql(false).build();
 		
 		JobId jobId = JobId.of(databaseConfig.getBigQueryProject(), UUID.randomUUID().toString());
-		
 	    Job queryJob = getBigQuery().create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
 
 	    // Wait for the query to complete.
@@ -154,8 +146,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	    // Check for errors
 	    if (queryJob == null) {
+			logger.error("runBigQuery: [Job no exists] " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 			throw new RuntimeException("Job no longer exists");
 	    } else if (queryJob.getStatus().getError() != null) {
+			logger.error("runBigQuery: [Query has error(s)] " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 			throw new RuntimeException(queryJob.getStatus().getExecutionErrors().toString());
 	    } 
 
@@ -163,80 +157,58 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return queryJob.getQueryResults();
 	}
 
-	public List<T> runQuery(String query, T myEntity, String alias) {
+	public List<T> runQuery(String query, T myEntity, String alias) throws SQLException {
 		T newEntity = null;
 		List<T> entities = new ArrayList<T>();
 
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("runQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
-
-		Statement stmt;
-		try {
-			stmt = getConnection().createStatement();
-			ResultSet rs = stmt.executeQuery(query);
-			while (rs.next()) {
-				newEntity = construct(rs, myEntity, alias);
-				if (newEntity != null) {
-					entities.add(newEntity);
-				}
+		Statement stmt = getConnection().createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		while (rs.next()) {
+			newEntity = construct(rs, myEntity, alias);
+			if (newEntity != null) {
+				entities.add(newEntity);
 			}
-		} catch (SQLException e) {
-			connectionErrorOccurred = true;
-			e.printStackTrace();
 		}
 
 		return entities;
 	}
 
-	public Long updateQuery(String query) {
+	public Long updateQuery(String query) throws SQLException {
 		Long retVal = 0L;
 
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("UpdateQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		PreparedStatement stmt;
-		try {
-			stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			int affectedRows = stmt.executeUpdate();
-			if (affectedRows == 0) {
-				logger.error("UPDATE failed with " + query);
-			}
-			connection.commit();
-	
-			ResultSet generatedKeys = stmt.getGeneratedKeys();
-			if (generatedKeys.next()) {
-				retVal = generatedKeys.getLong(1);
-			} else {
-				logger.warn("update Query failed, no ID generated, with " + query);
-			}
-		} catch (SQLException e) {
-			connectionErrorOccurred = true;
-			e.printStackTrace();
+		PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		int affectedRows = stmt.executeUpdate();
+		if (affectedRows == 0) {
+			logger.error("UPDATE failed with " + query);
+		}
+		connection.commit();
+
+		ResultSet generatedKeys = stmt.getGeneratedKeys();
+		if (generatedKeys.next()) {
+			retVal = generatedKeys.getLong(1);
+		} else {
+			logger.warn("update Query failed, no ID generated, with " + query);
 		}
 
 		return retVal;
 	}
 
-	public Long runCountQuery(String query, String alias) {
+	public Long runCountQuery(String query, String alias) throws SQLException {
 		Long retVal = 0L;
 
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		logger.debug("runCountQuery: Query after SqlRender translate to " + databaseConfig.getSqlRenderTargetDialect() + ": " + query);
 
-		Statement stmt;
-		try {
-			stmt = getConnection().createStatement();
-			ResultSet rs = stmt.executeQuery(query);
-			if (rs.next()) {
-				retVal = (long) rs.getInt(alias);
-			}
-		} catch (SQLException e) {
-			connectionErrorOccurred = true;
-			e.printStackTrace();
+		Statement stmt = getConnection().createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		if (rs.next()) {
+			retVal = (long) rs.getInt(alias);
 		}
 
 		return retVal;
@@ -1167,36 +1139,14 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		sql = renderedSql(sql, parameterList, valueList);
 
-		logger.debug("SqlRender:" + sql);
-
-		T entity = null; 
 		try {
-			entity = readEntity(sql);
-//			if (getQueryEntityDao().isBigQuery()) {
-//				TableResult result = getQueryEntityDao().runBigQuery(sql);
-//				List<String> columns = listOfColumns(sql);
-//				for (FieldValueList row : result.iterateAll()) {
-//					entity = construct(row, null, getSqlTableName(), columns);
-//					if (entity != null) {
-//						break;
-//					}
-//				}
-//			} else {
-//
-//				ResultSet rs = getQueryEntityDao().runQuery(sql);
-//
-//				if (rs.next()) {
-//					entity = construct(rs, null, getSqlTableName());
-//					if (entity != null) {
-//						return entity;
-//					}
-//				}
-//			}
+			return readEntity(sql);
 		} catch (Exception e) {
+			logger.error("SqlRender:" + sql);
 			e.printStackTrace();
 		}
-
-		return entity;
+		
+		return null;
 	}
 
 	public Long removeById(Long id) {
@@ -1246,32 +1196,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		valueList.add(value);
 
 		sql = renderedSql(sql, parameterList, valueList);
-
-		logger.debug("SqlRender:" + sql);
-		
 		try {
 			entities.addAll(searchEntity(sql));
-//
-//			if (getQueryEntityDao().isBigQuery()) {
-//				TableResult result = getQueryEntityDao().runBigQuery(sql);
-//				List<String> columns = listOfColumns(sql);
-//				for (FieldValueList row : result.iterateAll()) {
-//					T entity = construct(row, null, getSqlTableName(), columns);
-//					if (entity != null) {
-//						entities.add(entity);
-//					}
-//				}
-//			} else {
-//					ResultSet rs = getQueryEntityDao().runQuery(sql);
-//		
-//					while (rs.next()) {
-//						T entity = construct(rs, null, getSqlTableName());
-//						if (entity != null) {
-//							entities.add(entity);
-//						}
-//					}
-//			}
 		} catch (Exception e) {
+			logger.error("searchByColumnString:" + sql);		
 			e.printStackTrace();
 		}
 
@@ -1295,31 +1223,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		valueList.add(value.toString());
 
 		sql = renderedSql(sql, parameterList, valueList);
-
-		logger.debug("searchByColumnString:" + sql);
-
 		try {
 			entities.addAll(searchEntity(sql));
-//			if (getQueryEntityDao().isBigQuery()) {
-//				TableResult result = getQueryEntityDao().runBigQuery(sql);
-//				List<String> columns = listOfColumns(sql);
-//				for (FieldValueList row : result.iterateAll()) {
-//					T entity = construct(row, null, getSqlTableName(), columns);
-//					if (entity != null) {
-//						entities.add(entity);
-//					}
-//				}
-//			} else {	
-//				ResultSet rs = getQueryEntityDao().runQuery(sql);
-//	
-//				while (rs.next()) {
-//					T entity = construct(rs, null, getSqlTableName());
-//					if (entity != null) {
-//						entities.add(entity);
-//					}
-//				}
-//			}
 		} catch (Exception e) {
+			logger.debug("searchByColumnString:" + sql);
 			e.printStackTrace();
 		}
 
@@ -1352,38 +1259,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		sql = renderedSql(sql, parameterList, valueList);
-
-		logger.debug("searchWithoutParams:" + sql);
-
 		try {
 			entities.addAll(searchEntity(sql));
-//			if (getQueryEntityDao().isBigQuery()) {
-//				TableResult result = getQueryEntityDao().runBigQuery(sql);
-//				List<String> columns = listOfColumns(sql);
-////				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-////				System.out.println(sql);
-////				System.out.println("++++++++++++++++++++++++++++++++++++++++");
-////				for (String column : columns) {
-////					System.out.println(column);
-////				}
-//				for (FieldValueList row : result.iterateAll()) {
-//					T entity = construct(row, null, getSqlTableName(), columns);
-//					if (entity != null) {
-//						entities.add(entity);
-//					}
-//				}
-//			} else {
-//
-//				ResultSet rs = getQueryEntityDao().runQuery(sql);
-//
-//				while (rs.next()) {
-//					T entity = construct(rs, null, getSqlTableName());
-//					if (entity != null) {
-//						entities.add(entity);
-//					}
-//				}
-//			}
 		} catch (Exception e) {
+			logger.debug("searchWithoutParams:" + sql);
 			e.printStackTrace();
 		}
 
@@ -1409,7 +1288,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		} catch (NoSuchFieldException | SecurityException | NoSuchMethodException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
-
 			return entities;
 		}
 
@@ -1430,47 +1308,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				valueList.add("");
 			}
 
-//			String[] parameters = new String[parameterList.size()];
-//			parameters = parameterList.toArray(parameters);
-//
-//			String[] values = new String[valueList.size()];
-//			values = valueList.toArray(values);
-//
-//			sql = SqlRender.renderSql(sql.trim(), parameters, values).replaceAll("\\s+", " ");
 			sql = renderedSql(sql, parameterList, valueList);
-
-			logger.debug("searchWithParams:" + sql);
-
 			try {
 				entities.addAll(searchEntity(sql));
-//				if (getQueryEntityDao().isBigQuery()) {
-//					TableResult result = getQueryEntityDao().runBigQuery(sql);
-//					List<String> columns = listOfColumns(sql);
-////					System.out.println("++++++++++++++++++++++++++++++++++++++++");
-////					System.out.println(sql);
-////					System.out.println("++++++++++++++++++++++++++++++++++++++++");
-////					for (String column : columns) {
-////						System.out.println(column);
-////					}
-//					for (FieldValueList row : result.iterateAll()) {
-//						T entity = construct(row, null, getSqlTableName(), columns);
-//						if (entity != null) {
-//							entities.add(entity);
-//						}
-//					}
-//				} else {
-//
-//					ResultSet rs = getQueryEntityDao().runQuery(sql);
-//
-//					while (rs.next()) {
-//						T entity = construct(rs, null, getSqlTableName());
-//						if (entity != null) {
-//							entities.add(entity);
-//						}
-//					}
-//				}
-
 			} catch (Exception e) {
+				logger.debug("searchWithParams:" + sql);
 				e.printStackTrace();
 			}
 		}
@@ -1502,12 +1344,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			sql = renderedSql(sql, parameterList, valueList);
-
-			logger.debug("searchBySql:" + sql);
-
 			try {
 				entities.addAll(searchEntity(sql));
 			} catch (Exception e) {
+				logger.debug("searchBySql:" + sql);
 				e.printStackTrace();
 			}
 		}

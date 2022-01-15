@@ -654,7 +654,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return entities;
 	}
 
-	private String constructFieldValue(Field field, Object fieldObject, String columnName) 
+	private String constructFieldValue(Field field, Object fieldObject, String columnName, boolean nullable) 
 		throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String fieldValue = null;
 
@@ -678,7 +678,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 				fieldValue = "'" + (String) idObject + "'";
 			} else if (idObject instanceof Long) {
 				if (null == idObject || (Long)idObject == 0L) {
-					fieldValue = "null";
+					if (nullable) {
+						fieldValue = "null";
+					} else {
+						fieldValue = "0";
+					}
 				} else {
 					fieldValue = idObject.toString();
 				}
@@ -768,7 +772,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					logger.debug("FIELDOBJECT:" + fieldObject.toString() + ":FIELDOBJECT");
 					logger.debug("FIELDTYPE:" + field.getType() + ":FIELDTYPE");
 
-					fieldValue = constructFieldValue(field, fieldObject, columnName);
+					fieldValue = constructFieldValue(field, fieldObject, columnName, (columnAnnotation != null && columnAnnotation.nullable()));
 					if (fieldValue == null) {
 						// if value is null and not required, we skip this.
 						if (columnAnnotation != null && columnAnnotation.nullable()) {
@@ -782,31 +786,6 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 						logger.error(columnName + " object is not null. But, the value is null and is not nullable. This happens when the column is a foreign key");
 						return null;
 					}
-					// if (field.getType() == String.class) {
-					// 	fieldValue = "'" + (String) fieldObject + "'";
-					// } else if (field.getType() == Double.class || field.getType() == Integer.class
-					// 		|| field.getType() == Short.class || field.getType() == Long.class) {
-					// 	fieldValue = fieldObject.toString();
-					// } else if (field.getType() == Date.class || field.getType() == DateTime.class) {
-					// 	if (columnName.endsWith("time") || field.getType() == DateTime.class) {
-					// 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-					// 		fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
-					// 	} else {
-					// 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					// 		fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
-					// 	}
-					// } else {
-					// 	Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
-					// 	Object idObject = vocabularyGetIdMethod.invoke(fieldObject);
-					// 	if (idObject instanceof String) {
-					// 		fieldValue = "'" + (String) idObject + "'";
-					// 	} else if (idObject instanceof Long) {
-					// 		fieldValue = idObject.toString();
-					// 	} else {
-					// 		logger.error(columnName + " is foreign table. id cannot be null");
-					// 		return null;
-					// 	}
-					// }
 				} else if (nextIdString == null) {
 					// if value is null and not required, we skip this.
 					if (columnAnnotation != null) {
@@ -1016,7 +995,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			try {
 				Object fieldObject = field.get(entity);
 				if (fieldObject != null) {
-					fieldValue = constructFieldValue(field, fieldObject, columnName);
+					fieldValue = constructFieldValue(field, fieldObject, columnName, (columnAnnotation != null && columnAnnotation.nullable()));
 					if (fieldValue == null) return null;
 
 					// if (field.getType() == String.class) {

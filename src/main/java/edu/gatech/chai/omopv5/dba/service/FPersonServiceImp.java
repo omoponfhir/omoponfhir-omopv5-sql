@@ -17,11 +17,8 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.ohdsi.sql.SqlRender;
 import org.slf4j.Logger;

@@ -28,7 +28,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring_version>5.3.7</spring_version>
+		<spring_version>5.3.19</spring_version>
 	</properties>
 
 	<repositories>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.2</version>
+			<version>42.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

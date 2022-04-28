@@ -217,7 +217,9 @@ public class FPerson extends Person {
 				}
 			}
 		} catch (NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
+			if (!"personSourceValue".equals(e.getMessage())) {
+				e.printStackTrace();
+			}
 		}
 
 		return Person._getColumnName(columnVariable);

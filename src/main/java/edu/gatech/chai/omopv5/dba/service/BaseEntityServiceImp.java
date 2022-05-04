@@ -662,7 +662,16 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			fieldValue = "'" + (String) fieldObject + "'";
 		} else if (field.getType() == Double.class || field.getType() == Integer.class
 				|| field.getType() == Short.class || field.getType() == Long.class) {
-			fieldValue = fieldObject.toString();
+			if (null == fieldObject) {
+				if (nullable) {
+					fieldValue = "null";
+				} else {
+					fieldValue = "0";
+				}
+			} else {
+				fieldValue = fieldObject.toString();
+			}
+			// fieldValue = fieldObject.toString();
 		} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
 			if (columnName.endsWith("time") || field.getType() == DateTime.class) {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

@@ -21,7 +21,7 @@
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -35,7 +35,7 @@
 		<repository>
 			<id>ohdsi</id>
 			<name>repo.ohdsi.org</name>
-			<url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+			<url>https://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
 		</repository>
 		<repository>
 			<id>ohdsi.snapshots</id>

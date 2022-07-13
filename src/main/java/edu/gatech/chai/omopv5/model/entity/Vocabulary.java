@@ -38,7 +38,7 @@ public class Vocabulary extends BaseEntity {
 	@Column(name="vocabulary_name", nullable=false)
 	private String vocabularyName;
 	
-	@Column(name="vocabulary_reference", nullable=false)
+	@Column(name="vocabulary_reference")
 	private String vocabularyReference;
 	
 	@Column(name="vocabulary_version")

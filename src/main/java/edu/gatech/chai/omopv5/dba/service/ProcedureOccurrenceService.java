@@ -61,6 +61,10 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 					procedureOccurrence.setProcedureDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
 					procedureOccurrence.setProcedureDateTime(rs.getDate(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_date")) {
+					procedureOccurrence.setProcedureEndDate(rs.getDate(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_datetime")) {
+					procedureOccurrence.setProcedureEndDateTime(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
 					Concept procedureTypeConcept = ConceptService._construct(rs, null, "procedureTypeConcept");
 					procedureOccurrence.setProcedureTypeConcept(procedureTypeConcept);
@@ -123,6 +127,18 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 				Date date = SqlUtil.string2DateTime(dateString);
 				if (date != null) {
 					procedureOccurrence.setProcedureDateTime(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_date")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2Date(dateString);
+				if (date != null) {
+					procedureOccurrence.setProcedureEndDate(date);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_datetime")) {
+				String dateString = rowResult.get(columnInfo).getStringValue();
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					procedureOccurrence.setProcedureEndDateTime(date);
 				}
 			} else if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
 				Concept procedureTypeConcept = ConceptService._construct(rowResult, null, "procedureTypeConcept", columns);

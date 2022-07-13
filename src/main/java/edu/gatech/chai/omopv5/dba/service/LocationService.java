@@ -73,6 +73,19 @@ public interface LocationService extends IService<Location> {
 					location.setZip(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
 					location.setLocationSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("countryConcept_concept_id")) {
+					Concept countryConcept = ConceptService._construct(rs, null, "countryConcept");
+					location.setCountryConcept(countryConcept);
+				} else if (columnInfo.equalsIgnoreCase(alias + "_country_source_value")) {
+					location.setCountrySourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_latitude")) {
+					Long latitude = rs.getLong(columnInfo);
+					if (!rs.wasNull())
+						location.setLatitude(latitude);
+				} else if (columnInfo.equalsIgnoreCase(alias + "_longitude")) {
+					Long longitude = rs.getLong(columnInfo);
+					if (!rs.wasNull())
+						location.setLongitude(longitude);
 				}
 
 			}
@@ -108,6 +121,15 @@ public interface LocationService extends IService<Location> {
 				location.setZip(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_location_source_value")) {
 				location.setLocationSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("countryConcept_concept_id")) {
+				Concept countryConcept = ConceptService._construct(rowResult, null, "countryConcept", columns);
+				location.setCountryConcept(countryConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_country_source_value")) {
+				location.setCountrySourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_latitude")) {
+				location.setLatitude(rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_longitude")) {
+				location.setLongitude(rowResult.get(columnInfo).getLongValue());
 			}
 
 		}

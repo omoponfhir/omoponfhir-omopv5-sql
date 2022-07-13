@@ -63,6 +63,8 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 					deviceExposure.setDeviceExposureEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_unique_device_id")) {
 					deviceExposure.setUniqueDeviceId(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_production_id")) {
+					deviceExposure.setProductionId(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("deviceTypeConcept_concept_id")) {
 					Concept deviceTypeConcept = ConceptService._construct(rs, null, "deviceTypeConcept");
 					deviceExposure.setDeviceTypeConcept(deviceTypeConcept);
@@ -79,6 +81,14 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 					deviceExposure.setDeviceSourceValue(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
 					deviceExposure.setQuantity(rs.getInt(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
+					deviceExposure.setUnitConcept(unitConcept);
+				} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+					deviceExposure.setUnitSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
+					Concept unitSourceConcept = ConceptService._construct(rs, null, "unitSourceConcept");
+					deviceExposure.setUnitSourceConcept(unitSourceConcept);
 				}
 
 			}
@@ -123,6 +133,8 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 				}
 			} else if (columnInfo.equalsIgnoreCase(alias + "_unique_device_id")) {
 				deviceExposure.setUniqueDeviceId(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_production_id")) {
+				deviceExposure.setProductionId(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase("deviceTypeConcept_concept_id")) {
 				Concept deviceTypeConcept = ConceptService._construct(rowResult, null, "deviceTypeConcept", columns);
 				deviceExposure.setDeviceTypeConcept(deviceTypeConcept);
@@ -139,6 +151,14 @@ public interface DeviceExposureService extends IService<DeviceExposure> {
 				deviceExposure.setDeviceSourceValue(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
 				deviceExposure.setQuantity((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+				Concept unitConcept = ConceptService._construct(rowResult, null, "unitConcept", columns);
+				deviceExposure.setUnitConcept(unitConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+				deviceExposure.setUnitSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
+				Concept unitSourceConcept = ConceptService._construct(rowResult, null, "unitSourceConcept", columns);
+				deviceExposure.setUnitSourceConcept(unitSourceConcept);
 			}
 
 		}

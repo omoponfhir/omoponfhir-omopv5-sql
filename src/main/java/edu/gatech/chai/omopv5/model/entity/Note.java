@@ -52,7 +52,7 @@ public class Note extends BaseEntity {
 	@Column(name="note_title")
 	private String noteTitle;
 
-	@Column(name="note_text")
+	@Column(name="note_text", nullable=false)
 	private String noteText;
 
 	@JoinColumn(name="encoding_concept_id", referencedColumnName="concept_id", nullable=false)
@@ -69,6 +69,12 @@ public class Note extends BaseEntity {
 	
 	@Column(name="note_source_value")
 	private String noteSourceValue;
+
+	@Column(name="note_event_id")
+	private Integer noteEventId;
+
+	@JoinColumn(name="note_event_field_concept_id", referencedColumnName="concept_id")
+	private Concept noteEventFieldConcept;
 
 	public Note() {
 		super();
@@ -183,6 +189,22 @@ public class Note extends BaseEntity {
 		this.noteSourceValue = noteSourceValue;
 	}
 	
+	public Integer getNoteEventId() {
+		return noteEventId;
+	}
+	
+	public void setNoteEventId(Integer noteEventId) {
+		this.noteEventId = noteEventId;
+	}
+	
+	public Concept getNoteEventFieldConcept() {
+		return noteEventFieldConcept;
+	}
+	
+	public void setNoteEventFieldConcept(Concept noteEventFieldConcept) {
+		this.noteEventFieldConcept = noteEventFieldConcept;
+	}
+	
 	@Override
 	public Long getIdAsLong() {
 		return id;
@@ -270,7 +292,8 @@ public class Note extends BaseEntity {
 		if ("noteTypeConcept".equals(foreignVariable)
 				|| "noteClassConcept".equals(foreignVariable)
 				|| "encodingConcept".equals(foreignVariable)
-				|| "languageConcept".equals(foreignVariable))
+				|| "languageConcept".equals(foreignVariable)
+				|| "noteEventFieldConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))

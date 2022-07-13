@@ -91,6 +91,16 @@ public interface ObservationService extends IService<Observation> {
 					observation.setUnitSourceValue(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
 					observation.setQualifierSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
+					observation.setValueSourceValue(rs.getString(columnInfo));
+				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_event_id")) {
+					int observationEventId = rs.getInt(columnInfo);
+					if (!rs.wasNull()) {
+						observation.setObservationEventId(observationEventId);
+					}
+				} else if (columnInfo.equalsIgnoreCase("obsEventFieldConcept_concept_id")) {
+					Concept obsEventFieldConcept = ConceptService._construct(rs, null, "obsEventFieldConcept");
+					observation.setObsEventFieldConcept(obsEventFieldConcept);
 				}
 
 			}
@@ -163,6 +173,13 @@ public interface ObservationService extends IService<Observation> {
 				observation.setUnitSourceValue(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_qualifier_source_value")) {
 				observation.setQualifierSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
+				observation.setValueSourceValue(rowResult.get(columnInfo).getStringValue());
+			} else if (columnInfo.equalsIgnoreCase(alias + "_observation_event_id")) {
+				observation.setObservationEventId((int) rowResult.get(columnInfo).getLongValue());
+			} else if (columnInfo.equalsIgnoreCase("obsEventFieldConcept_concept_id")) {
+				Concept obsEventFieldConcept = ConceptService._construct(rowResult, null, "obsEventFieldConcept", columns);
+				observation.setObsEventFieldConcept(obsEventFieldConcept);
 			}
 
 		}

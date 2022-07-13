@@ -55,6 +55,18 @@ public class Location extends BaseEntity {
 	@Column(name="location_source_value")
 	private String locationSourceValue;
 
+	@JoinColumn(name="country_concept_id", referencedColumnName="concept_id")
+	private Concept countryConcept;
+
+	@Column(name="country_source_value")
+	private String countrySourceValue;
+
+	@Column(name="latitude")
+	private Long latitude;
+	
+	@Column(name="longitude")
+	private Long longitude;
+	
 	public Location() {
 		super();
 	}
@@ -126,6 +138,38 @@ public class Location extends BaseEntity {
 
 	public void setLocationSourceValue(String locationSourceValue) {
 		this.locationSourceValue = locationSourceValue;
+	}
+
+	public Concept getCountryConcept() {
+		return countryConcept;
+	}
+
+	public void setCountryConcept(Concept countryConcept) {
+		this.countryConcept = countryConcept;
+	}
+
+	public String getCountrySourceValue() {
+		return countrySourceValue;
+	}
+
+	public void setCountrySourceValue(String countrySourceValue) {
+		this.countrySourceValue = countrySourceValue;
+	}
+
+	public Long getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Long latitude) {
+		this.latitude = latitude;
+	}
+
+	public Long getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Long longitude) {
+		this.longitude = longitude;
 	}
 
 	public Long getId() {
@@ -214,7 +258,9 @@ public class Location extends BaseEntity {
 	}
 	
 	public static String _getForeignTableName(String foreignVariable) {
-		// no foreign table
+		if ("countryConcept".equals(foreignVariable))
+			return Concept._getTableName();
+			
 		return null;
 	}
 

@@ -85,8 +85,17 @@ public class Measurement extends BaseEntity {
 	@Column(name="unit_source_value")
 	private String unitSourceValue;
 	
+	@JoinColumn(name="unit_source_concept_id", referencedColumnName="concept_id")
+	private Concept unitSourceConcept;
+	
 	@Column(name="value_source_value")
 	private String valueSourceValue;
+
+	@Column(name="measurement_event_id")
+	private Integer measurementEventId;
+
+	@JoinColumn(name="meas_event_field_concept_id", referencedColumnName="concept_id")
+	private Concept measEventFieldConcept;
 	
 	public Long getId() {
 		return id;
@@ -232,12 +241,36 @@ public class Measurement extends BaseEntity {
 		this.unitSourceValue = unitSourceValue;
 	}
 
+	public Concept getUnitSourceConcept() {
+		return unitSourceConcept;
+	}
+	
+	public void setUnitSourceConcept(Concept unitSourceConcept) {
+		this.unitSourceConcept = unitSourceConcept;
+	}
+
 	public String getValueSourceValue() {
 		return valueSourceValue;
 	}
 	
 	public void setValueSourceValue(String valueSourceValue) {
 		this.valueSourceValue = valueSourceValue;
+	}
+	
+	public Integer getMeasurementEventId() {
+		return measurementEventId;
+	}
+	
+	public void setMeasurementEventId(Integer measurementEventId) {
+		this.measurementEventId = measurementEventId;
+	}
+
+	public Concept getMeasEventFieldConcept() {
+		return measEventFieldConcept;
+	}
+	
+	public void setMeasEventFieldConcept(Concept measEventFieldConcept) {
+		this.measEventFieldConcept = measEventFieldConcept;
 	}
 	
 	@Override
@@ -361,7 +394,9 @@ public class Measurement extends BaseEntity {
 				|| "valueAsConcept".equals(foreignVariable) 
 				|| "operatorConcept".equals(foreignVariable)
 				|| "unitConcept".equals(foreignVariable) 
-				|| "measurementTypeConcept".equals(foreignVariable))
+				|| "measurementTypeConcept".equals(foreignVariable)
+				|| "unitSourceConcept".equals(foreignVariable)
+				|| "measEventFieldConcept".equals(foreignVariable))
 			return Concept._getTableName();
 
 		if ("fPerson".equals(foreignVariable))

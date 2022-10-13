@@ -205,6 +205,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 
+		logger.debug("runCountQuery: " + query);
+		
 		Statement stmt = getConnection().createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 		if (rs.next()) {

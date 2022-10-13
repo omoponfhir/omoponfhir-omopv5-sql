@@ -35,7 +35,7 @@
 		<repository>
 			<id>ohdsi</id>
 			<name>repo.ohdsi.org</name>
-			<url>https://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
+			<url>http://repo.ohdsi.org:8085/nexus/content/repositories/releases</url>
 		</repository>
 		<repository>
 			<id>ohdsi.snapshots</id>

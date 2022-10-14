@@ -34,6 +34,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
@@ -661,7 +662,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		String fieldValue = null;
 
 		if (field.getType() == String.class) {
-			fieldValue = "'" + (String) fieldObject + "'";
+			String escapedFieldValue = StringEscapeUtils.escapeSql(((String) fieldObject));
+			fieldValue = "'" + escapedFieldValue + "'";
 		} else if (field.getType() == Double.class || field.getType() == Integer.class
 				|| field.getType() == Short.class || field.getType() == Long.class) {
 			if (null == fieldObject) {

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -305,7 +306,8 @@ public class ParameterWrapper {
 					_valueName = valueIter.next();
 
 				if ("String".equals(param.getParameterType())) {
-					valueName = "'" + _valueName + "'";
+					String valueEscaped = StringEscapeUtils.escapeSql(_valueName);
+					valueName = "'" + valueEscaped + "'";
 				} else if ("Code:In".equals(param.getParameterType())) {
 					// change oper to in and put valueName in parenthesis
 					valueName = "(" + _valueName + ")";

@@ -155,6 +155,11 @@ public class Vocabulary extends BaseEntity {
 		return Vocabulary._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "vocabulary_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Vocabulary.class.getDeclaredField(columnVariable);

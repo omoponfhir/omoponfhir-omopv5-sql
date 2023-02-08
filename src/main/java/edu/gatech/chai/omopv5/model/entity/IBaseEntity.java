@@ -20,6 +20,7 @@ import java.util.List;
 
 public interface IBaseEntity {
 	public String getColumnName(String columnVariable);
+	public String getFirstColumnName();
 	public String getTableName();
 	public String getForeignTableName(String foreignVariable);
 	public String getSqlSelectTableStatement(List<String> parameterList, List<String> valueList);

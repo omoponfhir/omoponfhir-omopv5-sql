@@ -216,6 +216,11 @@ public class ProcedureOccurrence extends BaseEntity {
 		return ProcedureOccurrence._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "procedure_occurrence_id";
+ 	}
+	
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = ProcedureOccurrence.class.getDeclaredField(columnVariable);

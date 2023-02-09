@@ -188,6 +188,11 @@ public class Concept extends BaseEntity {
 		return Concept._getColumnName(columnVariable);
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "concept_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Concept.class.getDeclaredField(columnVariable);

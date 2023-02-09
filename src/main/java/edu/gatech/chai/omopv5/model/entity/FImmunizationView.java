@@ -186,6 +186,11 @@ public class FImmunizationView extends BaseEntity {
 		return FImmunizationView._getColumnName(columnVariable);
     }
 
+	@Override
+  	public String getFirstColumnName() {
+  		return "immunization_id";
+  	}
+
     public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = FImmunizationView.class.getDeclaredField(columnVariable);

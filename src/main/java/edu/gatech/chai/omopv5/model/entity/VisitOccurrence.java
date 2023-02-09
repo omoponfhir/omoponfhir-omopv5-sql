@@ -235,6 +235,11 @@ public class VisitOccurrence extends BaseEntity {
 		return VisitOccurrence._getColumnName(columnVariable);
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "visit_occurrence_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = VisitOccurrence.class.getDeclaredField(columnVariable);

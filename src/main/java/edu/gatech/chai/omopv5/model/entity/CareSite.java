@@ -125,7 +125,12 @@ public class CareSite extends BaseEntity {
 	public String getColumnName(String columnVariable) {
 		return CareSite._getColumnName(columnVariable);
 	}
-	
+
+	@Override
+  	public String getFirstColumnName() {
+  		return "care_site_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = CareSite.class.getDeclaredField(columnVariable);

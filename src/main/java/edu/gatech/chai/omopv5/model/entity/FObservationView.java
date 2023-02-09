@@ -275,6 +275,11 @@ public class FObservationView extends BaseEntity {
 		return FObservationView._getColumnName(columnVariable);
 	}
 
+	@Override
+  	public String getFirstColumnName() {
+  		return "observation_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = FObservationView.class.getDeclaredField(columnVariable);

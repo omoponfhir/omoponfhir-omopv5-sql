@@ -200,6 +200,11 @@ public class Location extends BaseEntity {
 		return Location._getTableName();
 	}
 
+	@Override
+  	public String getFirstColumnName() {
+  		return "location_id";
+  	}
+
 	public static String _getTableName() {
 		Table annotation = Location.class.getDeclaredAnnotation(Table.class);
 		if (annotation != null) {

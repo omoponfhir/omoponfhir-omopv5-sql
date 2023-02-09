@@ -207,6 +207,11 @@ public class ConditionOccurrence extends BaseEntity {
 		return ConditionOccurrence._getColumnName(columnVariable);
 	}
 
+	@Override
+  	public String getFirstColumnName() {
+  		return "condition_occurrence_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 
 		try {

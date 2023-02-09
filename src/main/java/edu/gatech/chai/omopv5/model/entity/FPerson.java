@@ -204,6 +204,11 @@ public class FPerson extends Person {
 		return FPerson._getColumnName(columnVariable);
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "person_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = FPerson.class.getDeclaredField(columnVariable);

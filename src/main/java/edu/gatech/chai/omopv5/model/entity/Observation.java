@@ -228,6 +228,11 @@ public class Observation extends BaseEntity {
 		return Observation._getColumnName(columnVariable);
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "observation_id";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Observation.class.getDeclaredField(columnVariable);

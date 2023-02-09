@@ -125,6 +125,11 @@ public class ConceptRelationship extends BaseEntity {
 		return ConceptRelationship._getColumnName(columnVariable);
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "concept_id_1";
+  	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = ConceptRelationship.class.getDeclaredField(columnVariable);

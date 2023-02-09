@@ -225,6 +225,11 @@ public class ProcedureOccurrence extends BaseEntity {
 		return ProcedureOccurrence._getTableName();
 	}
 	
+	@Override
+  	public String getFirstColumnName() {
+  		return "procedure_occurrence_id";
+  	}
+
 	public static String _getTableName() {
 		Table annotation = ProcedureOccurrence.class.getDeclaredAnnotation(Table.class);
 		if (annotation != null) {

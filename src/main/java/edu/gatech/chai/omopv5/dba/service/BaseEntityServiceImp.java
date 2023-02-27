@@ -109,6 +109,10 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return "sql server".equals(databaseConfig.getSqlRenderTargetDialect());
 	}
 
+	public boolean isPostgreSql() {
+		return "postgresql".equals(databaseConfig.getSqlRenderTargetDialect());
+	}
+
 	public BigQuery getBigQuery() {
 		if (bigQuery == null) {
 			bigQuery = BigQueryOptions.getDefaultInstance().getService();
@@ -170,6 +174,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
+
+		logger.debug("runQuery: " + query);
 		Statement stmt = getConnection().createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 		while (rs.next()) {
@@ -560,7 +566,23 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		String queryString = "";
 		if (sql == null) {
-			sql = "select count(*) as count from " + getSqlTableName() + ";";
+			// this is size for entire table, which is expensive. Do an estimate if possible
+			String myTable = getSqlTableName();
+
+			if (isPostgreSql()) {
+				if ("f_observation_view".equalsIgnoreCase(myTable)) {
+					sql = "SELECT ((SELECT reltuples FROM pg_class where relname = 'measurement')::integer + (SELECT reltuples FROM pg_class WHERE relname = 'observation')::integer) as count;";
+				} else {
+					if ("f_immunization_view".equalsIgnoreCase(myTable)) {
+						sql = "select count(*) as count from " + myTable + ";";
+					} else {
+						sql = "SELECT reltuples as count FROM pg_class where relname = '" + myTable + "';";
+					}
+				}
+
+			} else {
+				sql = "select count(*) as count from " + myTable + ";";
+			}
 		} 
 
 		if (parameterList == null) {

@@ -62,8 +62,12 @@ public interface CareSiteService extends IService<CareSite> {
 		if (careSite == null)
 			careSite = new CareSite();
 
-		if (alias == null || alias.isEmpty())
+		boolean isReference = false;
+		if (alias == null || alias.isEmpty()) {
 			alias = CareSite._getTableName();
+		} else {
+			isReference = true;
+		}
 
 		try {
 			ResultSetMetaData metaData = rs.getMetaData();
@@ -74,8 +78,13 @@ public interface CareSiteService extends IService<CareSite> {
 				if (columnInfo.equalsIgnoreCase(alias + "_care_site_id")) {
 					careSite.setId(rs.getLong(columnInfo));
 					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase("location_location_id")) {
-					Location location = LocationService._construct(rs, null, "location");
+				} else if (columnInfo.equalsIgnoreCase(isReference?alias+"_location_id":"location_location_id")) {
+ 					Location location;
+ 					if (isReference) {
+ 						location = LocationService._construct(rs, null, alias);
+ 					} else {
+ 						location = LocationService._construct(rs, null, "location");
+ 					}
 					careSite.setLocation(location);
 				} else if (columnInfo.equalsIgnoreCase("placeOfServiceConcept_concept_id")) {
 					Concept placeOfServiceConcept = ConceptService._construct(rs, null, "placeOfServiceConcept");
@@ -101,16 +110,25 @@ public interface CareSiteService extends IService<CareSite> {
 		if (careSite == null)
 			careSite = new CareSite();
 
-		if (alias == null || alias.isEmpty())
+		boolean isReference = false;
+		if (alias == null || alias.isEmpty()) {
 			alias = CareSite._getTableName();
+		} else {
+			isReference = true;
+		}
 
 		for (String columnInfo : columns) {
 			if (rowResult.get(columnInfo).isNull()) continue;
 
 			if (columnInfo.equalsIgnoreCase(alias + "_care_site_id")) {
 				careSite.setId(rowResult.get(columnInfo).getLongValue());
-			} else if (columnInfo.equalsIgnoreCase("location_location_id")) {
-				Location location = LocationService._construct(rowResult, null, "location", columns);
+			} else if (columnInfo.equalsIgnoreCase(isReference?alias+"_location_id":"location_location_id")) {
+				Location location;
+				if (isReference) {
+					location = LocationService._construct(rowResult, null, alias, columns);
+				} else {
+					location = LocationService._construct(rowResult, null, "location", columns);
+				}
 				careSite.setLocation(location);
 			} else if (columnInfo.equalsIgnoreCase("placeOfServiceConcept_concept_id")) {
 				Concept placeOfServiceConcept = ConceptService._construct(rowResult, null, "placeOfServiceConcept", columns);

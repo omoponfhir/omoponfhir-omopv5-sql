@@ -179,13 +179,18 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 
 		logger.debug("runQuery: " + query);
-		Statement stmt = getConnection().createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		while (rs.next()) {
-			newEntity = construct(rs, myEntity, alias);
-			if (newEntity != null) {
-				entities.add(newEntity);
+		
+		try (Statement stmt = getConnection().createStatement();) {
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				newEntity = construct(rs, myEntity, alias);
+				if (newEntity != null) {
+					entities.add(newEntity);
+				}
 			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
 		}
 
 		return entities;
@@ -199,27 +204,32 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 
 		logger.debug("[updateQuery]querySql: " + query);
-		PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		int affectedRows = stmt.executeUpdate();
-		connection.commit();
+		// PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		try (PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+			int affectedRows = stmt.executeUpdate();
+			getConnection().commit();
 
-		if (affectedRows == 0) {
-			logger.error("UPDATE failed with " + query);
-			return retVal;
-		}
+			if (affectedRows == 0) {
+				logger.error("UPDATE failed with " + query);
+				return retVal;
+			}
 
-		ResultSet generatedKeys = stmt.getGeneratedKeys();
-		// ResultSetMetaData rsmd = generatedKeys.getMetaData();
-        // int columnCount = rsmd.getColumnCount();
+			ResultSet generatedKeys = stmt.getGeneratedKeys();
+			// ResultSetMetaData rsmd = generatedKeys.getMetaData();
+			// int columnCount = rsmd.getColumnCount();
 
-		if (generatedKeys.next()) {
-			do {
-				// for (int i=1; i<=columnCount; i++) {
-				// 	String key = generatedKeys.getString(i);
-				// 	System.out.println("KEY " + i + " = " + key);
-				// }
-				retVal = generatedKeys.getLong(1);
-			} while (generatedKeys.next()); 
+			if (generatedKeys.next()) {
+				do {
+					// for (int i=1; i<=columnCount; i++) {
+					// 	String key = generatedKeys.getString(i);
+					// 	System.out.println("KEY " + i + " = " + key);
+					// }
+					retVal = generatedKeys.getLong(1);
+				} while (generatedKeys.next()); 
+			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
 		}
 
 		if (retVal == null || retVal == 0) {
@@ -236,12 +246,16 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 		logger.debug("runCountQuery: " + query);
 
-		Statement stmt = getConnection().createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		if (rs.next()) {
-			retVal = (long) rs.getInt(alias);
+		try (Statement stmt = getConnection().createStatement();) {
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				retVal = (long) rs.getInt(alias);
+			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
 		}
-
+		
 		return retVal;
 	}
 		

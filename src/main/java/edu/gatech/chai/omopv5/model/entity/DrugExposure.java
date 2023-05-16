@@ -290,6 +290,11 @@ public class DrugExposure extends BaseEntity {
 		return DrugExposure._getColumnName(columnVariable);
 	}
 
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "drug_exposure_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = DrugExposure.class.getDeclaredField(columnVariable);

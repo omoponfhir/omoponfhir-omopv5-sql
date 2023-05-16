@@ -211,6 +211,11 @@ public class Provider extends BaseEntity {
 		return Provider._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "provider_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Provider.class.getDeclaredField(columnVariable);

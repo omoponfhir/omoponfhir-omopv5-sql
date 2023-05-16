@@ -74,6 +74,11 @@ public class FactRelationship extends BaseEntity {
 		return FactRelationship._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "domain_concept_id_1";
+ 	}
+	
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = FactRelationship.class.getDeclaredField(columnVariable);

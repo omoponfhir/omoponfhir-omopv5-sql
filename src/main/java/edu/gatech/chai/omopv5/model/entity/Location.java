@@ -190,6 +190,11 @@ public class Location extends BaseEntity {
 		return Location._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "location_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Location.class.getDeclaredField(columnVariable);

@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlTranslate;
 import org.slf4j.Logger;
@@ -79,6 +81,9 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	@Autowired
 	DatabaseConfiguration databaseConfig;
 
+	@Autowired
+	FCacheService fCacheService;
+
 	/**
 	 * Instantiates a new base entity service imp.
 	 *
@@ -101,6 +106,14 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 
 	public boolean isBigQuery() {
 		return "bigquery".equals(databaseConfig.getSqlRenderTargetDialect());
+	}
+
+	public boolean isSqlServer() {
+		return "sql server".equals(databaseConfig.getSqlRenderTargetDialect());
+	}
+
+	public boolean isPostgreSql() {
+		return "postgresql".equals(databaseConfig.getSqlRenderTargetDialect());
 	}
 
 	public BigQuery getBigQuery() {
@@ -164,13 +177,20 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		// sql string is full completed string rendered by SqlRender.
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
-		Statement stmt = getConnection().createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		while (rs.next()) {
-			newEntity = construct(rs, myEntity, alias);
-			if (newEntity != null) {
-				entities.add(newEntity);
+
+		logger.debug("runQuery: " + query);
+		
+		try (Statement stmt = getConnection().createStatement();) {
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				newEntity = construct(rs, myEntity, alias);
+				if (newEntity != null) {
+					entities.add(newEntity);
+				}
 			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
 		}
 
 		return entities;
@@ -183,34 +203,59 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		// Now, we translate this to attached database SQL.
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 
-		PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-		int affectedRows = stmt.executeUpdate();
-		if (affectedRows == 0) {
-			logger.error("UPDATE failed with " + query);
-		}
-		connection.commit();
+		logger.debug("[updateQuery]querySql: " + query);
+		// PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		try (PreparedStatement stmt = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
+			int affectedRows = stmt.executeUpdate();
+			getConnection().commit();
 
-		ResultSet generatedKeys = stmt.getGeneratedKeys();
-		if (generatedKeys.next()) {
-			retVal = generatedKeys.getLong(1);
-		} else {
+			if (affectedRows == 0) {
+				logger.error("UPDATE failed with " + query);
+				return retVal;
+			}
+
+			ResultSet generatedKeys = stmt.getGeneratedKeys();
+			// ResultSetMetaData rsmd = generatedKeys.getMetaData();
+			// int columnCount = rsmd.getColumnCount();
+
+			if (generatedKeys.next()) {
+				do {
+					// for (int i=1; i<=columnCount; i++) {
+					// 	String key = generatedKeys.getString(i);
+					// 	System.out.println("KEY " + i + " = " + key);
+					// }
+					retVal = generatedKeys.getLong(1);
+				} while (generatedKeys.next()); 
+			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
+		}
+
+		if (retVal == null || retVal == 0) {
 			logger.warn("update Query failed, no ID generated, with " + query);
 		}
 
 		return retVal;
 	}
 
-	public Long runCountQuery(String query, String alias) throws SQLException {
+	public Long runAliasQuery(String query, String alias) throws SQLException {
 		Long retVal = 0L;
 
 		query = SqlTranslate.translateSql(query, databaseConfig.getSqlRenderTargetDialect());
 
-		Statement stmt = getConnection().createStatement();
-		ResultSet rs = stmt.executeQuery(query);
-		if (rs.next()) {
-			retVal = (long) rs.getInt(alias);
-		}
+		logger.debug("runCountQuery: " + query);
 
+		try (Statement stmt = getConnection().createStatement();) {
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				retVal = (long) rs.getInt(alias);
+			}
+		} catch (Exception e) {
+			getConnection().rollback();
+			e.printStackTrace();
+		}
+		
 		return retVal;
 	}
 		
@@ -495,7 +540,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		return getSize(null, null, null);
 	}
 
+	public Long getSize(boolean cacheOnly) {
+		return getSize(null, null, null, cacheOnly);
+	}
+
 	public Long getSize(List<ParameterWrapper> paramList) {
+		return getSize(paramList, false);
+	}
+
+	public Long getSize(List<ParameterWrapper> paramList, boolean cacheOnly) {
 		Long retVal = 0L;
 
 		List<String> parameterList = new ArrayList<String>();
@@ -510,6 +563,19 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			sql = renderedSql(sql, parameterList, valueList);
+			
+			// check if we have cached this value.
+			Integer count = fCacheService.searchQueryCount(sql);
+			if (count >= 0) {
+				return count.longValue();
+			}
+	
+			if (cacheOnly) {
+				/// We only add this as an entry for cache db.
+				fCacheService.updateQuery(sql, null, -1, -1);
+				return null;
+			}
+		
 			if (isBigQuery()) {
 				TableResult result = runBigQuery(sql);
 				for (FieldValueList row : result.iterateAll()) {
@@ -519,7 +585,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 			} else {
-				retVal = runCountQuery(sql, "count");
+				retVal = runAliasQuery(sql, "count");
 				// if (rs.next()) {
 				// 	retVal = (long) rs.getInt("count");
 				// }
@@ -530,15 +596,37 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			e.printStackTrace();
 		}
 
+		fCacheService.updateQuery(sql, null, retVal.intValue(), 0);
 		return retVal;
 	}
 
 	public Long getSize(String sql, List<String> parameterList, List<String> valueList) {
+		return getSize(sql, parameterList, valueList, false);
+	}
+
+	public Long getSize(String sql, List<String> parameterList, List<String> valueList, boolean cacheOnly) {
 		Long retVal = 0L;
 
 		String queryString = "";
 		if (sql == null) {
-			sql = "select count(*) as count from " + getSqlTableName() + ";";
+			// this is size for entire table, which is expensive. Do an estimate if possible
+			String myTable = getSqlTableName();
+
+			// if (isPostgreSql()) {
+			// 	if ("f_observation_view".equalsIgnoreCase(myTable)) {
+			// 		sql = "SELECT ((SELECT reltuples FROM pg_class where relname = 'measurement')::integer + (SELECT reltuples FROM pg_class WHERE relname = 'observation')::integer) as count;";
+			// 	} else {
+			// 		if ("f_immunization_view".equalsIgnoreCase(myTable)) {
+			// 			sql = "select count(*) as count from " + myTable + ";";
+			// 		} else {
+			// 			sql = "SELECT reltuples as count FROM pg_class where relname = '" + myTable + "';";
+			// 		}
+			// 	}
+
+			// } else {
+			// 	sql = "select count(*) as count from " + myTable + ";";
+			// }
+			sql = "select count(*) as count from " + myTable + ";";
 		} 
 
 		if (parameterList == null) {
@@ -550,6 +638,16 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 		
 		queryString = renderedSql(sql, parameterList, valueList);
+		Integer count = fCacheService.searchQueryCount(queryString);
+		if (count >= 0) {
+			return count.longValue();
+		}
+
+		if (cacheOnly) {
+			/// We only add this as an entry for cache db.
+			fCacheService.updateQuery(queryString, null, -1, -1);
+			return null;
+		}
 
 		try {
 			if (isBigQuery()) {
@@ -561,7 +659,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				}
 			} else {
-				retVal = runCountQuery(queryString, "count");
+				retVal = runAliasQuery(queryString, "count");
 				// if (rs.next()) {
 				// 	retVal = (long) rs.getInt("count");
 				// }
@@ -572,6 +670,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			e.printStackTrace();
 		}
 
+		fCacheService.updateQuery(queryString, null, retVal.intValue(), 0);
 		return retVal;
 	}
 
@@ -659,7 +758,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		String fieldValue = null;
 
 		if (field.getType() == String.class) {
-			fieldValue = "'" + (String) fieldObject + "'";
+			String escapedFieldValue = StringEscapeUtils.escapeSql(((String) fieldObject));
+ 			fieldValue = "'" + escapedFieldValue + "'";
 		} else if (field.getType() == Double.class || field.getType() == Integer.class
 				|| field.getType() == Short.class || field.getType() == Long.class) {
 			if (null == fieldObject) {
@@ -897,6 +997,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 					}
 				} else {
 					id = updateQuery(sql);
+					if (id == 0L && primaryId != null) {
+						// Sql Server does not return autogenerated id. So, if this happens, try with max value.
+						sql = "select max(" + primaryId + ") as last_id from " + tableName;
+						id = runAliasQuery(sql, "last_id");			
+					}
 				}
 
 			} catch (Exception e) {
@@ -942,6 +1047,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			return null;
 		}
 		
+		fCacheService.invalidate(getSqlTableName(clazz));
 		return entity;
 	}
 
@@ -1106,9 +1212,11 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		if (updateEntity(id, clazz, entity) == null) {
-			logger.error("Failed to update table: " + getSqlTableName(parentClazz));
+			logger.error("Failed to update table: " + getSqlTableName(clazz));
 			return null;
 		}
+
+		fCacheService.invalidate(getSqlTableName(clazz));
 
 		return entity;
 	}
@@ -1168,7 +1276,9 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	@Override
-	public List<T> searchByColumnString(String column, String value) {
+	public List<T> searchByColumnString(String column, String valueOrignial) {
+		String value = StringEscapeUtils.escapeSql(valueOrignial);
+
 		List<T> entities = new ArrayList<T>();
 
 		List<String> parameterList = new ArrayList<String>();
@@ -1241,7 +1351,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 		}
 
 		if (length > 0) {
-			valueList.add("limit " + length + " offset " + fromIndex);
+			valueList.add("offset " + fromIndex + " rows fetch next " + length + " rows only");
+ 			// valueList.add("limit " + length + " offset " + fromIndex);
 		} else {
 			valueList.add("");
 		}
@@ -1291,7 +1402,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 
 			if (length > 0) {
-				valueList.add("limit " + length + " offset " + fromIndex);
+				valueList.add("offset " + fromIndex + " rows fetch next " + length + " rows only");
 			} else {
 				valueList.add("");
 			}

@@ -239,6 +239,11 @@ public class DeviceExposure extends BaseEntity {
 		return DeviceExposure._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "device_exposure_id";
+ 	}
+	
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = DeviceExposure.class.getDeclaredField(columnVariable);

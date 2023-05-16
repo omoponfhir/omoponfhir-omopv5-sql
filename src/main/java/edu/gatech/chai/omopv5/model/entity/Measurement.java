@@ -283,6 +283,11 @@ public class Measurement extends BaseEntity {
 		return Measurement._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "measurement_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Measurement.class.getDeclaredField(columnVariable);

@@ -84,6 +84,11 @@ public class Relationship extends BaseEntity {
 	public String getColumnName(String columnVariable) {
 		return Relationship._getColumnName(columnVariable);
 	}
+
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "relationship_id";
+ 	}
 	
 	public static String _getColumnName(String columnVariable) {
 		try {

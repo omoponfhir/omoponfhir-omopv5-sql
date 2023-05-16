@@ -18,6 +18,9 @@ package edu.gatech.chai.omopv5.model.entity;
 
 import java.lang.reflect.Field;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
@@ -30,6 +33,8 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
  */
 @Table(name = "f_person")
 public class FPerson extends Person {
+	private static final Logger logger = LoggerFactory.getLogger(FPerson.class);
+
 	@Id
 	@JoinColumn(name="person_id", table="person:person", nullable=false)
 	private Long id;
@@ -198,6 +203,11 @@ public class FPerson extends Person {
 	public String getColumnName(String columnVariable) {
 		return FPerson._getColumnName(columnVariable);
 	}
+
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "person_id";
+ 	}
 	
 	public static String _getColumnName(String columnVariable) {
 		try {
@@ -216,11 +226,14 @@ public class FPerson extends Person {
 //					return null;
 				}
 			}
-		} catch (NoSuchFieldException | SecurityException e) {
-			if (!"personSourceValue".equals(e.getMessage())) {
-				e.printStackTrace();
-			}
-		}
+		} catch (NoSuchFieldException e) {
+ 			// we just display warning message instead of exception trace as it's OK to have no field 
+ 			// because f_person is extended from person table. f_person does not have what person table has.
+ 			logger.warn("column, '" + columnVariable + "', does not exist in f_person table.");
+
+ 		} catch (SecurityException e) {
+ 			e.printStackTrace();
+ 		}
 
 		return Person._getColumnName(columnVariable);
 	}

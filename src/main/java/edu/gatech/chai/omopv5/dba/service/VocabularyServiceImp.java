@@ -17,12 +17,16 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
 
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.Vocabulary;
 
 // TODO: Auto-generated Javadoc
@@ -31,6 +35,7 @@ import edu.gatech.chai.omopv5.model.entity.Vocabulary;
  */
 @Service
 public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> implements VocabularyService {
+	private static final Logger logger = LoggerFactory.getLogger(LocationServiceImp.class);
 
 	/**
 	 * Instantiates a new vocabulary service imp.
@@ -43,7 +48,27 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 	 * @see edu.gatech.chai.omopv5.dba.service.VocabularyService#findById(java.lang.String)
 	 */
 	public Vocabulary findById(String id) {
-		return null; // getEntityDao().findById(getEntityClass(), id);
+		List<String> parameterList = new ArrayList<String>();
+ 		List<String> valueList = new ArrayList<String>();
+
+ 		String rootTableName = SqlUtil.getTableName(getEntityClass());
+ 		String sql = constructSqlSelectWithoutWhere(rootTableName);
+ 		sql = sql + " where @cname='@value'";
+ 		parameterList.add("cname");
+ 		parameterList.add("value");
+ 		valueList.add(rootTableName + "." + getSqlTableColumnName("id"));
+ 		valueList.add(id);
+
+ 		sql = renderedSql(sql, parameterList, valueList);
+
+ 		try {
+ 			return readEntity(sql);
+ 		} catch (Exception e) {
+ 			logger.error("SqlRender:" + sql);
+ 			e.printStackTrace();
+ 		}
+
+ 		return null;
 	}
 
 	/* (non-Javadoc)

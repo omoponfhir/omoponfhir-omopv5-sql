@@ -277,6 +277,11 @@ public class Person extends BaseEntity {
 		return Person._getColumnName(columnVariable);
 	}
 
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "person_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = Person.class.getDeclaredField(columnVariable);

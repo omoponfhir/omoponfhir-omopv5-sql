@@ -68,6 +68,11 @@ public class ConceptAncestor extends BaseEntity {
 		return ConceptAncestor._getColumnName(columnVariable);
 	}
 	
+	@Override
+ 	public String getFirstColumnName() {
+ 		return "ancestor_concept_id";
+ 	}
+
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = ConceptAncestor.class.getDeclaredField(columnVariable);

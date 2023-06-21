@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.google.cloud.bigquery.FieldValueList;
 
+import edu.gatech.chai.omopv5.dba.util.SqlUtil;
 import edu.gatech.chai.omopv5.model.entity.CareSite;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -211,15 +212,9 @@ public interface FPersonService extends IService<FPerson> {
 				fPerson.setDayOfBirth((int) rowResult.get(columnInfo).getLongValue());
 			} else if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
 				String dateString = rowResult.get(columnInfo).getStringValue();
-				if (dateString != null && !dateString.isEmpty()) {
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					Date date;
-					try {
-						date = dateFormat.parse(dateString);
-						fPerson.setBirthDateTime(date);
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
+				Date date = SqlUtil.string2DateTime(dateString);
+				if (date != null) {
+					fPerson.setBirthDateTime(date);
 				}
 			} else if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
 				Concept raceConcept = ConceptService._construct(rowResult, null, "raceConcept", columns);

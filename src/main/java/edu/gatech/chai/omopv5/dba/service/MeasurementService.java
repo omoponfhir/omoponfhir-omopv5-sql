@@ -59,7 +59,7 @@ public interface MeasurementService extends IService<Measurement> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_date")) {
 					measurement.setMeasurementDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_datetime")) {
-					measurement.setMeasurementDateTime(rs.getDate(columnInfo));
+					measurement.setMeasurementDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("measurementTypeConcept_concept_id")) {
 					Concept measurementTypeConcept = ConceptService._construct(rs, null, "measurementTypeConcept");
 					measurement.setMeasurementTypeConcept(measurementTypeConcept);

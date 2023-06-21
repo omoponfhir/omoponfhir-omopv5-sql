@@ -64,7 +64,7 @@ public interface FImmunizationViewService extends IService<FImmunizationView> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_date")) {
 					fImmunizationView.setImmunizationDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_datetime")) {
-					fImmunizationView.setImmunizationDatetime(rs.getDate(columnInfo));
+					fImmunizationView.setImmunizationDatetime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("immunizationTypeConcept_concept_id")) {
 					Concept immunizationTypeConcept = ConceptService._construct(rs, null, "immunizationTypeConcept");
 					fImmunizationView.setImmunizationTypeConcept(immunizationTypeConcept);

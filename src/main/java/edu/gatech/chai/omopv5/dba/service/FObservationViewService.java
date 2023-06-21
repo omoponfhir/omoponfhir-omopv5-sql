@@ -75,7 +75,7 @@ public interface FObservationViewService extends IService<FObservationView> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
 					fObservationView.setObservationDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
-					fObservationView.setObservationDateTime(rs.getDate(columnInfo));
+					fObservationView.setObservationDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_string")) {
 					String valueAsString = rs.getString(columnInfo);
 					if (!rs.wasNull()) {

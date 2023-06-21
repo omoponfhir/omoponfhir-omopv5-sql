@@ -60,11 +60,11 @@ public interface VisitOccurrenceService extends IService<VisitOccurrence> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
 					visitOccurrence.setVisitStartDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
-					visitOccurrence.setVisitStartDateTime(rs.getDate(columnInfo));
+					visitOccurrence.setVisitStartDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
 					visitOccurrence.setVisitEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
-					visitOccurrence.setVisitEndDateTime(rs.getDate(columnInfo));
+					visitOccurrence.setVisitEndDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
 					Concept visitTypeConcept = ConceptService._construct(rs, null, "visitTypeConcept");
 					visitOccurrence.setVisitTypeConcept(visitTypeConcept);

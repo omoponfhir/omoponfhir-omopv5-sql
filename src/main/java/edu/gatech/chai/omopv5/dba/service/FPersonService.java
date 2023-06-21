@@ -108,7 +108,7 @@ public interface FPersonService extends IService<FPerson> {
 				} else if (columnInfo.equalsIgnoreCase("person_day_of_birth")) {
 					fPerson.setDayOfBirth(rs.getInt(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("person_birth_datetime")) {
-					fPerson.setBirthDateTime(rs.getDate(columnInfo));
+					fPerson.setBirthDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("raceConcept_concept_id")) {
 					Concept raceConcept = ConceptService._construct(rs, null, "raceConcept");
 					fPerson.setRaceConcept(raceConcept);

@@ -60,11 +60,11 @@ public interface ProcedureOccurrenceService extends IService<ProcedureOccurrence
 				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_date")) {
 					procedureOccurrence.setProcedureDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_datetime")) {
-					procedureOccurrence.setProcedureDateTime(rs.getDate(columnInfo));
+					procedureOccurrence.setProcedureDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_date")) {
 					procedureOccurrence.setProcedureEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_procedure_end_datetime")) {
-					procedureOccurrence.setProcedureEndDateTime(rs.getDate(columnInfo));
+					procedureOccurrence.setProcedureEndDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("procedureTypeConcept_concept_id")) {
 					Concept procedureTypeConcept = ConceptService._construct(rs, null, "procedureTypeConcept");
 					procedureOccurrence.setProcedureTypeConcept(procedureTypeConcept);

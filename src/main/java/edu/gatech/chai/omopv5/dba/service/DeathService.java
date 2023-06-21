@@ -33,7 +33,7 @@ public interface DeathService extends IService<Death> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_death_date")) {
 					death.setDeathDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_death_datetime")) {
-					death.setDeathDateTime(rs.getDate(columnInfo));
+					death.setDeathDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("deathTypeConcept_concept_id")) {
 					Concept deathTypeConcept = ConceptService._construct(rs, null, "deathTypeConcept");
 					death.setDeathTypeConcept(deathTypeConcept);

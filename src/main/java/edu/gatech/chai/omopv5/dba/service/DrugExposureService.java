@@ -59,11 +59,11 @@ public interface DrugExposureService extends IService<DrugExposure> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_date")) {
 					drugExposure.setDrugExposureStartDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_datetime")) {
-					drugExposure.setDrugExposureStartDateTime(rs.getDate(columnInfo));
+					drugExposure.setDrugExposureStartDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_date")) {
 					drugExposure.setDrugExposureEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_datetime")) {
-					drugExposure.setDrugExposureEndDateTime(rs.getDate(columnInfo));
+					drugExposure.setDrugExposureEndDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_verbatim_end_date")) {
 					drugExposure.setVerbatimEndDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("drugTypeConcept_concept_id")) {

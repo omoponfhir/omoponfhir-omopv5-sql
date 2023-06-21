@@ -59,7 +59,7 @@ public interface ObservationService extends IService<Observation> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_date")) {
 					observation.setObservationDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_observation_datetime")) {
-					observation.setObservationDateTime(rs.getDate(columnInfo));
+					observation.setObservationDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("observationTypeConcept_concept_id")) {
 					Concept observationTypeConcept = ConceptService._construct(rs, null, "observationTypeConcept");
 					observation.setObservationTypeConcept(observationTypeConcept);

@@ -56,7 +56,7 @@ public interface NoteService extends IService<Note> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_note_date")) {
 					note.setNoteDate(rs.getDate(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_note_datetime")) {
-					note.setNoteDateTime(rs.getDate(columnInfo));
+					note.setNoteDateTime(rs.getTimestamp(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("noteTypeConcept_concept_id")) {
 					Concept noteTypeConcept = ConceptService._construct(rs, null, "noteTypeConcept");
 					note.setNoteTypeConcept(noteTypeConcept);

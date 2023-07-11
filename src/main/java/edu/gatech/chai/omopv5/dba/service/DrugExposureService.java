@@ -72,11 +72,20 @@ public interface DrugExposureService extends IService<DrugExposure> {
 				} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
 					drugExposure.setStopReason(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase(alias + "_refills")) {
-					drugExposure.setRefills(rs.getInt(columnInfo));
+					int valueAsInt = rs.getInt(columnInfo);
+					if (!rs.wasNull()) {
+						drugExposure.setRefills(valueAsInt);
+					}
 				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
-					drugExposure.setQuantity(rs.getDouble(columnInfo));
+					double valueAsDouble = rs.getDouble(columnInfo);
+					if (!rs.wasNull()) {
+						drugExposure.setQuantity(valueAsDouble);
+					}
 				} else if (columnInfo.equalsIgnoreCase(alias + "_days_supply")) {
-					drugExposure.setDaysSupply(rs.getInt(columnInfo));
+					int valueAsInt = rs.getInt(columnInfo);
+					if (!rs.wasNull()) {
+						drugExposure.setDaysSupply(valueAsInt);
+					}
 				} else if (columnInfo.equalsIgnoreCase(alias + "_sig")) {
 					drugExposure.setSig(rs.getString(columnInfo));
 				} else if (columnInfo.equalsIgnoreCase("routeConcept_concept_id")) {

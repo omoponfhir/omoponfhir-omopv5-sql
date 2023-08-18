@@ -193,6 +193,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			e.printStackTrace();
 		}
 
+		closeConnection();;
+		
 		return entities;
 	}
 
@@ -236,6 +238,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			logger.warn("update Query failed, no ID generated, with " + query);
 		}
 
+		closeConnection();
+
 		return retVal;
 	}
 
@@ -255,6 +259,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			getConnection().rollback();
 			e.printStackTrace();
 		}
+
+		closeConnection();
 		
 		return retVal;
 	}

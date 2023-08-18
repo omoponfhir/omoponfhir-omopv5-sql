@@ -109,6 +109,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 //					if (entity != null)
 //						entities.add(new Note(entity.getFactId1()));
 				}
+
+				closeConnection();
 			}
 		} catch (Exception e) {
 			try {

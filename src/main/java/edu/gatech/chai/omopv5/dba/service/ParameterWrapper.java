@@ -314,8 +314,9 @@ public class ParameterWrapper {
 				} else if ("Date".equals(param.getParameterType())) {
 					Long dateInMili = Long.valueOf(_valueName);
 					Date value = new Date(dateInMili);
-					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-					valueName = "cast ('" + dateFormat.format(value) + "' as date)";
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					// valueName = "cast ('" + dateFormat.format(value) + "' as date)";
+					valueName = "'" + dateFormat.format(value) + "'";
 				} else {
 					valueName = _valueName;
 				}

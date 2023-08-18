@@ -779,13 +779,15 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			}
 			// fieldValue = fieldObject.toString();
 		} else if (field.getType() == Date.class || field.getType() == DateTime.class) {
+			SimpleDateFormat dateFormat;
 			if (columnName.endsWith("time") || field.getType() == DateTime.class) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-				fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as datetime)";
+				dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				// fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
 			} else {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
+				dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				// fieldValue = "cast('" + dateFormat.format(fieldObject) + "' as date)";
 			}
+			fieldValue = "'" + dateFormat.format(fieldObject) + "'";
 		} else {
 			Method vocabularyGetIdMethod = fieldObject.getClass().getMethod("getId");
 			Object idObject = vocabularyGetIdMethod.invoke(fieldObject);

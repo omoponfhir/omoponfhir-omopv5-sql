@@ -259,6 +259,8 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 			e.printStackTrace();
 		}
 
+		closeConnection();
+		
 		return retVal;
 	}
 		

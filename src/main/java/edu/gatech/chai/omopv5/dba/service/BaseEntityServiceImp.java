@@ -131,14 +131,12 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	}
 
 	public Connection getConnection() throws SQLException {		
-		if (connection == null || connection.isClosed()) {
-			connection = ds.getConnection();
-			if (connection.getAutoCommit()) {
-				try {
-					connection.setAutoCommit(false);
-				} catch (SQLFeatureNotSupportedException ignored) {
-					logger.debug("SetAutoCommit failed.");
-				}
+		connection = ds.getConnection();
+		if (connection.getAutoCommit()) {
+			try {
+				connection.setAutoCommit(false);
+			} catch (SQLFeatureNotSupportedException ignored) {
+				logger.debug("SetAutoCommit failed.");
 			}
 		}
 

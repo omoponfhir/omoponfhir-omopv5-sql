@@ -146,8 +146,18 @@ public class Vocabulary extends BaseEntity {
 
 	@Override
 	public Long getIdAsLong() {
-		// TODO Auto-generated method stub
-		return null;
+		Concept vocabularyConcept = getVocabularyConcept();
+		// Long retval;
+		// try {
+		// 	System.out.println(vocabularyConcept.getIdAsLong());
+		// 	retval = vocabularyConcept.getIdAsLong();
+		// } catch (Exception e) {
+		// 	e.printStackTrace();
+		// } finally {
+		// 	retval = -1L;
+		// }
+		// return retval;
+		return vocabularyConcept.getIdAsLong();
 	}
 
 	@Override

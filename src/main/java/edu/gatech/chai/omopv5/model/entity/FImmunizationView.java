@@ -28,7 +28,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name="f_immunization_view")
+@Table(name="f_immunization_view", schema = "data")
 public class FImmunizationView extends BaseEntity {
 	private static final Logger logger = LoggerFactory.getLogger(FImmunizationView.class);
 
@@ -36,10 +36,10 @@ public class FImmunizationView extends BaseEntity {
 	@Column(name="immunization_id")
 	private Long id;
 
-	@JoinColumn(name = "person_id", nullable = false)
+	@JoinColumn(name = "person_id", table="data.person", nullable = false)
 	private FPerson fPerson;
 
-	@JoinColumn(name = "immunization_concept_id", referencedColumnName="concept_id", nullable = false)
+	@JoinColumn(name = "immunization_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable = false)
 	private Concept immunizationConcept;
 
 	@Column(name = "immunization_date", nullable = false)
@@ -48,22 +48,22 @@ public class FImmunizationView extends BaseEntity {
 	@Column(name = "immunization_datetime")
 	private Date immunizationDatetime;
 
-	@JoinColumn(name = "immunization_type_concept_id", referencedColumnName="concept_id", nullable = false)
+	@JoinColumn(name = "immunization_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable = false)
 	private Concept immunizationTypeConcept;
 
 	@Column(name = "immunization_status")
 	private String immunizationStatus;
 	
-	@JoinColumn(name = "provider_id")
+	@JoinColumn(name = "provider_id", table="data.provider")
 	private Provider provider;
 
-	@JoinColumn(name = "visit_occurrence_id")
+	@JoinColumn(name = "visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 
 	@Column(name = "lot_number")
 	private String lotNumber;
 
-	@JoinColumn(name = "route_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name = "route_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept routeConcept;
 
 	@Column(name = "quantity")

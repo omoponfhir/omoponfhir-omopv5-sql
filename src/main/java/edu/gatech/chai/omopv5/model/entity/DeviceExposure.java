@@ -27,17 +27,17 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "device_exposure")
+@Table(name = "device_exposure", schema = "data")
 public class DeviceExposure extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="device_exposure_id_seq")
 	@Column(name="device_exposure_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="device_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="device_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept deviceConcept;
 	
 	@Column(name="device_exposure_start_date", nullable=false)
@@ -52,7 +52,7 @@ public class DeviceExposure extends BaseEntity {
 	@Column(name="device_exposure_end_datetime")
 	private Date deviceExposureEndDateTime;
 	
-	@JoinColumn(name="device_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="device_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept deviceTypeConcept;
 	
 	@Column(name="unique_device_id")
@@ -67,22 +67,22 @@ public class DeviceExposure extends BaseEntity {
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="device_source_value")
 	private String deviceSourceValue;
 	
-	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="device_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept deviceSourceConcept;
 
-	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitConcept;
 	
 	@Column(name="unit_source_value")
 	private String unitSourceValue;
 	
-	@JoinColumn(name="unit_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitSourceConcept;
 
 	public Long getId() {

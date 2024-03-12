@@ -23,16 +23,16 @@ import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "concept_ancestor")
+@Table(name = "concept_ancestor", schema = "vocab")
 public class ConceptAncestor extends BaseEntity {
 	/**
 	 * 
 	 */
 
-	@JoinColumn(name="ancestor_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	@JoinColumn(name="ancestor_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept ancestorConcept;
 
-	@JoinColumn(name="descendant_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	@JoinColumn(name="descendant_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept descendantConcept;
 	
 	@Column(name="min_levels_of_separation", nullable=false)

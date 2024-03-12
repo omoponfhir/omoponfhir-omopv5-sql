@@ -27,7 +27,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "procedure_occurrence")
+@Table(name = "procedure_occurrence", schema = "data")
 public class ProcedureOccurrence extends BaseEntity {
 
 	@Id
@@ -35,10 +35,10 @@ public class ProcedureOccurrence extends BaseEntity {
 	@Column(name="procedure_occurrence_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="procedure_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="procedure_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept procedureConcept;
 	
 	@Column(name="procedure_date", nullable=false)
@@ -53,25 +53,25 @@ public class ProcedureOccurrence extends BaseEntity {
 	@Column(name="procedure_end_datetime")
 	private Date procedureEndDateTime;
 	
-	@JoinColumn(name="procedure_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="procedure_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept procedureTypeConcept;
 	
-	@JoinColumn(name="modifier_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="modifier_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept modifierConcept;
 	
 	@Column(name="quantity")
 	private Long quantity;
 	
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName = "provider_id", table = "data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", referencedColumnName = "visit_occurrence_id", table = "data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="procedure_source_value")
 	private String procedureSourceValue;
 	
-	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="procedure_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept procedureSourceConcept;
 	
 	@Column(name="modifier_source_value")

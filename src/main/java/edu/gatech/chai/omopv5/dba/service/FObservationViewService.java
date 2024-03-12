@@ -22,8 +22,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
@@ -37,7 +35,6 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
 /**
  * The Interface FObservationViewService.
  */
-@Transactional
 public interface FObservationViewService extends IService<FObservationView> {
 
 	/**

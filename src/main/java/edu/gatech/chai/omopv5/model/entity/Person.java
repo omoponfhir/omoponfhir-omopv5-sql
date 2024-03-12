@@ -27,15 +27,15 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "person")
+@Table(name = "person", schema = "data")
 public class Person extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="person_id_seq")
-	@JoinColumn(name = "person_id", table="f_person:f_person", nullable = false)
+	@JoinColumn(name = "person_id", table="data.f_person:fPerson", nullable = false)
 	private Long id;
 
-	@JoinColumn(name = "gender_concept_id", referencedColumnName="concept_id", nullable = false)
+	@JoinColumn(name = "gender_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable = false)
 	private Concept genderConcept;
 
 	@Column(name = "year_of_birth", nullable = false)
@@ -50,19 +50,19 @@ public class Person extends BaseEntity {
 	@Column(name = "birth_datetime")
 	private Date birthDateTime;
 
-	@JoinColumn(name = "race_concept_id", referencedColumnName="concept_id", nullable = false)
+	@JoinColumn(name = "race_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable = false)
 	private Concept raceConcept;
 
-	@JoinColumn(name = "ethnicity_concept_id", referencedColumnName="concept_id", nullable = false)
+	@JoinColumn(name = "ethnicity_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable = false)
 	private Concept ethnicityConcept;
 
-	@JoinColumn(name = "location_id")
+	@JoinColumn(name = "location_id", referencedColumnName = "location_id", table = "data.location")
 	private Location location;
 
-	@JoinColumn(name = "provider_id")
+	@JoinColumn(name = "provider_id", referencedColumnName = "provider_id", table = "data.provider")
 	private Provider provider;
 
-	@JoinColumn(name = "care_site_id")
+	@JoinColumn(name = "care_site_id", referencedColumnName = "care_site_id", table = "data.care_site")
 	private CareSite careSite;
 
 	@Column(name = "person_source_value")
@@ -71,19 +71,19 @@ public class Person extends BaseEntity {
 	@Column(name = "gender_source_value")
 	private String genderSourceValue;
 
-	@JoinColumn(name = "gender_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name = "gender_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept genderSourceConcept;
 
 	@Column(name = "race_source_value")
 	private String raceSourceValue;
 
-	@JoinColumn(name = "race_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name = "race_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept raceSourceConcept;
 
 	@Column(name = "ethnicity_source_value")
 	private String ethnicitySourceValue;
 
-	@JoinColumn(name = "ethnicity_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name = "ethnicity_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept ethnicitySourceConcept;
 
 	public Person() {

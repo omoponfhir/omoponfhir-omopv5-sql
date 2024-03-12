@@ -31,12 +31,12 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
  * all the data specified for FHIR.
  * @author Ismael Sarmento
  */
-@Table(name = "f_person")
+@Table(name = "f_person", schema = "data")
 public class FPerson extends Person {
 	private static final Logger logger = LoggerFactory.getLogger(FPerson.class);
 
 	@Id
-	@JoinColumn(name="person_id", table="person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.person:person", nullable=false)
 	private Long id;
 	
 	@Column(name="family_name")

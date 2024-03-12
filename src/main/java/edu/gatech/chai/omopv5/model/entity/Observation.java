@@ -27,17 +27,17 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "observation")
+@Table(name = "observation", schema = "data")
 public class Observation extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="observation_id_seq")
 	@Column(name="observation_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="observation_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="observation_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept observationConcept;
 	
 	@Column(name="observation_date", nullable=false)
@@ -46,7 +46,7 @@ public class Observation extends BaseEntity {
 	@Column(name="observation_datetime")
 	private Date observationDateTime;
 	
-	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept observationTypeConcept;
 	
 	@Column(name="value_as_number")
@@ -55,25 +55,25 @@ public class Observation extends BaseEntity {
 	@Column(name="value_as_string")
 	private String valueAsString;
 	
-	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept valueAsConcept;
 	
-	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept qualifierConcept;
 	
-	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitConcept;
 	
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName = "provider_id", table = "data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", referencedColumnName = "visit_occurrence_id", table = "data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="observation_source_value")
 	private String observationSourceValue;
 	
-	@JoinColumn(name="observation_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="observation_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept observationSourceConcept;
 	
 	@Column(name="unit_source_value")
@@ -88,7 +88,7 @@ public class Observation extends BaseEntity {
 	@Column(name="observation_event_id")
 	private Integer observationEventId;
 
-	@Column(name="obs_event_field_concept_id")
+	@JoinColumn(name="obs_event_field_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept obsEventFieldConcept;
 
 	public Long getId() {

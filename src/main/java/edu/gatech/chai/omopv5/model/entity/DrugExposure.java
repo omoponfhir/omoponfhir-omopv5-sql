@@ -27,17 +27,17 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "drug_exposure")
+@Table(name = "drug_exposure", schema = "data")
 public class DrugExposure extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="drug_exposure_id_seq")
 	@Column(name="drug_exposure_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="drug_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="drug_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept drugConcept;
 	
 	@Column(name="drug_exposure_start_date", nullable=false)
@@ -55,7 +55,7 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="verbatim_end_date")
 	private Date verbatimEndDate;
 
-	@JoinColumn(name="drug_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="drug_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept drugTypeConcept;
 	
 	@Column(name="stop_reason")
@@ -73,7 +73,7 @@ public class DrugExposure extends BaseEntity {
 	@Column(name="sig")
 	private String sig;
 	
-	@JoinColumn(name="route_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="route_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept routeConcept;
 	
 	@Column(name="lot_number")
@@ -82,13 +82,13 @@ public class DrugExposure extends BaseEntity {
 	@JoinColumn(name="provider_id")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="drug_source_value")
 	private String drugSourceValue;
 	
-	@JoinColumn(name="drug_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="drug_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept drugSourceConcept;
 	
 	@Column(name="route_source_value")

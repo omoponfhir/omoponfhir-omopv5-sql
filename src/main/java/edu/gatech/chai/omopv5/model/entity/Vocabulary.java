@@ -28,7 +28,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Table;
  * 
  * @author Myung Choi
  */
-@Table(name = "vocabulary")
+@Table(name = "vocabulary", schema = "vocab")
 public class Vocabulary extends BaseEntity {
 	
 	@Id
@@ -44,7 +44,7 @@ public class Vocabulary extends BaseEntity {
 	@Column(name="vocabulary_version")
 	private String vocabularyVersion;
 	
-	@JoinColumn(name="vocabulary_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="vocabulary_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept vocabularyConcept;
 
 	public Vocabulary() {

@@ -29,7 +29,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "f_observation_view")
+@Table(name = "f_observation_view", schema = "data")
 public class FObservationView extends BaseEntity {
 	private static final Logger logger = LoggerFactory.getLogger(FObservationView.class);
 
@@ -37,10 +37,10 @@ public class FObservationView extends BaseEntity {
 	@Column(name="observation_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", nullable=false)
+	@JoinColumn(name="person_id", table="data.person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="observation_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="observation_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept observationConcept;
 	
 	@Column(name="observation_date", nullable=false)
@@ -49,10 +49,10 @@ public class FObservationView extends BaseEntity {
 	@Column(name="observation_datetime")
 	private Date observationDateTime;
 	
-	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="observation_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept observationTypeConcept;
 	
-	@JoinColumn(name="observation_operator_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="observation_operator_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept observationOperatorConcept;
 
 	@Column(name="value_as_number")
@@ -61,13 +61,13 @@ public class FObservationView extends BaseEntity {
 	@Column(name="value_as_string")
 	private String valueAsString;
 	
-	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept valueAsConcept;
 	
-	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="qualifier_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept qualifierConcept;
 	
-	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitConcept;
 	
 	@Column(name="range_low")
@@ -76,16 +76,16 @@ public class FObservationView extends BaseEntity {
 	@Column(name="range_high")
 	private BigDecimal rangeHigh;
 	
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName="provider_id", table="data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", referencedColumnName="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="observation_source_value")
 	private String observationSourceValue;
 	
-	@JoinColumn(name="observation_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="observation_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept observationSourceConcept;
 	
 	@Column(name="unit_source_value")

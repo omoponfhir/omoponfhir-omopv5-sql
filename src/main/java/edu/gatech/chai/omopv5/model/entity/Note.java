@@ -27,14 +27,14 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "note")
+@Table(name = "note", schema = "data")
 public class Note extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="note_id_seq")
 	@Column(name="note_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
 	@Column(name="note_date", nullable=false)
@@ -43,10 +43,10 @@ public class Note extends BaseEntity {
 	@Column(name="note_datetime")
 	private Date noteDateTime;
 	
-	@JoinColumn(name="note_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="note_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept noteTypeConcept;
 	
-	@JoinColumn(name="note_class_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="note_class_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept noteClassConcept;
 
 	@Column(name="note_title")
@@ -55,16 +55,16 @@ public class Note extends BaseEntity {
 	@Column(name="note_text", nullable=false)
 	private String noteText;
 
-	@JoinColumn(name="encoding_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="encoding_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept encodingConcept;
 
-	@JoinColumn(name="language_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="language_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept languageConcept;
 
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName="provider_id", table="data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", referencedColumnName="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="note_source_value")
@@ -73,7 +73,7 @@ public class Note extends BaseEntity {
 	@Column(name="note_event_id")
 	private Integer noteEventId;
 
-	@JoinColumn(name="note_event_field_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="note_event_field_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept noteEventFieldConcept;
 
 	public Note() {

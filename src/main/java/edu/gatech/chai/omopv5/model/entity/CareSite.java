@@ -26,7 +26,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "care_site")
+@Table(name = "care_site", schema = "data")
 public class CareSite extends BaseEntity {
 	
 	@Id
@@ -37,10 +37,10 @@ public class CareSite extends BaseEntity {
 	@Column(name="care_site_name")
 	private String careSiteName;
 	
-	@JoinColumn(name="place_of_service_concept_id", referencedColumnName="concept_id", table="concept")
+	@JoinColumn(name="place_of_service_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept placeOfServiceConcept;
 	
-	@JoinColumn(name="location_id", table="location")
+	@JoinColumn(name="location_id", table="data.location")
 	private Location location;
 
 	@Column(name="care_site_source_value")

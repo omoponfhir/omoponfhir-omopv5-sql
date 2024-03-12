@@ -8,7 +8,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "relationship")
+@Table(name = "relationship", schema = "vocab")
 public class Relationship extends BaseEntity {
 	@Id
 	@Column(name="relationship_id", nullable=false)
@@ -26,7 +26,7 @@ public class Relationship extends BaseEntity {
 	@Column(name="reverse_relationship_id", nullable=false)
 	private String reverseRelationshipId;
 	
-	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
 	private Concept relationshipConcept;
 	
 	public Relationship() {

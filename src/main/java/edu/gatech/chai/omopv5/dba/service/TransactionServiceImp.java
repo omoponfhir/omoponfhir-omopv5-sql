@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -49,7 +48,6 @@ public class TransactionServiceImp implements TransactionService {
 	/* (non-Javadoc)
  * @see edu.gatech.chai.omopv5.dba.service.TransactionService#writeTransaction(java.util.Map)
  */
-@Transactional
 	public int writeTransaction(Map<String, List<BaseEntity>> transactionMap) {
 //		EntityManager em = transactionDao.getEntityManager();
 

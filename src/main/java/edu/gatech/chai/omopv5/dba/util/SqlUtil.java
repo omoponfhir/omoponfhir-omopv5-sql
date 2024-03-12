@@ -73,6 +73,39 @@ public class SqlUtil {
 		return null;
 	}
 
+	public static String getFullTableName(String dataSchema, String vocabSchema, Class<?> clazz) {
+		Table tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
+		if (tableAnnotation == null) {
+			clazz = clazz.getSuperclass();
+			if (clazz == null) {
+				logger.error("Annontation for Table class is null, and there is no parent class either");
+				return null;
+			}
+			tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
+			if (tableAnnotation == null) {
+				logger.warn("Annotation for Table class: " + clazz.getCanonicalName() + " is null");
+				return null;
+			}
+		}
+
+		if (tableAnnotation.schema().isBlank()) {
+			return tableAnnotation.name();
+		} else { 
+			if ("data".equals(tableAnnotation.schema())) {
+				// String dataSchema = SqlUtil.dataSchema();
+				if (dataSchema != null && !dataSchema.isBlank()) {
+					return dataSchema + "." + tableAnnotation.name();
+				}
+			} else if ("vocab".equals(tableAnnotation.schema())) {
+				// String vocabSchema = SqlUtil.vocabSchema();
+				if (vocabSchema != null && !vocabSchema.isBlank()) {
+					return vocabSchema + "." + tableAnnotation.name();
+				}
+			}
+			return tableAnnotation.schema()+"."+tableAnnotation.name();
+		}
+	}
+
 	public static String getTableName(Class<?> clazz) {
 		Table tableAnnotation = clazz.getDeclaredAnnotation(Table.class);
 		if (tableAnnotation == null) {
@@ -89,6 +122,24 @@ public class SqlUtil {
 		}
 
 		return tableAnnotation.name();
+	}
+
+	public static String getFullTableNameFromString(String dataSchema, String vocabSchema, String tableAnnotationName) {
+		if (tableAnnotationName != null && !tableAnnotationName.isBlank()) {
+			if (tableAnnotationName.startsWith("data.")) {
+				// String dataSchema = System.getenv("JDBC_DATA_SCHEMA");
+				if (dataSchema != null && !dataSchema.isBlank()) {
+					tableAnnotationName = tableAnnotationName.replace("data.", dataSchema+".");
+				}
+			} else if (tableAnnotationName.startsWith("vocab.")) {
+				// String vocabSchema = System.getenv("JDBC_VOCABS_SCHEMA");
+				if (vocabSchema != null && !vocabSchema.isBlank()) {
+					tableAnnotationName = tableAnnotationName.replace("vocab.", vocabSchema+".");
+				}
+			}
+		}
+
+		return tableAnnotationName;
 	}
 
 	public static Date string2Date(String dateString) {
@@ -127,5 +178,4 @@ public class SqlUtil {
 
 		return date;
 	}
-
 }

@@ -30,7 +30,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		implements FactRelationshipService {
 	private static final Logger logger = LoggerFactory.getLogger(FactRelationshipServiceImp.class);
 
-	@Value("${schema.registry}")
+	@Value("${schema.data}")
     private String schema;
 
 	/**

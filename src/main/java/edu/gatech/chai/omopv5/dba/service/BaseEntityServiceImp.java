@@ -83,7 +83,7 @@ public abstract class BaseEntityServiceImp<T extends BaseEntity> implements ISer
 	@Autowired
 	FCacheService fCacheService;
 
-	@Value("${schema.registry}")
+	@Value("${schema.data}")
     private String dataSchema;
 
 	@Value("${schema.vocabularies}")

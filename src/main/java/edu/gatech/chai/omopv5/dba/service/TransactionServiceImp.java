@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.gatech.chai.omopv5.model.entity.BaseEntity;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -35,23 +34,26 @@ import edu.gatech.chai.omopv5.model.entity.Observation;
 @Service
 public class TransactionServiceImp implements TransactionService {
 
-//	@Autowired
-//	private TransactionDao transactionDao;
-	
+	// @Autowired
+	// private TransactionDao transactionDao;
+
 	/** The person dao. */
 	// @Autowired
 	// private QueryEntityDao myDao;
-	
-//	public TransactionDao getEntityDao() {
-//		return transactionDao;
-//	}
-	
-	/* (non-Javadoc)
- * @see edu.gatech.chai.omopv5.dba.service.TransactionService#writeTransaction(java.util.Map)
- */
-@Transactional
+
+	// public TransactionDao getEntityDao() {
+	// return transactionDao;
+	// }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.gatech.chai.omopv5.dba.service.TransactionService#writeTransaction(java.
+	 * util.Map)
+	 */
 	public int writeTransaction(Map<String, List<BaseEntity>> transactionMap) {
-//		EntityManager em = transactionDao.getEntityManager();
+		// EntityManager em = transactionDao.getEntityManager();
 
 		System.out.println("At the writeTransaction");
 		// It's not efficient. But, we need to process patients first. so...
@@ -67,19 +69,20 @@ public class TransactionServiceImp implements TransactionService {
 				// process it.
 				List<BaseEntity> entityClasses = transactionMap.get(key);
 				if (entityClasses != null) {
-					// We have patients, process this. 
+					// We have patients, process this.
 					for (BaseEntity entity : entityClasses) {
 						FPerson fPerson = (FPerson) entity;
-						System.out.println("Writing fPerson name="+fPerson.getFamilyName()+", "+fPerson.getGivenName1());
-//						myDao.add(fPerson);
+						System.out.println(
+								"Writing fPerson name=" + fPerson.getFamilyName() + ", " + fPerson.getGivenName1());
+						// myDao.add(fPerson);
 					}
 				}
 
 			} else {
 				continue;
-			}			
+			}
 		}
-		
+
 		for (String key : transactionMap.keySet()) {
 			String[] keyInfo = key.split("\\^");
 			System.out.println("working on key=" + key + " with keyInfo length=" + keyInfo.length);
@@ -93,21 +96,21 @@ public class TransactionServiceImp implements TransactionService {
 				// we have alreay done this.
 				continue;
 			}
-			
+
 			List<BaseEntity> entities = transactionMap.get(key);
 			if (entities == null) {
 				System.out.println("null entities for transactionMap.....");
 				continue;
 			}
 			System.out.println("About to process " + entityName + " from Service");
-			
-			String subjectKey = keyInfo[0]+"^"+"FPerson";
-			
+
+			String subjectKey = keyInfo[0] + "^" + "FPerson";
+
 			// list of the entity classes
 			try {
 				for (BaseEntity entity : entities) {
 					if (entityName.equals("Measurement")) {
-						System.out.println("Adding Measurement with subjectKey ("+key+") to OMOP");
+						System.out.println("Adding Measurement with subjectKey (" + key + ") to OMOP");
 						// Get patient information from subject key.
 						FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
 						if (subjectEntity == null) {
@@ -115,11 +118,11 @@ public class TransactionServiceImp implements TransactionService {
 							System.out.println("FPerson info not available for the Measurement");
 							throw new Exception("FPerson info not available for the Measurement");
 						}
-						
+
 						Measurement measurement = (Measurement) entity;
 						measurement.setFPerson(subjectEntity);
-						
-//						measurementDao.add(measurement);
+
+						// measurementDao.add(measurement);
 					} else if (entityName.equals("Observation")) {
 						System.out.println("Adding Observation to OMOP");
 						FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
@@ -128,11 +131,11 @@ public class TransactionServiceImp implements TransactionService {
 							System.out.println("FPerson info not available for the Observation");
 							throw new Exception("FPerson info not available for the Observation");
 						}
-						
+
 						Observation observation = (Observation) entity;
 						observation.setFPerson(subjectEntity);
 
-//						observationDao.add(observation);
+						// observationDao.add(observation);
 					}
 				}
 			} catch (Exception ex) {
@@ -141,5 +144,5 @@ public class TransactionServiceImp implements TransactionService {
 			}
 		}
 		return 0;
-	}	
+	}
 }

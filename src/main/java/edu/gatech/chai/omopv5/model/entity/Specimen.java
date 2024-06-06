@@ -27,20 +27,20 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "specimen")
+@Table(name = "specimen", schema = "data")
 public class Specimen extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="specimen_id_seq")
 	@Column(name="specimen_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="specimen_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="specimen_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept specimenConcept;
 	
-	@JoinColumn(name="specimen_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="specimen_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept specimenTypeConcept;
 	
 	@Column(name="specimen_date", nullable=false)
@@ -52,13 +52,13 @@ public class Specimen extends BaseEntity {
 	@Column(name="quantity")
 	private Double quantity;
 	
-	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitConcept;
 	
-	@JoinColumn(name="anatomic_site_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="anatomic_site_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept anatomicSiteConcept;
 	
-	@JoinColumn(name="disease_status_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="disease_status_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept diseaseStatusConcept;
 	
 	@Column(name="specimen_source_id")

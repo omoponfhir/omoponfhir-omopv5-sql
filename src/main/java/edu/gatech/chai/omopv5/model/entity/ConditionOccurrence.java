@@ -27,7 +27,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "condition_occurrence")
+@Table(name = "condition_occurrence", schema = "data")
 public class ConditionOccurrence extends BaseEntity {
 
 	@Id
@@ -35,10 +35,10 @@ public class ConditionOccurrence extends BaseEntity {
 	@Column(name="condition_occurrence_id", nullable=false)
 	private Long id;
 
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="condition_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	@JoinColumn(name="condition_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept conditionConcept;
 	
 	@Column(name="condition_start_date", nullable=false)
@@ -53,28 +53,28 @@ public class ConditionOccurrence extends BaseEntity {
 	@Column(name="condition_end_datetime")
 	private Date conditionEndDateTime;
 
-	@JoinColumn(name="condition_type_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	@JoinColumn(name="condition_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept conditionTypeConcept;
 	
 	@Column(name="stop_reason")
 	private String stopReason;
 	
-	@JoinColumn(name="provider_id", table="provider")
+	@JoinColumn(name="provider_id", table="data.provider")
 	private Provider provider;
 
-	@JoinColumn(name="visit_occurrence_id", table="visit_occurrence")
+	@JoinColumn(name="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 
 	@Column(name="condition_source_value")
 	private String conditionSourceValue;
 
-	@JoinColumn(name="condition_source_concept_id", referencedColumnName="concept_id", table="concept")
+	@JoinColumn(name="condition_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept conditionSourceConcept;
 
 	@Column(name="condition_status_source_value")
 	private String conditionStatusSourceValue;
 	
-	@JoinColumn(name="condition_status_concept_id", referencedColumnName="concept_id", table="concept")
+	@JoinColumn(name="condition_status_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept conditionStatusConcept;
 
 	public Long getId() {

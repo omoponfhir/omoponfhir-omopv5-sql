@@ -8,9 +8,9 @@ import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "death")
+@Table(name = "death", schema = "data")
 public class Death extends BaseEntity {
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 
 	@Column(name="death_date", nullable=false)
@@ -19,16 +19,16 @@ public class Death extends BaseEntity {
 	@Column(name="death_datetime")
 	private Date deathDateTime;
 
-	@JoinColumn(name="death_type_concept_id", referencedColumnName="concept_id", table="concept", nullable=false)
+	@JoinColumn(name="death_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept deathTypeConcept;
 
-	@JoinColumn(name="cause_concept_id", referencedColumnName="concept_id", table="concept")
+	@JoinColumn(name="cause_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept causeConcept;
 
 	@Column(name="cause_source_value")
 	private String causeSourceValue;
 
-	@JoinColumn(name="cause_source_concept_id", referencedColumnName="concept_id", table="concept")
+	@JoinColumn(name="cause_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept causeSourceConcept;
 
 	public FPerson getFPerson() {

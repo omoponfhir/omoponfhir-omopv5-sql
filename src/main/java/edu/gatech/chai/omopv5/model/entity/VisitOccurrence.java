@@ -27,17 +27,17 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "visit_occurrence")
+@Table(name = "visit_occurrence", schema = "data")
 public class VisitOccurrence extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="visit_occurrence_id_seq")
 	@Column(name="visit_occurrence_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="visit_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="visit_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept visitConcept;
 	
 	@Column(name="visit_start_date", nullable=false)
@@ -52,34 +52,34 @@ public class VisitOccurrence extends BaseEntity {
 	@Column(name="visit_end_datetime")
 	private Date visitEndDateTime;
 	
-	@JoinColumn(name="visit_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="visit_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept visitTypeConcept;
 
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName = "provider_id", table = "data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="care_site_id")
+	@JoinColumn(name="care_site_id", referencedColumnName = "care_site_id", table = "data.care_site")
 	private CareSite careSite;
 	
 	@Column(name="visit_source_value")
 	private String visitSourceValue;
 	
-	@JoinColumn(name="visit_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="visit_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept visitSourceConcept;
 	
-	@JoinColumn(name="admitting_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="admitting_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept admittingSourceConcept;
 	
 	@Column(name="admitting_source_value")
 	private String admittingSourceValue;
 	
-	@JoinColumn(name="discharge_to_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="discharge_to_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept dischargeToConcept;
 	
 	@Column(name="discharge_to_source_value")
 	private String dischargeToSourceValue;
 	
-	@JoinColumn(name="preceding_visit_occurrence_id", referencedColumnName="visit_occurrence_id")
+	@JoinColumn(name="preceding_visit_occurrence_id", referencedColumnName="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence precedingVisitOccurrence;
 
 	public VisitOccurrence() {

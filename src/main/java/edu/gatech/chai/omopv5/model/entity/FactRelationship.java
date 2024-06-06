@@ -7,7 +7,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Column;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "fact_relationship")
+@Table(name = "fact_relationship", schema = "data")
 public class FactRelationship extends BaseEntity {
 	@Column(name="domain_concept_id_1", nullable=false)
 	private Long domainConceptId1;
@@ -21,7 +21,7 @@ public class FactRelationship extends BaseEntity {
 	@Column(name="fact_id_2", nullable=false)
 	private Long factId2;
 	
-	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="relationship_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept relationshipConcept;
 	
 	public Long getDomainConceptId1() {

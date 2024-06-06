@@ -26,7 +26,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "provider")
+@Table(name = "provider", schema = "data")
 public class Provider extends BaseEntity {
 
 	@Id
@@ -43,7 +43,7 @@ public class Provider extends BaseEntity {
 	@Column(name="dea")
 	private String dea;
 	
-	@JoinColumn(name="specialty_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="specialty_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept specialtyConcept;
 	
 	@JoinColumn(name="care_site_id")
@@ -52,7 +52,7 @@ public class Provider extends BaseEntity {
 	@Column(name="year_of_birth")
 	private Integer yearOfBirth;
 	
-	@JoinColumn(name="gender_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="gender_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept genderConcept;
 	
 	@Column(name="provider_source_value")
@@ -61,13 +61,13 @@ public class Provider extends BaseEntity {
 	@Column(name="specialty_source_value")
 	private String specialtySourceValue;
 	
-	@JoinColumn(name="specialty_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="specialty_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept specialtySourceConcept;
 	
 	@Column(name="gender_source_value")
 	private String genderSourceValue;
 	
-	@JoinColumn(name="gender_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="gender_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept genderSourceConcept;	
 
 	public Provider() {

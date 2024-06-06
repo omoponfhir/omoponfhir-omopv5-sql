@@ -25,7 +25,7 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "concept")
+@Table(name = "concept", schema = "vocab")
 public class Concept extends BaseEntity {
 
 	@Id

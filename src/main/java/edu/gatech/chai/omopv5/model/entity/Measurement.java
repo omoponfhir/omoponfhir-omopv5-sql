@@ -27,17 +27,17 @@ import edu.gatech.chai.omopv5.model.entity.custom.Id;
 import edu.gatech.chai.omopv5.model.entity.custom.JoinColumn;
 import edu.gatech.chai.omopv5.model.entity.custom.Table;
 
-@Table(name = "measurement")
+@Table(name = "measurement", schema = "data")
 public class Measurement extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="measurement_id_seq")
 	@Column(name="measurement_id", nullable=false)
 	private Long id;
 	
-	@JoinColumn(name="person_id", table="f_person:fPerson,person:person", nullable=false)
+	@JoinColumn(name="person_id", table="data.f_person:fPerson,data.person:person", nullable=false)
 	private FPerson fPerson;
 	
-	@JoinColumn(name="measurement_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="measurement_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept measurementConcept;
 	
 	@Column(name="measurement_date", nullable=false)
@@ -49,19 +49,19 @@ public class Measurement extends BaseEntity {
 	@Column(name="measurement_time")
 	private String measurementTime;
 	
-	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", nullable=false)
+	@JoinColumn(name="measurement_type_concept_id", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
 	private Concept measurementTypeConcept;
 
-	@JoinColumn(name="operator_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="operator_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept operatorConcept;
 	
 	@Column(name="value_as_number")
 	private Double valueAsNumber;
 	
-	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="value_as_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept valueAsConcept;
 	
-	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="unit_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept unitConcept;
 	
 	@Column(name="range_low")
@@ -70,16 +70,16 @@ public class Measurement extends BaseEntity {
 	@Column(name="range_high")
 	private Double rangeHigh;
 	
-	@JoinColumn(name="provider_id")
+	@JoinColumn(name="provider_id", referencedColumnName="provider_id", table="data.provider")
 	private Provider provider;
 	
-	@JoinColumn(name="visit_occurrence_id")
+	@JoinColumn(name="visit_occurrence_id", referencedColumnName="visit_occurrence_id", table="data.visit_occurrence")
 	private VisitOccurrence visitOccurrence;
 	
 	@Column(name="measurement_source_value")
 	private String measurementSourceValue;
 	
-	@JoinColumn(name="measurement_source_concept_id", referencedColumnName="concept_id")
+	@JoinColumn(name="measurement_source_concept_id", referencedColumnName="concept_id", table="vocab.concept")
 	private Concept measurementSourceConcept;
 	
 	@Column(name="unit_source_value")

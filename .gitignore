@@ -149,3 +149,5 @@ local.properties
 # vscode
 .factorypath
 .vscode
+
+.fake

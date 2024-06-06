@@ -34,7 +34,7 @@
    * all the data specified for FHIR.
    * @author Ismael Sarmento
    */
-  @Table(name = "f_cache")
+  @Table(name="f_cache", schema="data")
   public class FCache extends BaseEntity {
       private static final Logger logger = LoggerFactory.getLogger(FCache.class);
  

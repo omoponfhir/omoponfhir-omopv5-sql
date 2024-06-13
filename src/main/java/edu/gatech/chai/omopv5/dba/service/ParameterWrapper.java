@@ -402,6 +402,16 @@ public class ParameterWrapper {
 					// Now, check if the foreign table column exists and get real sql column name.
 //					Class<?> fTableClazz = field.getDeclaringClass();
 					Class<?> fTableClazz = field.getType();
+
+					// see if we can find this field.
+					try {
+						fTableClazz.getDeclaredField(columnPath[1]);
+					} catch (NoSuchFieldException e) {
+						// try parent class.
+						fTableClazz = fTableClazz.getSuperclass();
+					}
+					
+
 					String sqlColumnName = SqlUtil.getSqlColumnName(fTableClazz, columnPath[1]);
 					if (sqlColumnName == null) {
 						logger.error("Failed to get sql column name for table=" + fTableClazz.getCanonicalName()
@@ -419,12 +429,13 @@ public class ParameterWrapper {
 					//
 					// fTableClazz should have a right class (updated with a class used in
 					// SqlUtil.getSqlColumnName.
+
 					String alias = columnPath[0];
 					String aliasInfo = joinColumnAnnotation.table();
 					if (aliasInfo != null && !aliasInfo.equals("")) {
 						Table referredTableAnnotation = fTableClazz.getDeclaredAnnotation(Table.class);
 						if (referredTableAnnotation != null) {
-							String referredTableName = referredTableAnnotation.name();
+							String referredTableName = referredTableAnnotation.schema() + "." + referredTableAnnotation.name();
 							String[] aliasTables = aliasInfo.split(",");
 							for (String aliasTable : aliasTables) {
 								String[] tables = aliasTable.split(":");

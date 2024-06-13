@@ -36,7 +36,8 @@ public class SqlUtil {
 			// It's OK to not having this field if the table class has some relation mapping
 			// (like f_person)
 			// In this case, its parent may have it.
-			e.printStackTrace();
+			// e.printStackTrace();
+			logger.info(columnVariable + " does not exist. Trying parent class.");
 
 			Class<?> parentClazz = clazz.getSuperclass();
 			if (parentClazz != null) {
@@ -45,7 +46,7 @@ public class SqlUtil {
 					clazz = parentClazz;
 
 					Field field = parentClazz.getDeclaredField(columnVariable);
-					field.getAnnotation(Column.class);
+					// field.getAnnotation(Column.class);
 
 					Column columnAnnotation = field.getAnnotation(Column.class);
 					JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);

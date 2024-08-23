@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
@@ -37,6 +38,8 @@ import edu.gatech.chai.omopv5.model.entity.Location;
 public class LocationServiceImp extends BaseEntityServiceImp<Location> implements LocationService {
 	private static final Logger logger = LoggerFactory.getLogger(LocationServiceImp.class);
 
+	@Value("${schema.registry}")
+    private String schema;
 	/**
 	 * Instantiates a new location service imp.
 	 */
@@ -50,9 +53,14 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	public Location searchByAddress(String line1, String line2, String city, String state, String zip) {
 		Location entity = null;
 		
+		String mySchema = "";
+
+		if (schema != null && !schema.isBlank()) {
+			mySchema = schema + ".";
+		} 
 		String queryString = "SELECT location.location_id as location_location_id, location.address_1 as location_address_1, " +
 			"location.address_2 as location_address_2, location.city as location_city, location.state as location_state, location.zip as location_zip, " + 
-			"location.county as location_county, location.location_source_value as location_location_source_value FROM " + Location._getTableName() + " location WHERE";
+			"location.county as location_county, location.location_source_value as location_location_source_value FROM " + mySchema + Location._getTableName() + " location WHERE";
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 

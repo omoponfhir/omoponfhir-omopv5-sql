@@ -56,17 +56,17 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		// 44818721 = Contains
 
 		// String schema = System.getenv("JDBC_DATA_SCHEMA");
+		String mySchema = "";
 		if (schema != null && !schema.isBlank()) {
-			schema = schema + ".";
-		} else {
-			schema = "";
-		}		
+			mySchema = schema + ".";
+		} 
+		
 		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
 			+ "fact_relationship.fact_id_1 as fact_relationship_fact_id_1, "
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
 			+ "fact_relationship.relationship_concept_id as fact_relationship_relationship_concept_id "
-			+ "FROM " + schema + "fact_relationship fact_relationship WHERE fact_relationship.domain_concept_id_1 = 21 "
+			+ "FROM " + mySchema + "fact_relationship fact_relationship WHERE fact_relationship.domain_concept_id_1 = 21 "
 			+ "AND fact_relationship.relationship_concept_id = 44818800 AND fact_relationship.fact_id_1 = @fact1";
 		parameterList.add("fact1");
 		valueList.add(domainId.toString());
@@ -149,10 +149,9 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 
 		// 44818721 = Contains
 		// String schema = System.getenv("JDBC_DATA_SCHEMA");
+		String mySchema = "";
 		if (schema != null && !schema.isBlank()) {
-			schema = schema + ".";
-		} else {
-			schema = "";
+			mySchema = schema + ".";
 		}
 
 		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
@@ -160,7 +159,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
 			+ "fact_relationship.relationship_concept_id as fact_relationship_relationship_concept_id "
-			+ "FROM " + schema + "fact_relationship fact_relationship WHERE fact_relationship.domain_concept_id_1 = 21 "
+			+ "FROM " + mySchema + "fact_relationship fact_relationship WHERE fact_relationship.domain_concept_id_1 = 21 "
 			+ "AND fact_relationship.fact_id_1 = @fact1 AND fact_relationship.domain_concept_id_2 = 26 AND fact_relationship.relationship_concept_id = 44818721";
 		parameterList.add("fact1");
 		valueList.add(domainId.toString());
@@ -215,10 +214,9 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 		List<FactRelationship> entities = new ArrayList<FactRelationship>();
 
 		// String schema = System.getenv("JDBC_DATA_SCHEMA");
+		String mySchema = "";
 		if (schema != null && !schema.isBlank()) {
-			schema = schema + ".";
-		} else {
-			schema = "";
+			mySchema = schema + ".";
 		}
 
 		String queryString = "SELECT fact_relationship.domain_concept_id_1 as fact_relationship_domain_concept_id_1, "
@@ -226,7 +224,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 			+ "fact_relationship.domain_concept_id_2 as fact_relationship_domain_concept_id_2, "
 			+ "fact_relationship.fact_id_2 as fact_reationship_fact_id_2, "
 			+ "fact_relationship.relationship_concept_id as fact_relationship_relationship_concept_id "
-			+ "FROM " + schema + "fact_relationship fact_relationship WHERE";
+			+ "FROM " + mySchema + "fact_relationship fact_relationship WHERE";
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 

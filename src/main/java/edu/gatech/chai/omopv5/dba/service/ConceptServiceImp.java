@@ -65,10 +65,10 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		List<String> parameterList = new ArrayList<String>();
 		List<String> valueList = new ArrayList<String>();
 		// String vocabSchema = SqlUtil.vocabSchema();
-		if (vocabSchema == null || vocabSchema.isBlank()) {
-			vocabSchema = "";
-		} else {
-			vocabSchema += ".";
+
+		String myVocabSchema = "";
+		if (vocabSchema != null && !vocabSchema.isBlank()) {
+			myVocabSchema = vocabSchema + ".";
 		}
 
 		String sql = null;
@@ -76,11 +76,11 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		if ("NDC".equals(concept.getVocabularyId())) {
 			// Use JPQL
 			sql = sqlWithoutWhere 
-				+ " JOIN " + vocabSchema + "concept_relationship cr on concept.concept_id = cr.concept_id_1 "
+				+ " JOIN " + myVocabSchema + "concept_relationship cr on concept.concept_id = cr.concept_id_1 "
 				+ "AND cr.relationship_id = 'Maps to' " + "AND cr.invalid_reason is null "
-				+ "JOIN " + vocabSchema + "concept tar on cr.concept_id_2 = tar.id " + "AND tar.standard_concept = 'S' "
+				+ "JOIN " + myVocabSchema + "concept tar on cr.concept_id_2 = tar.id " + "AND tar.standard_concept = 'S' "
 				+ "AND tar.invalid_reason is null " + "JOIN concept_ancestor ca ON ca.ancestor_concept_id = tar.concept_id "
-				+ "JOIN " + vocabSchema + "concept c ON ca.ancestor_concept_id = c.concept_id "
+				+ "JOIN " + myVocabSchema + "concept c ON ca.ancestor_concept_id = c.concept_id "
 				+ " WHERE concept.concept_code = @med_code "
 				+ "AND 'NDC' = concept.vocabulary_id " + "AND c.vocabulary_id = 'RxNorm' "
 				+ "AND c.concept_class_id = 'Ingredient' " + "AND concept.invalid_reason is null";
@@ -94,8 +94,8 @@ public class ConceptServiceImp extends BaseEntityServiceImp<Concept> implements 
 		} else if ("RxNorm".equals(concept.getVocabularyId())) {
 			// when RxNorm.
 			sql = sqlWithoutWhere 
-				+ " JOIN " + vocabSchema + "concept_ancestor ca ON ca.descendant_concept_id = concept.concept_id "
-				+ "JOIN " + vocabSchema + "concept c ON ca.ancestor_concept_id = c.concept_id "
+				+ " JOIN " + myVocabSchema + "concept_ancestor ca ON ca.descendant_concept_id = concept.concept_id "
+				+ "JOIN " + myVocabSchema + "concept c ON ca.ancestor_concept_id = c.concept_id "
 				+ " WHERE concept.concept_code = @med_code "
 				+ "AND 'RxNorm' = concept.vocabulary_id " + "AND c.vocabulary_id = 'RxNorm' "
 				+ "AND c.concept_class_id = 'Ingredient' " + "AND concept.invalid_reason is null "

@@ -38,7 +38,7 @@ import edu.gatech.chai.omopv5.model.entity.Location;
 public class LocationServiceImp extends BaseEntityServiceImp<Location> implements LocationService {
 	private static final Logger logger = LoggerFactory.getLogger(LocationServiceImp.class);
 
-	@Value("${schema.registry}")
+	@Value("${schema.data}")
     private String schema;
 	/**
 	 * Instantiates a new location service imp.

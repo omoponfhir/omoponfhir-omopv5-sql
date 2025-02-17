@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class SpecimenServiceImp extends BaseEntityServiceImp<Specimen> implement
 	}
 
 	@Override
-	public Specimen construct(ResultSet rs, Specimen entity, String alias) {
+	public Specimen construct(ResultSet rs, Specimen entity, String alias) throws SQLException {
 		return SpecimenService._construct(rs, entity, alias);
 	}
 

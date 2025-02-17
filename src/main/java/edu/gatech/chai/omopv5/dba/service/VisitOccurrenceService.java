@@ -35,70 +35,65 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  * The Interface VisitOccurrenceService.
  */
 public interface VisitOccurrenceService extends IService<VisitOccurrence> {
-	public static VisitOccurrence _construct(ResultSet rs, VisitOccurrence visitOccurrence, String alias) {
+	public static VisitOccurrence _construct(ResultSet rs, VisitOccurrence visitOccurrence, String alias) throws SQLException {
 		if (visitOccurrence == null)
 			visitOccurrence = new VisitOccurrence();
 
 		if (alias == null || alias.isEmpty())
 			alias = VisitOccurrence._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_visit_occurrence_id")) {
-					visitOccurrence.setId(rs.getLong(columnInfo));
-					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					visitOccurrence.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("visitConcept_concept_id")) {
-					Concept visitConcept = ConceptService._construct(rs, null, "visitConcept");
-					visitOccurrence.setVisitConcept(visitConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
-					visitOccurrence.setVisitStartDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
-					visitOccurrence.setVisitStartDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
-					visitOccurrence.setVisitEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
-					visitOccurrence.setVisitEndDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
-					Concept visitTypeConcept = ConceptService._construct(rs, null, "visitTypeConcept");
-					visitOccurrence.setVisitTypeConcept(visitTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					visitOccurrence.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("careSite_provider_id")) {
-					CareSite careSite = CareSiteService._construct(rs, null, "careSite");
-					visitOccurrence.setCareSite(careSite);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_visit_source_value")) {
-					visitOccurrence.setVisitSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
-					Concept visitSourceConcept = ConceptService._construct(rs, null, "visitSourceConcept");
-					visitOccurrence.setVisitSourceConcept(visitSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase("admittedFromConcept_concept_id")) {
-					Concept admittedFromConcept = ConceptService._construct(rs, null, "admittedFromConcept");
-					visitOccurrence.setAdmittedFromConcept(admittedFromConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_admitted_from_source_value")) {
-					visitOccurrence.setAdmittedFromSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("dischargedToConcept_concept_id")) {
-					Concept dischargedToConcept = ConceptService._construct(rs, null, "dischargedToConcept");
-					visitOccurrence.setDischargedToConcept(dischargedToConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_discharged_to_source_value")) {
-					visitOccurrence.setDischargedToSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null,
-							"precedingVisitOccurrence");
-					visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);
-				}
-
+			if (columnInfo.equalsIgnoreCase(alias + "_visit_occurrence_id")) {
+				visitOccurrence.setId(rs.getLong(columnInfo));
+				if (rs.wasNull()) return null;
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				visitOccurrence.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("visitConcept_concept_id")) {
+				Concept visitConcept = ConceptService._construct(rs, null, "visitConcept");
+				visitOccurrence.setVisitConcept(visitConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_date")) {
+				visitOccurrence.setVisitStartDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_start_datetime")) {
+				visitOccurrence.setVisitStartDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_date")) {
+				visitOccurrence.setVisitEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_end_datetime")) {
+				visitOccurrence.setVisitEndDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("visitTypeConcept_concept_id")) {
+				Concept visitTypeConcept = ConceptService._construct(rs, null, "visitTypeConcept");
+				visitOccurrence.setVisitTypeConcept(visitTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				visitOccurrence.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("careSite_provider_id")) {
+				CareSite careSite = CareSiteService._construct(rs, null, "careSite");
+				visitOccurrence.setCareSite(careSite);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_visit_source_value")) {
+				visitOccurrence.setVisitSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("visitSourceConcept_concept_id")) {
+				Concept visitSourceConcept = ConceptService._construct(rs, null, "visitSourceConcept");
+				visitOccurrence.setVisitSourceConcept(visitSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase("admittedFromConcept_concept_id")) {
+				Concept admittedFromConcept = ConceptService._construct(rs, null, "admittedFromConcept");
+				visitOccurrence.setAdmittedFromConcept(admittedFromConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_admitted_from_source_value")) {
+				visitOccurrence.setAdmittedFromSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("dischargedToConcept_concept_id")) {
+				Concept dischargedToConcept = ConceptService._construct(rs, null, "dischargedToConcept");
+				visitOccurrence.setDischargedToConcept(dischargedToConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_discharged_to_source_value")) {
+				visitOccurrence.setDischargedToSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("precedingVisitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence precedingVisitOccurrence = VisitOccurrenceService._construct(rs, null,
+						"precedingVisitOccurrence");
+				visitOccurrence.setPrecedingVisitOccurrence(precedingVisitOccurrence);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return visitOccurrence;

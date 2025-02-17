@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,8 +54,6 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	 * .lang.Long, java.lang.Long, java.util.Date, java.lang.String)
 	 */
 	public FObservationView findDiastolic(Long conceptId, Long personId, Date date, Date time) {
-		List<FObservationView> entities = new ArrayList<FObservationView>();
-		
 		String myTable = getSqlTableName();
 		String select_from = constructSqlSelectWithoutWhere(myTable);
 
@@ -89,13 +88,14 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 				// if (rs.next()) {
 				// 	entity = construct(rs, null, getSqlTableName());
 				// }
-				if (!myEntities.isEmpty()) {
+				if (myEntities != null && !myEntities.isEmpty()) {
 					entity = myEntities.get(0);
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		
 		return entity;
@@ -108,7 +108,7 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	}
 
 	@Override
-	public FObservationView construct(ResultSet rs, FObservationView entity, String alias) {
+	public FObservationView construct(ResultSet rs, FObservationView entity, String alias) throws SQLException {
 		return FObservationViewService._construct(rs, entity, alias);
 	}
 

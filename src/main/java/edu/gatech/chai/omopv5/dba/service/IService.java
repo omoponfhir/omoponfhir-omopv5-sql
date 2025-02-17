@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import com.google.cloud.bigquery.FieldValueList;
@@ -40,7 +41,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param id the id
 	 * @return the v
 	 */
-	public v findById (Long id);
+	public v findById (Long id) throws Exception;
 	
 	/**
 	 * Removes the by id.
@@ -48,7 +49,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param id the id
 	 * @return the long
 	 */
-	public Long removeById (Long id);
+	public Long removeById (Long id) throws Exception;
 	
 	/**
 	 * Search by column string.
@@ -57,7 +58,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param value the value
 	 * @return the list
 	 */
-	public List<v> searchByColumnString (String column, String value);
+	public List<v> searchByColumnString (String column, String value) throws Exception;
 	
 	/**
 	 * Search by column string.
@@ -66,9 +67,18 @@ public interface IService<v extends BaseEntity> {
 	 * @param value the value
 	 * @return the list
 	 */
-	public List<v> searchByColumnString (String column, Long value);
+	public List<v> searchByColumnStringIgnoreCase (String column, String value) throws Exception;
+
+	/**
+	 * Search by column string.
+	 *
+	 * @param column the column
+	 * @param value the value
+	 * @return the list
+	 */
+	public List<v> searchByColumnString (String column, Long value) throws Exception;
 	
-	public List<v> searchBySql (int fromIndex, int toIndex, String sql, List<String> parameterList, List<String> valueList, String sort);
+	public List<v> searchBySql (int fromIndex, int toIndex, String sql, List<String> parameterList, List<String> valueList, String sort) throws Exception;
 
 	/**
 	 * Search with params.
@@ -79,7 +89,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param sort the sort
 	 * @return the list
 	 */
-	public List<v> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort);
+	public List<v> searchWithParams(int fromIndex, int toIndex, List<ParameterWrapper> paramList, String sort) throws Exception;
 	
 	/**
 	 * Search without params.
@@ -89,7 +99,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param sort the sort
 	 * @return the list
 	 */
-	public List<v> searchWithoutParams(int fromIndex, int toIndex, String sort);
+	public List<v> searchWithoutParams(int fromIndex, int toIndex, String sort) throws Exception;
 	
 	/**
 	 * Creates the.
@@ -97,7 +107,7 @@ public interface IService<v extends BaseEntity> {
 	 * @param entity the entity
 	 * @return the v
 	 */
-	v create(v entity);
+	v create(v entity) throws Exception;
 	
 	/**
 	 * Update.
@@ -105,15 +115,15 @@ public interface IService<v extends BaseEntity> {
 	 * @param entity the entity
 	 * @return the v
 	 */
-	v update(v entity);
+	v update(v entity) throws Exception;
 	
 	/**
 	 * Gets the size.
 	 *
 	 * @return the size
 	 */
-	Long getSize();
-	Long getSize(boolean cacheOnly);
+	Long getSize() throws Exception;
+	// Long getSize(boolean cacheOnly);
 
 	/**
 	 * Gets the size.
@@ -121,15 +131,15 @@ public interface IService<v extends BaseEntity> {
 	 * @param paramList the param list
 	 * @return the size
 	 */
-	Long getSize(List<ParameterWrapper> paramList);
-	Long getSize(List<ParameterWrapper> paramList, boolean cacheOnly);
+	Long getSize(List<ParameterWrapper> paramList) throws Exception;
+	// Long getSize(List<ParameterWrapper> paramList, boolean cacheOnly);
 	
-	Long getSize(String sqlString, List<String> parameterList, List<String> valueList);
-	Long getSize(String sqlString, List<String> parameterList, List<String> valueList, boolean cacheOnly);
+	Long getSize(String sqlString, List<String> parameterList, List<String> valueList) throws Exception;
+	// Long getSize(String sqlString, List<String> parameterList, List<String> valueList, boolean cacheOnly);
 
 	//	Long getNextId();
 	
-	v construct (ResultSet rs, v entity, String alias);
+	v construct (ResultSet rs, v entity, String alias) throws SQLException;
 
 	v construct (FieldValueList rowResult, v entity, String alias, List<String> columns);
 

@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,6 +149,8 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			return null;
 		}
 
 //		if (line2 != null) {
@@ -163,7 +166,7 @@ public class LocationServiceImp extends BaseEntityServiceImp<Location> implement
 	}
 
 	@Override
-	public Location construct(ResultSet rs, Location entity, String alias) {
+	public Location construct(ResultSet rs, Location entity, String alias) throws SQLException {
 		return LocationService._construct(rs, entity, alias);
 	}
 

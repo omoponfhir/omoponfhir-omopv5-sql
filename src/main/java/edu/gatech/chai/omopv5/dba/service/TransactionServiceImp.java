@@ -48,7 +48,7 @@ public class TransactionServiceImp implements TransactionService {
 	/* (non-Javadoc)
  * @see edu.gatech.chai.omopv5.dba.service.TransactionService#writeTransaction(java.util.Map)
  */
-	public int writeTransaction(Map<String, List<BaseEntity>> transactionMap) {
+	public int writeTransaction(Map<String, List<BaseEntity>> transactionMap) throws Exception {
 //		EntityManager em = transactionDao.getEntityManager();
 
 		System.out.println("At the writeTransaction");
@@ -102,40 +102,35 @@ public class TransactionServiceImp implements TransactionService {
 			String subjectKey = keyInfo[0]+"^"+"FPerson";
 			
 			// list of the entity classes
-			try {
-				for (BaseEntity entity : entities) {
-					if (entityName.equals("Measurement")) {
-						System.out.println("Adding Measurement with subjectKey ("+key+") to OMOP");
-						// Get patient information from subject key.
-						FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
-						if (subjectEntity == null) {
-							// This is an error. We must have subject.
-							System.out.println("FPerson info not available for the Measurement");
-							throw new Exception("FPerson info not available for the Measurement");
-						}
-						
-						Measurement measurement = (Measurement) entity;
-						measurement.setFPerson(subjectEntity);
-						
+			for (BaseEntity entity : entities) {
+				if (entityName.equals("Measurement")) {
+					System.out.println("Adding Measurement with subjectKey ("+key+") to OMOP");
+					// Get patient information from subject key.
+					FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
+					if (subjectEntity == null) {
+						// This is an error. We must have subject.
+						System.out.println("FPerson info not available for the Measurement");
+						throw new Exception("FPerson info not available for the Measurement");
+					}
+					
+					Measurement measurement = (Measurement) entity;
+					measurement.setFPerson(subjectEntity);
+					
 //						measurementDao.add(measurement);
-					} else if (entityName.equals("Observation")) {
-						System.out.println("Adding Observation to OMOP");
-						FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
-						if (subjectEntity == null) {
-							// This is an error. We must have subject.
-							System.out.println("FPerson info not available for the Observation");
-							throw new Exception("FPerson info not available for the Observation");
-						}
-						
-						Observation observation = (Observation) entity;
-						observation.setFPerson(subjectEntity);
+				} else if (entityName.equals("Observation")) {
+					System.out.println("Adding Observation to OMOP");
+					FPerson subjectEntity = (FPerson) transactionMap.get(subjectKey).get(0);
+					if (subjectEntity == null) {
+						// This is an error. We must have subject.
+						System.out.println("FPerson info not available for the Observation");
+						throw new Exception("FPerson info not available for the Observation");
+					}
+					
+					Observation observation = (Observation) entity;
+					observation.setFPerson(subjectEntity);
 
 //						observationDao.add(observation);
-					}
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				return -1;
 			}
 		}
 		return 0;

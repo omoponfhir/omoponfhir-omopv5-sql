@@ -35,84 +35,79 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  * The Interface MeasurementService.
  */
 public interface MeasurementService extends IService<Measurement> {
-	public static Measurement _construct(ResultSet rs, Measurement measurement, String alias) {
+	public static Measurement _construct(ResultSet rs, Measurement measurement, String alias) throws SQLException {
 		if (measurement == null)
 			measurement = new Measurement();
 
 		if (alias == null || alias.isEmpty())
 			alias = Measurement._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_measurement_id")) {
-					measurement.setId(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					measurement.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("measurementConcept_concept_id")) {
-					Concept measurementConcept = ConceptService._construct(rs, null, "measurementConcept");
-					measurement.setMeasurementConcept(measurementConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_date")) {
-					measurement.setMeasurementDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_datetime")) {
-					measurement.setMeasurementDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("measurementTypeConcept_concept_id")) {
-					Concept measurementTypeConcept = ConceptService._construct(rs, null, "measurementTypeConcept");
-					measurement.setMeasurementTypeConcept(measurementTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase("operatorConcept_concept_id")) {
-					Concept operatorConcept = ConceptService._construct(rs, null, "operatorConcept");
-					measurement.setOperationConcept(operatorConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
-					double valueAsNumber = rs.getDouble(columnInfo);
-					if (!rs.wasNull()) {
-						measurement.setValueAsNumber(valueAsNumber);
-					}
-				} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
-					Concept valueAsConcept = ConceptService._construct(rs, null, "valueAsConcept");
-					measurement.setValueAsConcept(valueAsConcept);
-				} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
-					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
-					measurement.setUnitConcept(unitConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_range_low")) {
-					measurement.setRangeLow(rs.getDouble(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_range_high")) {
-					measurement.setRangeHigh(rs.getDouble(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					measurement.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
-					measurement.setVisitOccurrence(visitOccurrence);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_source_value")) {
-					measurement.setMeasurementSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("measurementSourceConcept_concept_id")) {
-					Concept measurementSourceConcept = ConceptService._construct(rs, null, "measurementSourceConcept");
-					measurement.setMeasurementSourceConcept(measurementSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
-					measurement.setUnitSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
-					measurement.setValueSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
-					Concept unitSourceConcept = ConceptService._construct(rs, null, "unitSourceConcept");
-					measurement.setUnitSourceConcept(unitSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_event_id")) {
-					int measurementEventId = rs.getInt(columnInfo);
-					if (!rs.wasNull()) {
-						measurement.setMeasurementEventId(measurementEventId);
-					}
-				} else if (columnInfo.equalsIgnoreCase("measEventFieldConcept_concept_id")) {
-					Concept measEventFieldConcept = ConceptService._construct(rs, null, "measEventFieldConcept");
-					measurement.setMeasEventFieldConcept(measEventFieldConcept);
+			if (columnInfo.equalsIgnoreCase(alias + "_measurement_id")) {
+				measurement.setId(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				measurement.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("measurementConcept_concept_id")) {
+				Concept measurementConcept = ConceptService._construct(rs, null, "measurementConcept");
+				measurement.setMeasurementConcept(measurementConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_date")) {
+				measurement.setMeasurementDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_datetime")) {
+				measurement.setMeasurementDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("measurementTypeConcept_concept_id")) {
+				Concept measurementTypeConcept = ConceptService._construct(rs, null, "measurementTypeConcept");
+				measurement.setMeasurementTypeConcept(measurementTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase("operatorConcept_concept_id")) {
+				Concept operatorConcept = ConceptService._construct(rs, null, "operatorConcept");
+				measurement.setOperationConcept(operatorConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_value_as_number")) {
+				double valueAsNumber = rs.getDouble(columnInfo);
+				if (!rs.wasNull()) {
+					measurement.setValueAsNumber(valueAsNumber);
 				}
-
+			} else if (columnInfo.equalsIgnoreCase("valueAsConcept_concept_id")) {
+				Concept valueAsConcept = ConceptService._construct(rs, null, "valueAsConcept");
+				measurement.setValueAsConcept(valueAsConcept);
+			} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+				Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
+				measurement.setUnitConcept(unitConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_range_low")) {
+				measurement.setRangeLow(rs.getDouble(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_range_high")) {
+				measurement.setRangeHigh(rs.getDouble(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				measurement.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
+				measurement.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_source_value")) {
+				measurement.setMeasurementSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("measurementSourceConcept_concept_id")) {
+				Concept measurementSourceConcept = ConceptService._construct(rs, null, "measurementSourceConcept");
+				measurement.setMeasurementSourceConcept(measurementSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+				measurement.setUnitSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_value_source_value")) {
+				measurement.setValueSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("unitSourceConcept_concept_id")) {
+				Concept unitSourceConcept = ConceptService._construct(rs, null, "unitSourceConcept");
+				measurement.setUnitSourceConcept(unitSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_measurement_event_id")) {
+				int measurementEventId = rs.getInt(columnInfo);
+				if (!rs.wasNull()) {
+					measurement.setMeasurementEventId(measurementEventId);
+				}
+			} else if (columnInfo.equalsIgnoreCase("measEventFieldConcept_concept_id")) {
+				Concept measEventFieldConcept = ConceptService._construct(rs, null, "measEventFieldConcept");
+				measurement.setMeasEventFieldConcept(measEventFieldConcept);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return measurement;

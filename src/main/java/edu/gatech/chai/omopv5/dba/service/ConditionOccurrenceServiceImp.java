@@ -19,6 +19,7 @@ package edu.gatech.chai.omopv5.dba.service;
 import edu.gatech.chai.omopv5.model.entity.ConditionOccurrence;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class ConditionOccurrenceServiceImp extends BaseEntityServiceImp<Conditio
     }
 
 	@Override
-	public ConditionOccurrence construct(ResultSet rs, ConditionOccurrence entity, String alias) {
+	public ConditionOccurrence construct(ResultSet rs, ConditionOccurrence entity, String alias) throws SQLException {
 		return ConditionOccurrenceService._construct(rs, entity, alias);
 	}
 

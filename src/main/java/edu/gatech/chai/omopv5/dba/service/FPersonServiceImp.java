@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +133,7 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 
 		return entity;
@@ -200,7 +202,7 @@ public class FPersonServiceImp extends BaseEntityServiceImp<FPerson> implements 
 	}
 
 	@Override
-	public FPerson construct(ResultSet rs, FPerson entity, String alias) {
+	public FPerson construct(ResultSet rs, FPerson entity, String alias) throws SQLException {
 		return FPersonService._construct(rs, entity, alias);
 	}
 

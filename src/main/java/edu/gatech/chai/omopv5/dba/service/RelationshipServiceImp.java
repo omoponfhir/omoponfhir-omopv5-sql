@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	 * @see edu.gatech.chai.omopv5.dba.service.RelationshipService#findById(java.lang.String)
 	 */
 	@Override
-	public Relationship findById(String id) {
+	public Relationship findById(String id) throws Exception {
 		return null;
 	}
 
@@ -51,30 +52,30 @@ public class RelationshipServiceImp extends BaseEntityServiceImp<Relationship> i
 	 * @see edu.gatech.chai.omopv5.dba.service.RelationshipService#removeById(java.lang.String)
 	 */
 	@Override
-	public String removeById(String id) {
+	public String removeById(String id) throws Exception {
 		return null;
 	}
 
 	@Override
-	public Relationship findById(Long id) {
+	public Relationship findById(Long id) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Long removeById(Long id) {
+	public Long removeById(Long id) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Relationship update(Relationship entity) {
+	public Relationship update(Relationship entity) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Relationship construct(ResultSet rs, Relationship entity, String alias) {
+	public Relationship construct(ResultSet rs, Relationship entity, String alias) throws SQLException {
 		return RelationshipService._construct(rs, entity, alias);
 	}
 

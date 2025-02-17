@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class VocabularyServiceImp extends BaseEntityServiceImp<Vocabulary> imple
 	}
 
 	@Override
-	public Vocabulary construct(ResultSet rs, Vocabulary entity, String alias) {
+	public Vocabulary construct(ResultSet rs, Vocabulary entity, String alias) throws SQLException {
 		return VocabularyService._construct(rs, entity, alias);
 	}
 

@@ -35,53 +35,48 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  * The Interface ConditionOccurrenceService.
  */
 public interface ConditionOccurrenceService extends IService<ConditionOccurrence> {
-	public static ConditionOccurrence _construct(ResultSet rs, ConditionOccurrence conditionOccurrence, String alias) {
+	public static ConditionOccurrence _construct(ResultSet rs, ConditionOccurrence conditionOccurrence, String alias) throws SQLException {
 		if (conditionOccurrence == null)
 			conditionOccurrence = new ConditionOccurrence();
 
 		if (alias == null || alias.isEmpty())
 			alias = ConditionOccurrence._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
-					conditionOccurrence.setId(rs.getLong(columnInfo));
-					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					conditionOccurrence.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
-					Concept conditionConcept = ConceptService._construct(rs, null, "conditionConcept");
-					conditionOccurrence.setConditionConcept(conditionConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
-					conditionOccurrence.setConditionStartDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
-					conditionOccurrence.setConditionEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
-					Concept conditionTypeConcept = ConceptService._construct(rs, null, "conditionTypeConcept");
-					conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
-					conditionOccurrence.setStopReason(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					conditionOccurrence.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
-					conditionOccurrence.setVisitOccurrence(visitOccurrence);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_condition_source_value")) {
-					conditionOccurrence.setConditionSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
-					Concept conditionSourceConcept = ConceptService._construct(rs, null, "conditionSourceConcept");
-					conditionOccurrence.setConditionSourceConcept(conditionSourceConcept);
-				}
+			if (columnInfo.equalsIgnoreCase(alias + "_condition_occurrence_id")) {
+				conditionOccurrence.setId(rs.getLong(columnInfo));
+				if (rs.wasNull()) return null;
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				conditionOccurrence.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
+				Concept conditionConcept = ConceptService._construct(rs, null, "conditionConcept");
+				conditionOccurrence.setConditionConcept(conditionConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_start_date")) {
+				conditionOccurrence.setConditionStartDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_end_date")) {
+				conditionOccurrence.setConditionEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("conditionTypeConcept_concept_id")) {
+				Concept conditionTypeConcept = ConceptService._construct(rs, null, "conditionTypeConcept");
+				conditionOccurrence.setConditionTypeConcept(conditionTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
+				conditionOccurrence.setStopReason(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				conditionOccurrence.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
+				conditionOccurrence.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_condition_source_value")) {
+				conditionOccurrence.setConditionSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("conditionSourceConcept_concept_id")) {
+				Concept conditionSourceConcept = ConceptService._construct(rs, null, "conditionSourceConcept");
+				conditionOccurrence.setConditionSourceConcept(conditionSourceConcept);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
 		}
 
 		return conditionOccurrence;

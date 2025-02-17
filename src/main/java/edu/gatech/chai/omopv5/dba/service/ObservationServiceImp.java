@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class ObservationServiceImp extends BaseEntityServiceImp<Observation> imp
 	}
 
 	@Override
-	public Observation construct(ResultSet rs, Observation entity, String alias) {
+	public Observation construct(ResultSet rs, Observation entity, String alias) throws SQLException {
 		return ObservationService._construct(rs, entity, alias);
 	}
 

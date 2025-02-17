@@ -9,8 +9,8 @@ import java.util.List;
 import com.google.cloud.bigquery.FieldValueList;
 
 import edu.gatech.chai.omopv5.dba.util.SqlUtil;
+import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.ConceptRelationship;
-import edu.gatech.chai.omopv5.model.entity.ConceptRelationshipPK;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,49 +21,48 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 	/**
 	 * Find by id.
 	 *
-	 * @param conceptRelationshipPk the concept relationship pk
+	 * @param conceptId1 the concept relationship pk
 	 * @return the concept relationship
 	 */
-	public ConceptRelationshipPK findById(ConceptRelationshipPK conceptRelationshipPk);
+	public ConceptRelationship findById(Long conceptId1);
 
+	public ConceptRelationship find(Concept concept1, Concept concept2, String reationshipId) throws Exception;
+	
 	/**
 	 * Removes the by id.
 	 *
-	 * @param conceptRelationshipPk the concept relationship pk
+	 * @param conceptId1 the concept relationship pk
 	 */
-	public void removeById(ConceptRelationshipPK conceptRelationshipPk);
+	public Long removeById(Long conceptId1);
 
-	public static ConceptRelationship _construct(ResultSet rs, ConceptRelationship conceptRelationship, String alias) {
+	public static ConceptRelationship _construct(ResultSet rs, ConceptRelationship conceptRelationship, String alias) throws SQLException {
 		if (conceptRelationship == null)
 			conceptRelationship = new ConceptRelationship();
 
 		if (alias == null || alias.isEmpty())
 			alias = ConceptRelationship._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
-					conceptRelationship.setConceptId1(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
-					conceptRelationship.setConceptId2(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
-					conceptRelationship.setRelationshipId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
-					conceptRelationship.setValidStartDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_end_date")) {
-					conceptRelationship.setValidEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_invalid_reason")) {
-					conceptRelationship.setInvalidReason(rs.getString(columnInfo));
-				}
-
+			if (columnInfo.equalsIgnoreCase("concept1_concept_id")) {
+				Concept concept1 = ConceptService._construct(rs, null, "concept1");
+				conceptRelationship.setConcept1(concept1);
+			} else if (columnInfo.equalsIgnoreCase("concept2_concept_id")) {
+				Concept concept2 = ConceptService._construct(rs, null, "concept2");
+				conceptRelationship.setConcept2(concept2);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
+				conceptRelationship.setRelationshipId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
+				conceptRelationship.setValidStartDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_end_date")) {
+				conceptRelationship.setValidEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_invalid_reason")) {
+				conceptRelationship.setInvalidReason(rs.getString(columnInfo));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return conceptRelationship;
@@ -80,10 +79,17 @@ public interface ConceptRelationshipService extends IService<ConceptRelationship
 		for (String columnInfo : columns) {
 			if (rowResult.get(columnInfo).isNull()) continue;
 
-			if (columnInfo.equalsIgnoreCase(alias + "_concept_id_1")) {
-				conceptRelationship.setConceptId1(rowResult.get(columnInfo).getLongValue());
-			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_id_2")) {
-				conceptRelationship.setConceptId2(rowResult.get(columnInfo).getLongValue());
+		// } else if (columnInfo.equalsIgnoreCase("conditionConcept_concept_id")) {
+		// 	Concept conditionConcept = ConceptService._construct(rowResult, null, "conditionConcept", columns);
+		// 	conditionOccurrence.setConditionConcept(conditionConcept);
+
+
+			if (columnInfo.equalsIgnoreCase("concept1_concept_id")) {
+				Concept concept1 = ConceptService._construct(rowResult, null, "concpet1", columns);
+				conceptRelationship.setConcept1(concept1);
+			} else if (columnInfo.equalsIgnoreCase("concpet2_concept_id")) {
+				Concept concept2 = ConceptService._construct(rowResult, null, "concept2", columns);
+				conceptRelationship.setConcept2(concept2);
 			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
 				conceptRelationship.setRelationshipId(rowResult.get(columnInfo).getStringValue());
 			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {

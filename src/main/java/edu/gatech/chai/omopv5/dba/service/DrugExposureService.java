@@ -35,86 +35,81 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  * The Interface DrugExposureService.
  */
 public interface DrugExposureService extends IService<DrugExposure> {
-	public static DrugExposure _construct(ResultSet rs, DrugExposure drugExposure, String alias) {
+	public static DrugExposure _construct(ResultSet rs, DrugExposure drugExposure, String alias) throws SQLException {
 		if (drugExposure == null) drugExposure = new DrugExposure();
 		
 		if (alias == null || alias.isEmpty())
 			alias = DrugExposure._getTableName();
 		
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_id")) {
-					drugExposure.setId(rs.getLong(columnInfo));
-					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					drugExposure.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("drugConcept_concept_id")) {
-					Concept drugConcept = ConceptService._construct(rs, null, "drugConcept");
-					drugExposure.setDrugConcept(drugConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_date")) {
-					drugExposure.setDrugExposureStartDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_datetime")) {
-					drugExposure.setDrugExposureStartDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_date")) {
-					drugExposure.setDrugExposureEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_datetime")) {
-					drugExposure.setDrugExposureEndDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_verbatim_end_date")) {
-					drugExposure.setVerbatimEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("drugTypeConcept_concept_id")) {
-					Concept drugTypeConcept = ConceptService._construct(rs, null, "drugTypeConcept");
-					drugExposure.setDrugTypeConcept(drugTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
-					drugExposure.setStopReason(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_refills")) {
-					int valueAsInt = rs.getInt(columnInfo);
-					if (!rs.wasNull()) {
-						drugExposure.setRefills(valueAsInt);
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
-					double valueAsDouble = rs.getDouble(columnInfo);
-					if (!rs.wasNull()) {
-						drugExposure.setQuantity(valueAsDouble);
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_days_supply")) {
-					int valueAsInt = rs.getInt(columnInfo);
-					if (!rs.wasNull()) {
-						drugExposure.setDaysSupply(valueAsInt);
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_sig")) {
-					drugExposure.setSig(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("routeConcept_concept_id")) {
-					Concept routeConcept = ConceptService._construct(rs, null, "routeConcept");
-					drugExposure.setRouteConcept(routeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_lot_number")) {
-					drugExposure.setLotNumber(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					drugExposure.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
-					drugExposure.setVisitOccurrence(visitOccurrence);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_drug_source_value")) {
-					drugExposure.setDrugSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("drugSourceConcept_concept_id")) {
-					Concept drugSourceConcept = ConceptService._construct(rs, null, "drugSourceConcept");
-					drugExposure.setDrugSourceConcpet(drugSourceConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_route_source_value")) {
-					drugExposure.setRouteSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_dose_unit_source_value")) {
-					drugExposure.setDoseUnitSourceValue(rs.getString(columnInfo));
+			if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_id")) {
+				drugExposure.setId(rs.getLong(columnInfo));
+				if (rs.wasNull()) return null;
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				drugExposure.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("drugConcept_concept_id")) {
+				Concept drugConcept = ConceptService._construct(rs, null, "drugConcept");
+				drugExposure.setDrugConcept(drugConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_date")) {
+				drugExposure.setDrugExposureStartDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_start_datetime")) {
+				drugExposure.setDrugExposureStartDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_date")) {
+				drugExposure.setDrugExposureEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_drug_exposure_end_datetime")) {
+				drugExposure.setDrugExposureEndDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_verbatim_end_date")) {
+				drugExposure.setVerbatimEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("drugTypeConcept_concept_id")) {
+				Concept drugTypeConcept = ConceptService._construct(rs, null, "drugTypeConcept");
+				drugExposure.setDrugTypeConcept(drugTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_stop_reason")) {
+				drugExposure.setStopReason(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_refills")) {
+				int valueAsInt = rs.getInt(columnInfo);
+				if (!rs.wasNull()) {
+					drugExposure.setRefills(valueAsInt);
 				}
-
-
+			} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
+				double valueAsDouble = rs.getDouble(columnInfo);
+				if (!rs.wasNull()) {
+					drugExposure.setQuantity(valueAsDouble);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_days_supply")) {
+				int valueAsInt = rs.getInt(columnInfo);
+				if (!rs.wasNull()) {
+					drugExposure.setDaysSupply(valueAsInt);
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_sig")) {
+				drugExposure.setSig(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("routeConcept_concept_id")) {
+				Concept routeConcept = ConceptService._construct(rs, null, "routeConcept");
+				drugExposure.setRouteConcept(routeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_lot_number")) {
+				drugExposure.setLotNumber(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				drugExposure.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
+				drugExposure.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_drug_source_value")) {
+				drugExposure.setDrugSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("drugSourceConcept_concept_id")) {
+				Concept drugSourceConcept = ConceptService._construct(rs, null, "drugSourceConcept");
+				drugExposure.setDrugSourceConcpet(drugSourceConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_route_source_value")) {
+				drugExposure.setRouteSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_dose_unit_source_value")) {
+				drugExposure.setDoseUnitSourceValue(rs.getString(columnInfo));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
+
 		}
 		
 		return drugExposure;

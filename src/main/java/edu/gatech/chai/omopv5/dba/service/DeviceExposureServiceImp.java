@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class DeviceExposureServiceImp extends BaseEntityServiceImp<DeviceExposur
 	}
 
 	@Override
-	public DeviceExposure construct(ResultSet rs, DeviceExposure entity, String alias) {
+	public DeviceExposure construct(ResultSet rs, DeviceExposure entity, String alias) throws SQLException {
 		return DeviceExposureService._construct(rs, entity, alias);
 	}
 

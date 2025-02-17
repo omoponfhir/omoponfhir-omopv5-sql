@@ -48,51 +48,46 @@ public interface ConceptService extends IService<Concept> {
 	 */
 	public Long getLargestId();
 
-	public static Concept _construct(ResultSet rs, Concept concept, String alias) {
+	public static Concept _construct(ResultSet rs, Concept concept, String alias) throws SQLException {
 		if (concept == null)
 			concept = new Concept();
 
 		if (alias == null || alias.isEmpty())
 			alias = Concept._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_concept_id")) {
-					concept.setId(rs.getLong(columnInfo));
-					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_name")) {
-					concept.setConceptName(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_domain_id")) {
-					concept.setDomainId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_class_id")) {
-					concept.setConceptClassId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_standard_concept")) {
-					String res = rs.getString(columnInfo);
-					if (res != null) {
-						concept.setStandardConcept(res.charAt(0));
-					} else {
-						concept.setStandardConcept(null);
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
-					concept.setVocabularyId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_concept_code")) {
-					concept.setConceptCode(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
-					concept.setValidStartDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "valid_end_date")) {
-					concept.setValidEndDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "invalid_reason")) {
-					concept.setInvalidReason(rs.getString(columnInfo));
+			if (columnInfo.equalsIgnoreCase(alias + "_concept_id")) {
+				concept.setId(rs.getLong(columnInfo));
+				if (rs.wasNull()) return null;
+			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_name")) {
+				concept.setConceptName(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_domain_id")) {
+				concept.setDomainId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_class_id")) {
+				concept.setConceptClassId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_standard_concept")) {
+				String res = rs.getString(columnInfo);
+				if (res != null) {
+					concept.setStandardConcept(res.charAt(0));
+				} else {
+					concept.setStandardConcept(null);
 				}
-
+			} else if (columnInfo.equalsIgnoreCase(alias + "_vocabulary_id")) {
+				concept.setVocabularyId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_concept_code")) {
+				concept.setConceptCode(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_valid_start_date")) {
+				concept.setValidStartDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "valid_end_date")) {
+				concept.setValidEndDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "invalid_reason")) {
+				concept.setInvalidReason(rs.getString(columnInfo));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return concept;

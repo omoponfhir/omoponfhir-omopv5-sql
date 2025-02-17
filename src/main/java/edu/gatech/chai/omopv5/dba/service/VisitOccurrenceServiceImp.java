@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class VisitOccurrenceServiceImp extends BaseEntityServiceImp<VisitOccurre
 	}
 
 	@Override
-	public VisitOccurrence construct(ResultSet rs, VisitOccurrence entity, String alias) {
+	public VisitOccurrence construct(ResultSet rs, VisitOccurrence entity, String alias) throws SQLException {
 		return VisitOccurrenceService._construct(rs, entity, alias);
 	}
 

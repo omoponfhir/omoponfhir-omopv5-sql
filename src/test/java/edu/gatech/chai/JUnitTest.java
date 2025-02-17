@@ -31,11 +31,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import edu.gatech.chai.omopv5.dba.config.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.dba.service.FObservationViewService;
 import edu.gatech.chai.omopv5.dba.service.FPersonService;
 import edu.gatech.chai.omopv5.dba.service.MeasurementService;
 import edu.gatech.chai.omopv5.dba.service.ObservationService;
+import edu.gatech.chai.omopv5.dba.config.DatabaseConfiguration;
 import edu.gatech.chai.omopv5.model.entity.Concept;
 import edu.gatech.chai.omopv5.model.entity.FObservationView;
 import edu.gatech.chai.omopv5.model.entity.FPerson;
@@ -49,7 +49,7 @@ import edu.gatech.chai.omopv5.model.entity.Observation;
 @ContextConfiguration(classes = AppConfig.class, loader = AnnotationConfigContextLoader.class)
 public class JUnitTest {
 	private static final Logger logger = LoggerFactory.getLogger(JUnitTest.class);
-	private PGPoolingDataSource ds;
+
 	@Autowired
 	private DatabaseConfiguration databaseConfiguration;
 
@@ -91,10 +91,15 @@ public class JUnitTest {
 //			System.out.println(fperson.toString());
 //		}
 
-		List<FObservationView> outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
-		logger.debug("Total Returned FObservationView: "+outFObs.size());
-		for (FObservationView fObservationView : outFObs) {
-			System.out.println(fObservationView.toString());
+		List<FObservationView> outFObs;
+		try {
+			outFObs = fObservationViewService.searchWithoutParams(0, 10, null);
+			logger.debug("Total Returned FObservationView: "+outFObs.size());
+			for (FObservationView fObservationView : outFObs) {
+				System.out.println(fObservationView.toString());
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 //		assert(outFperson.size() > 0);
@@ -141,9 +146,14 @@ public class JUnitTest {
 		measurement.setMeasurementDate(date);
 		measurement.setMeasurementDateTime(date);
 		
-		Measurement retVal = measurementService.create(measurement);
-		System.out.println(retVal.toString());
-
+		Measurement retVal;
+		try {
+			retVal = measurementService.create(measurement);
+			System.out.println(retVal.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//		List<ParameterWrapper> params = new ArrayList<ParameterWrapper>();
 //		ParameterWrapper paramWrapper = new ParameterWrapper();

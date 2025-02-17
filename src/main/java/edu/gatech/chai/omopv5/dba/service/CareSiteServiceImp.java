@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 				}
 			} else {
 				List<CareSite> myEntities = runQuery(sql, null, "care_site");
-				if (!myEntities.isEmpty()) {
+				if (myEntities != null && !myEntities.isEmpty()) {
 					careSites.addAll(myEntities);					
 				}
 			}
@@ -86,7 +87,7 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	/* (non-Javadoc)
 	 * @see edu.gatech.chai.omopv5.dba.service.CareSiteService#searchByNameAndLocation(java.lang.String, edu.gatech.chai.omopv5.model.entity.Location)
 	 */
-	public CareSite searchByNameAndLocation(String careSiteName, Location location) {
+	public CareSite searchByNameAndLocation(String careSiteName, Location location) throws Exception {
 		List<CareSite> careSites = new ArrayList<CareSite>();
 
 		List<String> parameterList = new ArrayList<String>();
@@ -104,24 +105,20 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 		sql = renderedSql(sql, parameterList, valueList);
 
 		CareSite entity;
-		try {
-			if (isBigQuery()) {
-				TableResult result = runBigQuery(sql);
-				List<String> columns = listOfColumns(sql);
-				for (FieldValueList row : result.iterateAll()) {
-					entity = construct(row, null, getSqlTableName(), columns);
-					if (entity != null) {
-						break;
-					}
-				}
-			} else {
-				List<CareSite> myEntities = runQuery(sql, null, "care_site");
-				if (!myEntities.isEmpty()) {
-					careSites.addAll(myEntities);					
+		if (isBigQuery()) {
+			TableResult result = runBigQuery(sql);
+			List<String> columns = listOfColumns(sql);
+			for (FieldValueList row : result.iterateAll()) {
+				entity = construct(row, null, getSqlTableName(), columns);
+				if (entity != null) {
+					break;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} else {
+			List<CareSite> myEntities = runQuery(sql, null, "care_site");
+			if (myEntities != null && !myEntities.isEmpty()) {
+				careSites.addAll(myEntities);					
+			}
 		}
 
 		if (careSites.isEmpty()) {
@@ -132,7 +129,7 @@ public class CareSiteServiceImp extends BaseEntityServiceImp<CareSite> implement
 	}
 
 	@Override
-	public CareSite construct(ResultSet rs, CareSite entity, String alias) {
+	public CareSite construct(ResultSet rs, CareSite entity, String alias) throws SQLException {
 		return CareSiteService._construct(rs, entity, alias);
 	}
 

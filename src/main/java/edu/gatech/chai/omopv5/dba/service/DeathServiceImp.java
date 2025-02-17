@@ -1,6 +1,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class DeathServiceImp extends BaseEntityServiceImp<Death> implements Deat
 	}
 
 	@Override
-	public Death construct(ResultSet rs, Death entity, String alias) {
+	public Death construct(ResultSet rs, Death entity, String alias) throws SQLException {
 		return DeathService._construct(rs, entity, alias);
 	}
 

@@ -36,58 +36,53 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  */
 public interface FImmunizationViewService extends IService<FImmunizationView> {
 
-	public static FImmunizationView _construct(ResultSet rs, FImmunizationView fImmunizationView, String alias) {
+	public static FImmunizationView _construct(ResultSet rs, FImmunizationView fImmunizationView, String alias) throws SQLException {
 		if (fImmunizationView == null)
 			fImmunizationView = new FImmunizationView();
 
 		if (alias == null || alias.isEmpty())
 			alias = FImmunizationView._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_immunization_id")) {
-					fImmunizationView.setId(rs.getLong(columnInfo));
-					if (rs.wasNull()) return null;
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					fImmunizationView.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("immunizationConcept_concept_id")) {
-					Concept immunizationConcept = ConceptService._construct(rs, null, "immunizationConcept");
-					fImmunizationView.setImmunizationConcept(immunizationConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_date")) {
-					fImmunizationView.setImmunizationDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_datetime")) {
-					fImmunizationView.setImmunizationDatetime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("immunizationTypeConcept_concept_id")) {
-					Concept immunizationTypeConcept = ConceptService._construct(rs, null, "immunizationTypeConcept");
-					fImmunizationView.setImmunizationTypeConcept(immunizationTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_status")) {
-					fImmunizationView.setImmunizationStatus(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					fImmunizationView.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
-					fImmunizationView.setVisitOccurrence(visitOccurrence);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_lot_number")) {
-					fImmunizationView.setLotNumber(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("routeConcept_concept_id")) {
-					Concept routeConcept = ConceptService._construct(rs, null, "routeConcept");
-					fImmunizationView.setRouteConcept(routeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
-					fImmunizationView.setQuantity(rs.getDouble(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_note")) {
-					fImmunizationView.setImmunizationNote(rs.getString(columnInfo));
-				}
-
+			if (columnInfo.equalsIgnoreCase(alias + "_immunization_id")) {
+				fImmunizationView.setId(rs.getLong(columnInfo));
+				if (rs.wasNull()) return null;
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				fImmunizationView.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("immunizationConcept_concept_id")) {
+				Concept immunizationConcept = ConceptService._construct(rs, null, "immunizationConcept");
+				fImmunizationView.setImmunizationConcept(immunizationConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_date")) {
+				fImmunizationView.setImmunizationDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_datetime")) {
+				fImmunizationView.setImmunizationDatetime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("immunizationTypeConcept_concept_id")) {
+				Concept immunizationTypeConcept = ConceptService._construct(rs, null, "immunizationTypeConcept");
+				fImmunizationView.setImmunizationTypeConcept(immunizationTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_status")) {
+				fImmunizationView.setImmunizationStatus(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				fImmunizationView.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
+				fImmunizationView.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_lot_number")) {
+				fImmunizationView.setLotNumber(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("routeConcept_concept_id")) {
+				Concept routeConcept = ConceptService._construct(rs, null, "routeConcept");
+				fImmunizationView.setRouteConcept(routeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
+				fImmunizationView.setQuantity(rs.getDouble(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_immunization_note")) {
+				fImmunizationView.setImmunizationNote(rs.getString(columnInfo));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return fImmunizationView;

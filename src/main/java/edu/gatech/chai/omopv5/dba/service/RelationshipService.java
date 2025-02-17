@@ -38,7 +38,7 @@ public interface RelationshipService extends IService<Relationship> {
 	 * @param id the id
 	 * @return the relationship
 	 */
-	public Relationship findById(String id);
+	public Relationship findById(String id) throws Exception;
 
 	/**
 	 * Removes the by id.
@@ -46,46 +46,41 @@ public interface RelationshipService extends IService<Relationship> {
 	 * @param id the id
 	 * @return the string
 	 */
-	public String removeById(String id);
+	public String removeById(String id) throws Exception;
 
-	public static Relationship _construct(ResultSet rs, Relationship relationship, String alias) {
+	public static Relationship _construct(ResultSet rs, Relationship relationship, String alias) throws SQLException {
 		if (relationship == null)
 			relationship = new Relationship();
 
 		if (alias == null || alias.isEmpty())
 			alias = Relationship._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
-					relationship.setId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
-					relationship.setRelationshipName(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {
-					String value = rs.getString(columnInfo);
-					if (value != null) {
-						relationship.setIsHierarchical(value.charAt(0));
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_defines_ancestry")) {
-					String value = rs.getString(columnInfo);
-					if (value != null) {
-						relationship.setDefinesAncestry(value.charAt(0));
-					}
-				} else if (columnInfo.equalsIgnoreCase(alias + "_reverse_relationship_id")) {
-					relationship.setReverseRelationshipId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
-					Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
-					relationship.setRelationshipConcept(relationshipConcept);
+			if (columnInfo.equalsIgnoreCase(alias + "_relationship_id")) {
+				relationship.setId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_relationship_name")) {
+				relationship.setRelationshipName(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_is_hierarchical")) {
+				String value = rs.getString(columnInfo);
+				if (value != null) {
+					relationship.setIsHierarchical(value.charAt(0));
 				}
-
+			} else if (columnInfo.equalsIgnoreCase(alias + "_defines_ancestry")) {
+				String value = rs.getString(columnInfo);
+				if (value != null) {
+					relationship.setDefinesAncestry(value.charAt(0));
+				}
+			} else if (columnInfo.equalsIgnoreCase(alias + "_reverse_relationship_id")) {
+				relationship.setReverseRelationshipId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
+				Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
+				relationship.setRelationshipConcept(relationshipConcept);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return relationship;

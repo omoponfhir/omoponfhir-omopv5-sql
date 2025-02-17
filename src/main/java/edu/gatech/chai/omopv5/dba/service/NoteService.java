@@ -35,65 +35,60 @@ import edu.gatech.chai.omopv5.model.entity.VisitOccurrence;
  * The Interface NoteService.
  */
 public interface NoteService extends IService<Note> {
-	public static Note _construct(ResultSet rs, Note note, String alias) {
+	public static Note _construct(ResultSet rs, Note note, String alias) throws SQLException {
 		if (note == null)
 			note = new Note();
 
 		if (alias == null || alias.isEmpty())
 			alias = Note._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_note_id")) {
-					note.setId(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					note.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_date")) {
-					note.setNoteDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_datetime")) {
-					note.setNoteDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("noteTypeConcept_concept_id")) {
-					Concept noteTypeConcept = ConceptService._construct(rs, null, "noteTypeConcept");
-					note.setNoteTypeConcept(noteTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase("noteClassConcept_concept_id")) {
-					Concept noteClassConcept = ConceptService._construct(rs, null, "noteClassConcept");
-					note.setNoteClassConcept(noteClassConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_title")) {
-					note.setNoteTitle(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_text")) {
-					note.setNoteText(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("encodingConcept_concept_id")) {
-					Concept encodingConcept = ConceptService._construct(rs, null, "encodingConcept");
-					note.setEncodingConcept(encodingConcept);
-				} else if (columnInfo.equalsIgnoreCase("languageConcept_concept_id")) {
-					Concept languageConcept = ConceptService._construct(rs, null, "languageConcept");
-					note.setLanguageConcept(languageConcept);
-				} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
-					Provider provider = ProviderService._construct(rs, null, "provider");
-					note.setProvider(provider);
-				} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
-					VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
-					note.setVisitOccurrence(visitOccurrence);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_source_value")) {
-					note.setNoteSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_note_event_id")) {
-					int noteEventId = rs.getInt(columnInfo);
-					if (!rs.wasNull()) {
-						note.setNoteEventId(noteEventId);
-					}
-				} else if (columnInfo.equalsIgnoreCase("noteEventFieldConcept_concept_id")) {
-					Concept noteEventFieldConcept = ConceptService._construct(rs, null, "noteEventFieldConcept");
-					note.setNoteEventFieldConcept(noteEventFieldConcept);
+			if (columnInfo.equalsIgnoreCase(alias + "_note_id")) {
+				note.setId(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				note.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_date")) {
+				note.setNoteDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_datetime")) {
+				note.setNoteDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("noteTypeConcept_concept_id")) {
+				Concept noteTypeConcept = ConceptService._construct(rs, null, "noteTypeConcept");
+				note.setNoteTypeConcept(noteTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase("noteClassConcept_concept_id")) {
+				Concept noteClassConcept = ConceptService._construct(rs, null, "noteClassConcept");
+				note.setNoteClassConcept(noteClassConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_title")) {
+				note.setNoteTitle(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_text")) {
+				note.setNoteText(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("encodingConcept_concept_id")) {
+				Concept encodingConcept = ConceptService._construct(rs, null, "encodingConcept");
+				note.setEncodingConcept(encodingConcept);
+			} else if (columnInfo.equalsIgnoreCase("languageConcept_concept_id")) {
+				Concept languageConcept = ConceptService._construct(rs, null, "languageConcept");
+				note.setLanguageConcept(languageConcept);
+			} else if (columnInfo.equalsIgnoreCase("provider_provider_id")) {
+				Provider provider = ProviderService._construct(rs, null, "provider");
+				note.setProvider(provider);
+			} else if (columnInfo.equalsIgnoreCase("visitOccurrence_visit_occurrence_id")) {
+				VisitOccurrence visitOccurrence = VisitOccurrenceService._construct(rs, null, "visitOccurrence");
+				note.setVisitOccurrence(visitOccurrence);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_source_value")) {
+				note.setNoteSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_note_event_id")) {
+				int noteEventId = rs.getInt(columnInfo);
+				if (!rs.wasNull()) {
+					note.setNoteEventId(noteEventId);
 				}
+			} else if (columnInfo.equalsIgnoreCase("noteEventFieldConcept_concept_id")) {
+				Concept noteEventFieldConcept = ConceptService._construct(rs, null, "noteEventFieldConcept");
+				note.setNoteEventFieldConcept(noteEventFieldConcept);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
 		}
 
 		return note;

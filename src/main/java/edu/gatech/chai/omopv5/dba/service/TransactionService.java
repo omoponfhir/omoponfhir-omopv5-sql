@@ -33,5 +33,5 @@ public interface TransactionService {
 	 * @param transactionMap the transaction map
 	 * @return the int
 	 */
-	public int writeTransaction (Map<String, List<BaseEntity>> transactionMap);
+	public int writeTransaction (Map<String, List<BaseEntity>> transactionMap) throws Exception;
 }

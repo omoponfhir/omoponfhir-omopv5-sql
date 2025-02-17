@@ -13,7 +13,7 @@
 	<groupId>edu.gatech.chai</groupId>
 	<artifactId>omoponfhir-omopv5-sql</artifactId>
 	<packaging>jar</packaging>
-	<version>1.6.7</version>
+	<version>1.7.0</version>
 	<name>omoponfhir-omopv5-sql</name>
 	<description>OMOP on FHIR SQL for OMOP version 5.4</description>
 	<url>http://maven.apache.org</url>
@@ -28,7 +28,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring_version>6.1.4</spring_version>
+		<spring_version>6.1.14</spring_version>
 		<hibernate_validator_version>8.0.0.Final</hibernate_validator_version>
 	</properties>
 
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.20.0-GA</version>
+			<version>3.30.2-GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -78,6 +78,12 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring_version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring_version}</version>
+		</dependency>		
 		<dependency>
 			<groupId>net.jcip</groupId>
 			<artifactId>jcip-annotations</artifactId>

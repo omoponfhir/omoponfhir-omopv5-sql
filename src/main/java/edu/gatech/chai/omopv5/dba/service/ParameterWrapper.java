@@ -308,6 +308,9 @@ public class ParameterWrapper {
 				if ("String".equals(param.getParameterType())) {
 					String valueEscaped = StringEscapeUtils.escapeSql(_valueName);
  					valueName = "'" + valueEscaped + "'";
+				} else if ("StringIgnoreCase".equals(param.getParameterType())) {
+					String valueEscaped = StringEscapeUtils.escapeSql(_valueName);
+ 					valueName = "'" + valueEscaped.toLowerCase() + "'";
 				} else if ("Code:In".equals(param.getParameterType())) {
 					// change oper to in and put valueName in parenthesis
 					valueName = "(" + _valueName + ")";
@@ -372,7 +375,11 @@ public class ParameterWrapper {
 
 					String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
 					parameterList.add("column" + i);
-					valueList.add(sqlColumnName);
+					if ("StringIgnoreCase".equals(param.getParameterType())) {
+						valueList.add("lower(" + sqlColumnName + ")");
+					} else {
+						valueList.add(sqlColumnName);
+					}
 					parameterList.add("value" + i);
 					valueList.add(valueName);
 
@@ -449,7 +456,11 @@ public class ParameterWrapper {
 
 					String subWhereToAdd = "@column" + i + " " + oper + " @value" + i;
 					parameterList.add("column" + i);
-					valueList.add(sqlColumnName);
+					if ("StringIgnoreCase".equals(param.getParameterType())) {
+						valueList.add("lower(" + sqlColumnName + ")");
+					} else {
+						valueList.add(sqlColumnName);
+					}
 					parameterList.add("value" + i);
 					valueList.add(valueName);
 

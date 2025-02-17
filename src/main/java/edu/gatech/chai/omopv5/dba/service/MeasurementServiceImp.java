@@ -17,6 +17,7 @@
 package edu.gatech.chai.omopv5.dba.service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class MeasurementServiceImp extends BaseEntityServiceImp<Measurement> imp
 	}
 
 	@Override
-	public Measurement construct(ResultSet rs, Measurement entity, String alias) {
+	public Measurement construct(ResultSet rs, Measurement entity, String alias) throws SQLException {
 		return MeasurementService._construct(rs, entity, alias);
 	}
 

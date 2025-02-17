@@ -33,61 +33,57 @@ import edu.gatech.chai.omopv5.model.entity.Specimen;
  * The Interface ObservationService.
  */
 public interface SpecimenService extends IService<Specimen> {
-	public static Specimen _construct(ResultSet rs, Specimen specimen, String alias) {
+	public static Specimen _construct(ResultSet rs, Specimen specimen, String alias) throws SQLException {
 		if (specimen == null)
 			specimen = new Specimen();
 
 		if (alias == null || alias.isEmpty())
 			alias = Specimen._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_specimen_id")) {
-					specimen.setId(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
-					FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
-					specimen.setFPerson(fPerson);
-				} else if (columnInfo.equalsIgnoreCase("specimenConcept_concept_id")) {
-					Concept specimenConcept = ConceptService._construct(rs, null, "specimenConcept");
-					specimen.setSpecimenConcept(specimenConcept);
-				} else if (columnInfo.equalsIgnoreCase("specimenTypeConcept_concept_id")) {
-					Concept specimenTypeConcept = ConceptService._construct(rs, null, "specimenTypeConcept");
-					specimen.setSpecimenTypeConcept(specimenTypeConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_date")) {
-					specimen.setSpecimenDate(rs.getDate(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_datetime")) {
-					specimen.setSpecimenDateTime(rs.getTimestamp(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
-					specimen.setQuantity(rs.getDouble(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
-					Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
-					specimen.setUnitConcept(unitConcept);
-				} else if (columnInfo.equalsIgnoreCase("anatomicSiteConcept_concept_id")) {
-					Concept anatomicSiteConcept = ConceptService._construct(rs, null, "anatomicSiteConcept");
-					specimen.setAnatomicSiteConcept(anatomicSiteConcept);
-				} else if (columnInfo.equalsIgnoreCase("disease_status_concept_id")) {
-					Concept diseaseStatusConcept = ConceptService._construct(rs, null, "diseaseStatusConcept");
-					specimen.setDiseaseStatusConcept(diseaseStatusConcept);
-				} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_source_id")) {
-					specimen.setSpecimenSourceId(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_source_value")) {
-					specimen.setSpecimenSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
-					specimen.setUnitSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_anatomic_site_source_value")) {
-					specimen.setAnatomicSiteSourceValue(rs.getString(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_disease_status_source_value")) {
-					specimen.setDiseaseStatusSourceValue(rs.getString(columnInfo));
-				}
+			if (columnInfo.equalsIgnoreCase(alias + "_specimen_id")) {
+				specimen.setId(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("fPerson_person_id")) {
+				FPerson fPerson = FPersonService._construct(rs, null, "fPerson");
+				specimen.setFPerson(fPerson);
+			} else if (columnInfo.equalsIgnoreCase("specimenConcept_concept_id")) {
+				Concept specimenConcept = ConceptService._construct(rs, null, "specimenConcept");
+				specimen.setSpecimenConcept(specimenConcept);
+			} else if (columnInfo.equalsIgnoreCase("specimenTypeConcept_concept_id")) {
+				Concept specimenTypeConcept = ConceptService._construct(rs, null, "specimenTypeConcept");
+				specimen.setSpecimenTypeConcept(specimenTypeConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_date")) {
+				specimen.setSpecimenDate(rs.getDate(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_datetime")) {
+				specimen.setSpecimenDateTime(rs.getTimestamp(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_quantity")) {
+				specimen.setQuantity(rs.getDouble(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("unitConcept_concept_id")) {
+				Concept unitConcept = ConceptService._construct(rs, null, "unitConcept");
+				specimen.setUnitConcept(unitConcept);
+			} else if (columnInfo.equalsIgnoreCase("anatomicSiteConcept_concept_id")) {
+				Concept anatomicSiteConcept = ConceptService._construct(rs, null, "anatomicSiteConcept");
+				specimen.setAnatomicSiteConcept(anatomicSiteConcept);
+			} else if (columnInfo.equalsIgnoreCase("disease_status_concept_id")) {
+				Concept diseaseStatusConcept = ConceptService._construct(rs, null, "diseaseStatusConcept");
+				specimen.setDiseaseStatusConcept(diseaseStatusConcept);
+			} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_source_id")) {
+				specimen.setSpecimenSourceId(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_specimen_source_value")) {
+				specimen.setSpecimenSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_unit_source_value")) {
+				specimen.setUnitSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_anatomic_site_source_value")) {
+				specimen.setAnatomicSiteSourceValue(rs.getString(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_disease_status_source_value")) {
+				specimen.setDiseaseStatusSourceValue(rs.getString(columnInfo));
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
 		}
+
 		return specimen;
 	}
 

@@ -48,36 +48,31 @@ public interface FactRelationshipService extends IService<FactRelationship> {
 	public List<FactRelationship> searchFactRelationship(Long domainConcept1, Long factId1, Long domainConcept2,
 			Long factId2, Long relationshipId);
 
-	public static FactRelationship _construct(ResultSet rs, FactRelationship factRelationship, String alias) {
+	public static FactRelationship _construct(ResultSet rs, FactRelationship factRelationship, String alias) throws SQLException {
 		if (factRelationship == null)
 			factRelationship = new FactRelationship();
 
 		if (alias == null || alias.isEmpty())
 			alias = FactRelationship._getTableName();
 
-		try {
-			ResultSetMetaData metaData = rs.getMetaData();
-			int totalColumnSize = metaData.getColumnCount();
-			for (int i = 1; i <= totalColumnSize; i++) {
-				String columnInfo = metaData.getColumnName(i);
+		ResultSetMetaData metaData = rs.getMetaData();
+		int totalColumnSize = metaData.getColumnCount();
+		for (int i = 1; i <= totalColumnSize; i++) {
+			String columnInfo = metaData.getColumnName(i);
 
-				if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
-					factRelationship.setDomainConceptId1(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {
-					factRelationship.setFactId1(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_2")) {
-					factRelationship.setDomainConceptId2(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_2")) {
-					factRelationship.setFactId2(rs.getLong(columnInfo));
-				} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
-					Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
-					factRelationship.setRelationshipConcept(relationshipConcept);
-				}
-
+			if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_1")) {
+				factRelationship.setDomainConceptId1(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_1")) {
+				factRelationship.setFactId1(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_domain_concept_id_2")) {
+				factRelationship.setDomainConceptId2(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase(alias + "_fact_id_2")) {
+				factRelationship.setFactId2(rs.getLong(columnInfo));
+			} else if (columnInfo.equalsIgnoreCase("relationshipConcept_concept_id")) {
+				Concept relationshipConcept = ConceptService._construct(rs, null, "relationshipConcept");
+				factRelationship.setRelationshipConcept(relationshipConcept);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+
 		}
 
 		return factRelationship;

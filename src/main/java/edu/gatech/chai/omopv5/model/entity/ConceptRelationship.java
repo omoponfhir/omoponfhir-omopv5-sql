@@ -30,11 +30,11 @@ public class ConceptRelationship extends BaseEntity {
 	 * 
 	 */
 
-	@Column(name="concept_id_1", nullable=false)
-	private Long conceptId1;
+	@JoinColumn(name="concept_id_1", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
+	private Concept concept1;
 	
-	@Column(name="concept_id_2", nullable=false)
-    private Long conceptId2;
+	@JoinColumn(name="concept_id_2", referencedColumnName="concept_id", table="vocab.concept", nullable=false)
+    private Concept concept2;
 	
 	@Column(name="relationship_id", nullable=false)
 	private String relationshipId;
@@ -51,9 +51,9 @@ public class ConceptRelationship extends BaseEntity {
     public ConceptRelationship() {
     }
     
-    public ConceptRelationship(Long conceptId1, Long conceptId2, String relationshipId) {
-    	this.conceptId1 = conceptId1;
-    	this.conceptId2 = conceptId2;
+    public ConceptRelationship(Concept concept1, Concept concept2, String relationshipId) {
+    	this.concept1 = concept1;
+    	this.concept2 = concept2;
     	this.relationshipId = relationshipId;
     }
 
@@ -63,29 +63,29 @@ public class ConceptRelationship extends BaseEntity {
 	}
 	
 	// To support JPA's non primary key. We need to add this.
-	public ConceptRelationship getId() {
-		return this;
+	public Long getId() {
+		return null;
 	}
 	
-	public void setId(ConceptRelationshipPK conceptRelationshipPK) {
+	public void setId(Long conceptId) {
 		// this is for JPA implementation where it must have primary key. 
 		// We don't. So, just silently ignore...
 	}
 	
-	public Long getConceptId1() {
-		return this.conceptId1;
+	public Concept getConcept1() {
+		return this.concept1;
 	}
 	
-	public void setConceptId1(Long conceptId1) {
-		this.conceptId1 = conceptId1;
+	public void setConcept1(Concept concept1) {
+		this.concept1 = concept1;
 	}
 
-	public Long getConceptId2() {
-		return this.conceptId2;
+	public Concept getConcept2() {
+		return this.concept2;
 	}
 	
-	public void setConceptId2(Long conceptId2) {
-		this.conceptId2 = conceptId2;
+	public void setConcept2(Concept concept2) {
+		this.concept2 = concept2;
 	}
 	
 	public String getRelationshipId() {
@@ -122,14 +122,12 @@ public class ConceptRelationship extends BaseEntity {
 
 	@Override
 	public String getColumnName(String columnVariable) {
+		if ("id".equals(columnVariable)) {
+			return null;
+		}
 		return ConceptRelationship._getColumnName(columnVariable);
 	}
 	
-	@Override
- 	public String getFirstColumnName() {
- 		return "concept_id_1";
- 	}
-
 	public static String _getColumnName(String columnVariable) {
 		try {
 			Field field = ConceptRelationship.class.getDeclaredField(columnVariable);
@@ -179,6 +177,11 @@ public class ConceptRelationship extends BaseEntity {
 	@Override
 	public String getTableName() {
 		return ConceptRelationship._getTableName();
+	}
+	
+	@Override
+	public String getFirstColumnName() {
+		return "concept_id_1";
 	}
 	
 	public static String _getTableName() {

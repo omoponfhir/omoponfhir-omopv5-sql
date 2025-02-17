@@ -127,12 +127,15 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				closeConnection(connection);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+
 			try {
 				closeConnection(connection);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			e.printStackTrace();
+
+			return null;
 		}
 
 		return retVal;
@@ -195,12 +198,15 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 				closeConnection(connection);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+
 			try {
 				closeConnection(connection);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			e.printStackTrace();
+
+			return null;
 		}
 		
 		return entities;
@@ -311,6 +317,8 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			return null;
 		}
 
 //
@@ -341,7 +349,7 @@ public class FactRelationshipServiceImp extends BaseEntityServiceImp<FactRelatio
 	}
 
 	@Override
-	public FactRelationship construct(ResultSet rs, FactRelationship entity, String alias) {
+	public FactRelationship construct(ResultSet rs, FactRelationship entity, String alias) throws SQLException {
 		return FactRelationshipService._construct(rs, entity, alias);
 	}
 

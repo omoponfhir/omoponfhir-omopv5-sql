@@ -215,11 +215,11 @@ public class FPerson extends Person {
 			if (field != null) {
 				Column annotation = field.getDeclaredAnnotation(Column.class);
 				if (annotation != null) {
-					return Person._getTableName() + "." + annotation.name();
+					return FPerson._getTableName() + "." + annotation.name();
 				} else {
 					JoinColumn joinAnnotation = field.getDeclaredAnnotation(JoinColumn.class);
 					if (joinAnnotation != null) {
-						return Person._getTableName() + "." + joinAnnotation.name();
+						return FPerson._getTableName() + "." + joinAnnotation.name();
 					}
 					
 					System.out.println("WARNING: annotation is null for field="+field.toString());

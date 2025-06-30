@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.cloud.bigquery.FieldValueList;
@@ -38,6 +39,9 @@ import edu.gatech.chai.omopv5.model.entity.FPerson;
 @Service
 public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservationView>
 		implements FObservationViewService {
+
+	@Value("${schema.data}")
+	private String dataSchema;
 
 	/**
 	 * Instantiates a new f observation view service imp.
@@ -55,18 +59,24 @@ public class FObservationViewServiceImp extends BaseEntityServiceImp<FObservatio
 	 */
 	public FObservationView findDiastolic(Long conceptId, Long personId, Date date, Date time) {
 		String myTable = getSqlTableName();
-		String select_from = constructSqlSelectWithoutWhere(myTable);
+		String myDataSchema = "";
+		if (dataSchema != null && !dataSchema.isBlank()) {
+			myDataSchema = dataSchema + ".";
+		}
+		String myRootTable = myDataSchema + myTable;
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String select_from = constructSqlSelectWithoutWhere(myRootTable);
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String dateValue = "cast('" + dateFormat.format(date) + "' as date)";
 
-		dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String dateTimeValue = "cast('" + dateFormat.format(time) + "' as datetime)";
 
-		String where = "observationConcept." + Concept._getColumnName("id") + "=" + conceptId 
-				+ " and " + "fPerson." + FPerson._getColumnName("id") + "=" + personId 
-				+ " and " + myTable + "." + FObservationView._getColumnName("observationDate") + "=" + dateValue 
-				+ " and " + myTable + "." + FObservationView._getColumnName("observationDateTime") + "=" + dateTimeValue;
+		String where = FObservationView._getColumnName("observationConcept") + "=" + conceptId 
+				+ " and " + FObservationView._getColumnName("fPerson") + "=" + personId 
+				+ " and " + FObservationView._getColumnName("observationDate") + "=" + dateValue 
+				+ " and " + FObservationView._getColumnName("observationDateTime") + "=" + dateTimeValue;
 
 		String sql = select_from + " where " + where;
 		FObservationView entity = null;

@@ -35,19 +35,8 @@
 	<repositories>
 		<repository>
 			<id>ohdsi</id>
-			<name>repo.ohdsi.org</name>
-			<url>https://repo.ohdsi.org/nexus/content/repositories/releases</url>
-		</repository>
-		<repository>
-			<id>ohdsi.snapshots</id>
-			<name>repo.ohdsi.org-snapshots</name>
-			<url>https://repo.ohdsi.org/nexus/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
+			<name>OHDSI Repository</name>
+			<url>https://nexus.ohdsi.org/repository/maven-public/</url>
 		</repository>
 	</repositories>
 
@@ -120,10 +109,12 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>2.8.2</version>
 		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.ohdsi.sql/SqlRender -->
 		<dependency>
 			<groupId>org.ohdsi.sql</groupId>
 			<artifactId>SqlRender</artifactId>
-			<version>1.16.1</version>
+			<version>1.19.4</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-bigquery -->
